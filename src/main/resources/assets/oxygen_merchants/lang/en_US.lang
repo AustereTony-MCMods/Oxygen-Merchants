@@ -1,0 +1,55 @@
+merchants.gui.management.profiles.title=Merchants Profiles Management
+merchants.gui.management.entities.title=Bound Entities Management
+merchants.gui.management.create=Create
+
+merchants.gui.management.saveChangesButton=Save
+merchants.gui.management.changeCurrencyButton=Change
+merchants.gui.management.createOfferButton=New Offer
+
+merchants.gui.management.profileCreationCallback=Profile Creation
+merchants.gui.management.profileGenericName=Profile
+merchants.gui.management.removeProfileCallback=Remove Profile
+merchants.gui.management.removeProfileCallback.request=Profile %s will be removed.
+merchants.gui.management.editProfileName=Edit Name
+merchants.gui.management.editProfileCurrency=Edit Currency
+merchants.gui.management.newOffer=New Offer
+merchants.gui.management.remove=Remove
+merchants.gui.management.nameEditingCallback=Profile Name Editing
+merchants.gui.management.saveCallback=Save Changes
+merchants.gui.management.saveCallback.request=Sync changes with server?
+merchants.gui.management.currencyManagementCallback=Currency Management
+merchants.gui.management.offerCreationCallback=Offer Creation
+merchants.gui.management.offerEditingCallback=Edit Offer
+merchants.gui.management.useCurrency=Use Currency
+merchants.gui.management.useItem=Use Item
+merchants.gui.management.amount=Amount
+merchants.gui.management.cost=Cost
+merchants.gui.management.enableSelling=Enable Selling
+merchants.gui.management.sellingCost=Selling Cost
+merchants.gui.management.noSelling=No Selling
+merchants.gui.management.edit=Edit
+merchants.gui.management.openProfileButton=Open
+merchants.gui.management.entityBondCreationCallback=Bond Creation
+merchants.gui.management.profession=Profession
+merchants.gui.management.genericProfession=Merchant
+merchants.gui.management.profile=Merchant Profile
+merchants.gui.management.visitEntityCallback=Visit Merchant
+merchants.gui.management.visitEntityCallback.request=Teleport to %s?
+merchants.gui.management.visit=Visit
+merchants.gui.management.bondRemoveCallback=Remove Merchant
+merchants.gui.management.bondRemoveCallback.request=Remove %s?
+merchants.gui.management.emptyProfile=No Profile
+
+merchants.gui.management.sellFor=Sell for %s
+
+merchants.gui.merchant.buy=Buy
+merchants.gui.merchant.selling=Seling
+
+merchants.tooltip.profiles=Merchant Profiles
+merchants.tooltip.entities=Bound Entities
+merchants.tooltip.edit=Edit
+
+merchants.message.ingameManagementDisabled=Ingame management disabled.
+merchants.message.merchantsDataReloaded=Merchants data reloaded.
+merchants.message.bought=You bought %sx[%s].
+merchants.message.sold=You sold %sx[%s].
