@@ -27,7 +27,7 @@ public class OfferGUIButton extends IndexedGUIButton {
         this.useCurrencyStack = currencyStack != null;
         this.amount = amount;
         this.cost = cost;
-        this.setDisplayText(this.offeredStack.getDisplayName());
+        this.setDisplayText(this.offeredStack.getDisplayName());//for search
     }
 
     @Override

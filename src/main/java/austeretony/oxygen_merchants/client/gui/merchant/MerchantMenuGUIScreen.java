@@ -26,7 +26,7 @@ public class MerchantMenuGUIScreen extends AbstractGUIScreen {
 
     @Override
     protected GUIWorkspace initWorkspace() {
-        return new GUIWorkspace(this, 183, 189).setAlignment(EnumGUIAlignment.RIGHT, - 10, 0);
+        return new GUIWorkspace(this, 173, 189).setAlignment(EnumGUIAlignment.RIGHT, - 10, 0);
     }
 
     @Override

@@ -2,6 +2,7 @@ package austeretony.oxygen_merchants.common.event;
 
 import austeretony.oxygen.common.api.event.OxygenPlayerLoadedEvent;
 import austeretony.oxygen.common.api.event.OxygenPlayerUnloadedEvent;
+import austeretony.oxygen.common.core.api.CommonReference;
 import austeretony.oxygen_merchants.common.MerchantsManagerServer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -22,6 +23,6 @@ public class MerchantsEventsServer {
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {  
         if (!event.getEntity().world.isRemote && event.getEntity() instanceof EntityLiving)
-            MerchantsManagerServer.instance().getBoundEntitiesManager().entityLivingDied(event.getEntity().getPersistentID());//TODO replace method with reference
+            MerchantsManagerServer.instance().getBoundEntitiesManager().entityLivingDied(CommonReference.getPersistentUUID(event.getEntity()));
     }
 }

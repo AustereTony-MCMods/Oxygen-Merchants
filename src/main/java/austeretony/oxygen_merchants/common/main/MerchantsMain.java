@@ -47,7 +47,7 @@ import net.minecraftforge.fml.relauncher.Side;
         modid = MerchantsMain.MODID, 
         name = MerchantsMain.NAME, 
         version = MerchantsMain.VERSION,
-        dependencies = "required-after:oxygen@[0.7.0,);",//TODO Always check required Oxygen version before build
+        dependencies = "required-after:oxygen@[0.7.1,);",//TODO Always check required Oxygen version before build
         certificateFingerprint = "@FINGERPRINT@",
         updateJSON = MerchantsMain.VERSIONS_FORGE_URL)
 public class MerchantsMain {
@@ -55,7 +55,7 @@ public class MerchantsMain {
     public static final String 
     MODID = "oxygen_merchants",
     NAME = "Oxygen: Merchants",
-    VERSION = "0.1.0",
+    VERSION = "0.1.1",
     VERSION_CUSTOM = VERSION + ":alpha:0",
     GAME_VERSION = "1.12.2",
     VERSIONS_FORGE_URL = "https://raw.githubusercontent.com/AustereTony-MCMods/Oxygen-Merchants/info/mod_versions_forge.json";

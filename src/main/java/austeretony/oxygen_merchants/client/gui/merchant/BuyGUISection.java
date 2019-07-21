@@ -67,18 +67,18 @@ public class BuyGUISection extends AbstractGUISection {
 
         this.addElement(this.searchButton = new GUIButton(7, 15, 7, 7).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SEARCH_ICONS, 7, 7).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.search"), GUISettings.instance().getTooltipScale()));   
 
-        this.buyOffersPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 24, 180, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
+        this.buyOffersPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 24, this.getWidth() - 3, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.buyOffersPanel);
         this.addElement(this.searchField = new GUITextField(0, 15, 113, 20).setScale(0.7F).enableDynamicBackground().setDisplayText("...", false, GUISettings.instance().getTextScale()).cancelDraggedElementLogic().disableFull());
         this.buyOffersPanel.initSearchField(this.searchField);
         GUIScroller scroller = new GUIScroller(MathUtils.clamp(this.screen.merchantProfile.getOffersAmount(), 9, 100), 9);
         this.buyOffersPanel.initScroller(scroller);
-        GUISlider slider = new GUISlider(181, 24, 2, 152);
+        GUISlider slider = new GUISlider(this.getWidth() - 2, 24, 2, 152);
         slider.setDynamicBackgroundColor(GUISettings.instance().getEnabledSliderColor(), GUISettings.instance().getDisabledSliderColor(), GUISettings.instance().getHoveredSliderColor());
         scroller.initSlider(slider); 
 
         this.addElement(this.inventoryStateTextLabel = new GUITextLabel(2, 179).setTextScale(GUISettings.instance().getSubTextScale()));   
-        this.addElement(this.currencyBalance = new GUICurrencyBalance(171, 181));   
+        this.addElement(this.currencyBalance = new GUICurrencyBalance(this.getWidth() - 12, 181));   
 
         if (!this.screen.merchantProfile.isUsingCurrency())
             this.currencyBalance.setItemStack(this.screen.merchantProfile.getCurrencyStack().getItemStack());
@@ -102,11 +102,8 @@ public class BuyGUISection extends AbstractGUISection {
         int balance = 0;
         if (this.screen.merchantProfile.isUsingCurrency())
             balance = WatcherHelperClient.getInt(OxygenPlayerData.CURRENCY_GOLD_ID);
-        else {
-            for (ItemStack itemStack : this.mc.player.inventory.mainInventory)
-                if (this.screen.merchantProfile.getCurrencyStack().isEquals(itemStack))
-                    balance += itemStack.getCount();
-        }
+        else
+            balance = InventoryHelper.getEqualStackAmount(this.mc.player, this.screen.merchantProfile.getCurrencyStack());
         this.setBalance(balance);
     }
 
@@ -122,7 +119,7 @@ public class BuyGUISection extends AbstractGUISection {
 
             @Override
             public int compare(MerchantOffer offer1, MerchantOffer offer2) {
-                return (int) ((offer1.offerId - offer2.offerId) / 10000L);
+                return (int) ((offer1.offerId - offer2.offerId) / 10_000L);
             }
         });
 
@@ -133,7 +130,9 @@ public class BuyGUISection extends AbstractGUISection {
         if (!this.screen.merchantProfile.isUsingCurrency())
             currencyItemStack = this.screen.merchantProfile.getCurrencyStack().getItemStack();
 
-        int stock;
+        int 
+        stock,
+        sellingOfferCounter = 0;
         for (MerchantOffer offer : offers) {
             stock = InventoryHelper.getEqualStackAmount(this.mc.player, offer.getOfferedStack());
             offeredStack = offer.getOfferedStack().getItemStack();
@@ -153,8 +152,12 @@ public class BuyGUISection extends AbstractGUISection {
                 button.requireDoubleClick();
 
                 this.screen.getSellingSection().getSellingOffersPanel().addButton(button);
+                
+                sellingOfferCounter++;
             }
         }
+
+        this.screen.getSellingSection().getSellingOffersPanel().getScroller().updateRowsAmount(MathUtils.clamp(sellingOfferCounter, 9, 100));
     }
 
     @Override

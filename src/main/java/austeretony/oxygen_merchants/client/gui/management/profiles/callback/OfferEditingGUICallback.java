@@ -50,15 +50,15 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
         this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("merchants.gui.management.offerEditingCallback"), true, GUISettings.instance().getTitleScale()));
 
         this.addElement(new GUITextLabel(2, 98).setDisplayText(ClientReference.localize("merchants.gui.management.amount"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.amountField = new GUITextField(3, 108, 40, 10).setScale(0.7F).setText("1").enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(this.amountField = new GUITextField(3, 108, 40, 10).setScale(0.7F).enableDynamicBackground().setText("1").enableNumberFieldMode(Integer.MAX_VALUE));
 
         this.addElement(new GUITextLabel(2, 118).setDisplayText(ClientReference.localize("merchants.gui.management.cost"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.buyCostField = new GUITextField(3, 128, 40, 10).setScale(0.7F).setText("0").enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(this.buyCostField = new GUITextField(3, 128, 40, 10).setScale(0.7F).enableDynamicBackground().setText("0").enableNumberFieldMode(Integer.MAX_VALUE));
 
         this.addElement(this.enableSellButton = new GUICheckBoxButton(2, 138, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()));
         this.addElement(new GUITextLabel(12, 137).setDisplayText(ClientReference.localize("merchants.gui.management.enableSelling"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.sellingCostField = new GUITextField(3, 148, 40, 10).setScale(0.7F).setText("0").enableNumberFieldMode(Integer.MAX_VALUE).disable());
+        this.addElement(this.sellingCostField = new GUITextField(3, 148, 40, 10).setScale(0.7F).enableDynamicBackground().setText("0").enableNumberFieldMode(Integer.MAX_VALUE).disable());
 
         this.itemsPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 12, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.itemsPanel);       

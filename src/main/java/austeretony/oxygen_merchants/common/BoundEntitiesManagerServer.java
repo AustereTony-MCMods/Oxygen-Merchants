@@ -17,7 +17,6 @@ import austeretony.oxygen.util.StreamUtils;
 import austeretony.oxygen_merchants.common.config.MerchantsConfig;
 import austeretony.oxygen_merchants.common.main.BoundEntityEntry;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
-import austeretony.oxygen_merchants.common.main.SimpleTeleporter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -157,10 +156,7 @@ public class BoundEntitiesManagerServer implements IPersistentData {
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()
                 && this.bondExist(bondId)) {
             BoundEntityEntry entry = this.getBond(bondId);
-            if (playerMP.dimension == entry.dimId)                                                 
-                playerMP.setPositionAndUpdate(entry.xPos, entry.yPos, entry.zPos);    
-            else                                                
-                SimpleTeleporter.transferToDimension(playerMP, entry.dimId, entry.xPos, entry.yPos, entry.zPos);
+            CommonReference.teleportPlayer(playerMP, entry.dimId, entry.xPos, entry.yPos, entry.zPos);
         }
     }
 

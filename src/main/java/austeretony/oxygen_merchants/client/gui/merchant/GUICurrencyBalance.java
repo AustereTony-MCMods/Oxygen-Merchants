@@ -62,7 +62,7 @@ public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
         if (this.itemStack != null && mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + 8 && mouseY < this.getY() + 8)
-            this.screen.drawToolTip(this.itemStack, mouseX - 120, mouseY);
+            this.screen.drawToolTip(this.itemStack, mouseX - this.textWidth(this.itemStack.getDisplayName(), 1.0F) - 25, mouseY);
     }
 
     public void setItemStack(ItemStack itemStack) {
