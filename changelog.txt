@@ -1,2 +1,5 @@
+0.1.1b
++Slight improvements for GUIs.
+
 0.1.0a
 +Initial release.
