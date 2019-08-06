@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class MerchantMenuGUIScreen extends AbstractGUIScreen {
 
-    public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(MerchantsMain.MODID, "textures/gui/merchant/merchant_background.png");
+    public static final ResourceLocation MERCHANT_MENU_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/merchant/merchant_menu.png");
 
     public final MerchantProfile merchantProfile;
 

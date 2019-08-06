@@ -3,6 +3,7 @@ package austeretony.oxygen_merchants.client.gui.merchant;
 import austeretony.alternateui.screen.core.GUIAdvancedElement;
 import austeretony.alternateui.screen.core.GUISimpleElement;
 import austeretony.oxygen.client.api.ItemRenderHelper;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.OxygenGUITextures;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,8 +13,6 @@ import net.minecraft.item.ItemStack;
 public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
 
     private ItemStack itemStack;
-
-    private int balance;
 
     public GUICurrencyBalance(int x, int y) {
         this.setPosition(x, y);
@@ -29,13 +28,13 @@ public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             if (this.itemStack == null) {
                 GlStateManager.enableBlend(); 
-                this.mc.getTextureManager().bindTexture(OxygenGUITextures.GOLD_COIN_ICON);
+                this.mc.getTextureManager().bindTexture(OxygenGUITextures.COIN_ICON);
                 GUIAdvancedElement.drawCustomSizedTexturedRect(0, - 1, 0, 0, 6, 6, 6, 6);          
                 GlStateManager.disableBlend();
                 GlStateManager.pushMatrix();           
-                GlStateManager.translate(- 3.0F - this.textWidth(String.valueOf(this.balance), GUISettings.instance().getSubTextScale()), 0.0F, 0.0F);            
+                GlStateManager.translate(- 2.0F - this.textWidth(this.getDisplayText(), GUISettings.instance().getSubTextScale()), 0.0F, 0.0F);            
                 GlStateManager.scale(GUISettings.instance().getSubTextScale(), GUISettings.instance().getSubTextScale(), 0.0F);                                      
-                this.mc.fontRenderer.drawString(String.valueOf(this.balance), 0, 0, this.getEnabledTextColor(), false);
+                this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, this.getEnabledTextColor(), false);
                 GlStateManager.popMatrix();
             } else {
                 GlStateManager.pushMatrix();           
@@ -50,9 +49,9 @@ public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
 
                 GlStateManager.popMatrix();
                 GlStateManager.pushMatrix();           
-                GlStateManager.translate(- 3.0F - this.textWidth(String.valueOf(this.balance), GUISettings.instance().getSubTextScale()), 0.0F, 0.0F);            
+                GlStateManager.translate(- 3.0F - this.textWidth(this.getDisplayText(), GUISettings.instance().getSubTextScale()), 0.0F, 0.0F);            
                 GlStateManager.scale(GUISettings.instance().getSubTextScale(), GUISettings.instance().getSubTextScale(), 0.0F);                                      
-                this.mc.fontRenderer.drawString(String.valueOf(this.balance), 0, 0, this.getEnabledTextColor(), false);
+                this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, this.getEnabledTextColor(), false);
                 GlStateManager.popMatrix();
             } 
             GlStateManager.popMatrix();
@@ -62,7 +61,8 @@ public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
         if (this.itemStack != null && mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + 8 && mouseY < this.getY() + 8)
-            this.screen.drawToolTip(this.itemStack, mouseX - this.textWidth(this.itemStack.getDisplayName(), 1.0F) - 25, mouseY);
+            this.screen.drawToolTip(this.itemStack, 
+                    mouseX - this.textWidth(this.itemStack.getDisplayName(), 1.0F) - (ClientReference.getGameSettings().advancedItemTooltips ? 75 : 25), mouseY);
     }
 
     public void setItemStack(ItemStack itemStack) {
@@ -70,6 +70,6 @@ public class GUICurrencyBalance extends GUISimpleElement<GUICurrencyBalance> {
     }
 
     public void setBalance(int balance) {
-        this.balance = balance;
+        this.setDisplayText(String.valueOf(balance));
     }
 }

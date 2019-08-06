@@ -1,26 +1,35 @@
 package austeretony.oxygen_merchants.client.gui.management;
 
-import austeretony.alternateui.screen.core.AbstractGUIScreen;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.core.GUIWorkspace;
-import austeretony.oxygen.common.api.OxygenGUIHelper;
+import austeretony.oxygen.client.gui.SynchronizedGUIScreen;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import net.minecraft.util.ResourceLocation;
 
-public class ManagementMenuGUIScreen extends AbstractGUIScreen {
+public class ManagementMenuGUIScreen extends SynchronizedGUIScreen {
 
     public static final ResourceLocation 
-    PROFILES_SECTION_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profiles_background.png"),
+    PROFILES_MENU_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profiles_menu.png"),
+    PROFILE_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profile_creation_callback.png"),
+    REMOVE_PROFILE_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/remove_profile_callback.png"),
+    PROFILE_NAME_EDIT_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profile_name_edit_callback.png"),
     CURRENCY_MANAGEMENT_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/currency_management_callback.png"),
     OFFER_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/offer_creation_callback.png"),
-    ENTITIES_SECTION_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/entities_background.png");
+    SAVE_CHANGES_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/save_changes_callback.png"),
+
+    ENTITIES_MENU_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/entities_menu.png"),
+    ENTRY_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/entry_creation_callback.png"),
+    VISIT_ENTITY_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/visit_entity_callback.png"),
+    REMOVE_ENTRY_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/remove_entry_callback.png");
 
     private ProfilesManagementGUISection profilesSection;
 
     private EntitiesManagementGUISection entitiesSection;
 
-    private boolean profilesInitialized, entitiesInitialized;
+    public ManagementMenuGUIScreen() {
+        super(MerchantsMain.MANAGEMENT_MENU_SCREEN_ID);
+    }
 
     @Override
     protected GUIWorkspace initWorkspace() {
@@ -30,7 +39,7 @@ public class ManagementMenuGUIScreen extends AbstractGUIScreen {
     @Override
     protected void initSections() {
         this.getWorkspace().initSection(this.profilesSection = new ProfilesManagementGUISection(this));   
-        this.getWorkspace().initSection(this.entitiesSection = new EntitiesManagementGUISection(this));        
+        this.getWorkspace().initSection(this.entitiesSection = new EntitiesManagementGUISection(this));    
     }
 
     @Override
@@ -47,38 +56,9 @@ public class ManagementMenuGUIScreen extends AbstractGUIScreen {
     }
 
     @Override
-    public void updateScreen() {    
-        super.updateScreen();
-        if (!this.profilesInitialized//reduce map calls
-                && OxygenGUIHelper.isNeedSync(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID)
-                && OxygenGUIHelper.isScreenInitialized(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID)
-                && OxygenGUIHelper.isDataRecieved(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID)) {
-            this.profilesInitialized = true;
-            OxygenGUIHelper.resetNeedSync(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
-            this.profilesSection.sortProfiles(0);
-        }
-
-        if (!this.entitiesInitialized//reduce map calls
-                && OxygenGUIHelper.isNeedSync(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID)
-                && OxygenGUIHelper.isScreenInitialized(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID)
-                && OxygenGUIHelper.isDataRecieved(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID)) {
-            this.entitiesInitialized = true;
-            OxygenGUIHelper.resetNeedSync(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID);
-            this.entitiesSection.sortEntries(0);
-        }
-    }
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-
-        OxygenGUIHelper.resetNeedSync(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
-        OxygenGUIHelper.resetScreenInitialized(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
-        OxygenGUIHelper.resetDataRecieved(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
-
-        OxygenGUIHelper.resetNeedSync(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID);
-        OxygenGUIHelper.resetScreenInitialized(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID);
-        OxygenGUIHelper.resetDataRecieved(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID);
+    public void loadData() {
+        this.profilesSection.sortProfiles(0);
+        this.entitiesSection.sortEntries(0);
     }
 
     public ProfilesManagementGUISection getProfilesSection() {

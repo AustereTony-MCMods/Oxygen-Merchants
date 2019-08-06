@@ -2,8 +2,8 @@ package austeretony.oxygen_merchants.client.gui.management.profiles.context;
 
 import austeretony.alternateui.screen.contextmenu.AbstractContextAction;
 import austeretony.alternateui.screen.core.GUIBaseElement;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
-import net.minecraft.client.resources.I18n;
 
 public class EditOfferContextAction extends AbstractContextAction {
 
@@ -13,7 +13,7 @@ public class EditOfferContextAction extends AbstractContextAction {
 
     public EditOfferContextAction(ProfilesManagementGUISection section) {
         this.section = section;
-        this.name = I18n.format("merchants.gui.management.edit");
+        this.name = ClientReference.localize("oxygen_merchants.gui.management.edit");
     }
 
     @Override

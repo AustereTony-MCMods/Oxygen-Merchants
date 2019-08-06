@@ -2,9 +2,9 @@ package austeretony.oxygen_merchants.client.gui.management.profiles.context;
 
 import austeretony.alternateui.screen.contextmenu.AbstractContextAction;
 import austeretony.alternateui.screen.core.GUIBaseElement;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.profiles.OfferFullGUIButton;
-import net.minecraft.client.resources.I18n;
 
 public class RemoveOfferContextAction extends AbstractContextAction {
 
@@ -14,7 +14,7 @@ public class RemoveOfferContextAction extends AbstractContextAction {
 
     public RemoveOfferContextAction(ProfilesManagementGUISection section) {
         this.section = section;
-        this.name = I18n.format("merchants.gui.management.remove");
+        this.name = ClientReference.localize("oxygen_merchants.gui.management.remove");
     }
 
     @Override
@@ -29,6 +29,6 @@ public class RemoveOfferContextAction extends AbstractContextAction {
 
     @Override
     protected void execute(GUIBaseElement currElement) {
-        this.section.removeOfferFromCurrentProfile(((OfferFullGUIButton) currElement).id); 
+        this.section.removeOfferFromCurrentProfile(((OfferFullGUIButton) currElement).index); 
     }
 }

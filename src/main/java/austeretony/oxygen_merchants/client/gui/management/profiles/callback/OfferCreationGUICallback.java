@@ -8,9 +8,9 @@ import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.panel.GUIButtonPanel.GUIEnumOrientation;
 import austeretony.alternateui.screen.text.GUITextField;
 import austeretony.alternateui.screen.text.GUITextLabel;
+import austeretony.alternateui.util.EnumGUIOrientation;
 import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import austeretony.oxygen.common.itemstack.ItemStackWrapper;
@@ -34,7 +34,7 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
 
     private GUITextField amountField, buyCostField, sellingCostField;
 
-    private GUICheckBoxButton enableBuyUpButton;
+    private GUICheckBoxButton enableSellingButton;
 
     private InventoryItemGUIButton currentButton;
 
@@ -48,20 +48,26 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
     public void init() {
         this.addElement(new OfferCreationCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));//main background 1st layer
 
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("merchants.gui.management.offerCreationCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.offerCreationCallback"), true, GUISettings.instance().getTitleScale()));
 
-        this.addElement(new GUITextLabel(2, 98).setDisplayText(ClientReference.localize("merchants.gui.management.amount"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.amountField = new GUITextField(3, 108, 60, 10).setScale(0.7F).enableDynamicBackground().setText("1").enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(new GUITextLabel(2, 98).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.amount"), true, GUISettings.instance().getSubTextScale()));
+        this.addElement(this.amountField = new GUITextField(2, 107, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setText("1").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE));
 
-        this.addElement(new GUITextLabel(2, 118).setDisplayText(ClientReference.localize("merchants.gui.management.cost"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.buyCostField = new GUITextField(3, 128, 60, 10).setScale(0.7F).enableDynamicBackground().setText("0").enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(new GUITextLabel(2, 118).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.cost"), true, GUISettings.instance().getSubTextScale()));
+        this.addElement(this.buyCostField = new GUITextField(2, 127, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setText("0").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE));
 
-        this.addElement(this.enableBuyUpButton = new GUICheckBoxButton(2, 138, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
+        this.addElement(this.enableSellingButton = new GUICheckBoxButton(2, 139, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()));
-        this.addElement(new GUITextLabel(12, 137).setDisplayText(ClientReference.localize("merchants.gui.management.enableSelling"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.sellingCostField = new GUITextField(3, 148, 60, 10).setScale(0.7F).enableDynamicBackground().setText("0").enableNumberFieldMode(Integer.MAX_VALUE).disable());
+        this.addElement(new GUITextLabel(12, 138).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.enableSelling"), true, GUISettings.instance().getSubTextScale()));
+        this.addElement(this.sellingCostField = new GUITextField(2, 147, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setText("0").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE).disable());
 
-        this.itemsPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 12, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
+        this.itemsPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 12, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.itemsPanel);       
         GUIScroller scroller = new GUIScroller(36, 5);
         this.itemsPanel.initScroller(scroller);
@@ -100,7 +106,7 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
 
         this.amountField.setText("1");
         this.buyCostField.setText("0");
-        this.enableBuyUpButton.setToggled(false);
+        this.enableSellingButton.setToggled(false);
         this.sellingCostField.setText("0");
         this.sellingCostField.disable();
 
@@ -116,12 +122,12 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
                 MerchantOffer offer = new MerchantOffer(OxygenUtils.createDataStampedId(), ItemStackWrapper.getFromStack(this.currentButton.getItemStack()));
                 offer.setAmount(this.amountField.getTypedNumber());
                 offer.setBuyCost(this.buyCostField.getTypedNumber());
-                offer.setSellingEnabled(this.enableBuyUpButton.isToggled());
+                offer.setSellingEnabled(this.enableSellingButton.isToggled());
                 offer.setSellingCost(this.sellingCostField.getTypedNumber());
                 this.section.addOfferToCurrentProfile(offer);
                 this.close();
-            } else if (element == this.enableBuyUpButton) {
-                if (this.enableBuyUpButton.isToggled())
+            } else if (element == this.enableSellingButton) {
+                if (this.enableSellingButton.isToggled())
                     this.sellingCostField.enable();
                 else
                     this.sellingCostField.disable();

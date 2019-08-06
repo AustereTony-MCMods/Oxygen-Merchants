@@ -1,7 +1,7 @@
 package austeretony.oxygen_merchants.common.network.client;
 
+import austeretony.oxygen.client.api.OxygenGUIHelper;
 import austeretony.oxygen.client.api.OxygenHelperClient;
-import austeretony.oxygen.common.api.OxygenGUIHelper;
 import austeretony.oxygen.common.network.ProxyPacket;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.common.MerchantsManagerServer;
@@ -34,6 +34,6 @@ public class CPSyncMerchantProfiles extends ProxyPacket {
             MerchantsManagerClient.instance().getMerchantProfilesManager().addProfile(MerchantProfile.read(buffer));
         OxygenHelperClient.savePersistentDataDelegated(MerchantsManagerClient.instance().getMerchantProfilesManager());
 
-        OxygenGUIHelper.dataRecieved(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
+        OxygenGUIHelper.dataReceived(MerchantsMain.MANAGEMENT_MENU_SCREEN_ID);
     }
 }

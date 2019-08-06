@@ -2,7 +2,6 @@ package austeretony.oxygen_merchants.client.gui.merchant;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import austeretony.alternateui.screen.browsing.GUIScroller;
@@ -11,9 +10,9 @@ import austeretony.alternateui.screen.button.GUISlider;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.panel.GUIButtonPanel.GUIEnumOrientation;
 import austeretony.alternateui.screen.text.GUITextField;
 import austeretony.alternateui.screen.text.GUITextLabel;
+import austeretony.alternateui.util.EnumGUIOrientation;
 import austeretony.oxygen.client.api.WatcherHelperClient;
 import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.IndexedGUIButton;
@@ -60,16 +59,18 @@ public class BuyGUISection extends AbstractGUISection {
         this.addElement(new MerchantBackgroundGUIFiller(0, 0, this.getWidth(), this.getHeight()));
         this.addElement(new GUITextLabel(2, 4).setDisplayText(this.screen.merchantProfile.getName(), false, GUISettings.instance().getTitleScale()));
 
-        String sectionName = ClientReference.localize("merchants.gui.merchant.buy");
+        String sectionName = ClientReference.localize("oxygen_merchants.gui.merchant.buy");
         this.addElement(new GUITextLabel(this.getWidth() - 32 - this.textWidth(sectionName, GUISettings.instance().getTitleScale()), 4).setDisplayText(sectionName, false, GUISettings.instance().getTitleScale()));
-        this.addElement(new GUIButton(this.getWidth() - 28, 0, 12, 12).setTexture(MerchantsGUITextures.BUY_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("merchants.gui.merchant.buy"), GUISettings.instance().getTooltipScale()).toggle());    
-        this.addElement(this.sellingSectionButton = new GUIButton(this.getWidth() - 14, 0, 12, 12).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(MerchantsGUITextures.SELL_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("merchants.gui.merchant.selling"), GUISettings.instance().getTooltipScale()));     
+        this.addElement(new GUIButton(this.getWidth() - 28, 0, 12, 12).setTexture(MerchantsGUITextures.BUY_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.gui.merchant.buy"), GUISettings.instance().getTooltipScale()).toggle());    
+        this.addElement(this.sellingSectionButton = new GUIButton(this.getWidth() - 14, 0, 12, 12).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(MerchantsGUITextures.SELL_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.gui.merchant.selling"), GUISettings.instance().getTooltipScale()));     
 
-        this.addElement(this.searchButton = new GUIButton(7, 15, 7, 7).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SEARCH_ICONS, 7, 7).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.search"), GUISettings.instance().getTooltipScale()));   
+        this.addElement(this.searchButton = new GUIButton(3, 15, 7, 7).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SEARCH_ICONS, 7, 7).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.search"), GUISettings.instance().getTooltipScale()));   
 
-        this.buyOffersPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 24, this.getWidth() - 3, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
+        this.buyOffersPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 24, this.getWidth() - 3, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.buyOffersPanel);
-        this.addElement(this.searchField = new GUITextField(0, 15, 113, 20).setScale(0.7F).enableDynamicBackground().setDisplayText("...", false, GUISettings.instance().getTextScale()).cancelDraggedElementLogic().disableFull());
+        this.addElement(this.searchField = new GUITextField(0, 14, 85, 9, 20)
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setDisplayText("...", false, GUISettings.instance().getSubTextScale()).setLineOffset(3).cancelDraggedElementLogic().disableFull());
         this.buyOffersPanel.initSearchField(this.searchField);
         GUIScroller scroller = new GUIScroller(MathUtils.clamp(this.screen.merchantProfile.getOffersAmount(), 9, 100), 9);
         this.buyOffersPanel.initScroller(scroller);
@@ -78,7 +79,7 @@ public class BuyGUISection extends AbstractGUISection {
         scroller.initSlider(slider); 
 
         this.addElement(this.inventoryStateTextLabel = new GUITextLabel(2, 179).setTextScale(GUISettings.instance().getSubTextScale()));   
-        this.addElement(this.currencyBalance = new GUICurrencyBalance(this.getWidth() - 12, 181));   
+        this.addElement(this.currencyBalance = new GUICurrencyBalance(this.getWidth() - 13, 181));   
 
         if (!this.screen.merchantProfile.isUsingCurrency())
             this.currencyBalance.setItemStack(this.screen.merchantProfile.getCurrencyStack().getItemStack());
@@ -101,7 +102,7 @@ public class BuyGUISection extends AbstractGUISection {
     public void updateBalance() {
         int balance = 0;
         if (this.screen.merchantProfile.isUsingCurrency())
-            balance = WatcherHelperClient.getInt(OxygenPlayerData.CURRENCY_GOLD_ID);
+            balance = WatcherHelperClient.getInt(OxygenPlayerData.CURRENCY_COINS_WATCHER_ID);
         else
             balance = InventoryHelper.getEqualStackAmount(this.mc.player, this.screen.merchantProfile.getCurrencyStack());
         this.setBalance(balance);
@@ -115,13 +116,8 @@ public class BuyGUISection extends AbstractGUISection {
 
     public void loadOffers() {
         List<MerchantOffer> offers = new ArrayList<MerchantOffer>(this.screen.merchantProfile.getOffers());
-        Collections.sort(offers, new Comparator<MerchantOffer>() {
 
-            @Override
-            public int compare(MerchantOffer offer1, MerchantOffer offer2) {
-                return (int) ((offer1.offerId - offer2.offerId) / 10_000L);
-            }
-        });
+        Collections.sort(offers, (o1, o2)->(int) ((o1.offerId - o2.offerId) / 5_000L));
 
         OfferGUIButton button;
         ItemStack 
@@ -152,7 +148,7 @@ public class BuyGUISection extends AbstractGUISection {
                 button.requireDoubleClick();
 
                 this.screen.getSellingSection().getSellingOffersPanel().addButton(button);
-                
+
                 sellingOfferCounter++;
             }
         }
@@ -162,8 +158,10 @@ public class BuyGUISection extends AbstractGUISection {
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (this.searchField.isEnabled() && !this.searchField.isHovered())
+        if (this.searchField.isEnabled() && !this.searchField.isHovered()) {
+            this.searchButton.enableFull();
             this.searchField.disableFull();
+        }
         return super.mouseClicked(mouseX, mouseY, mouseButton);                 
     }
 
@@ -172,11 +170,12 @@ public class BuyGUISection extends AbstractGUISection {
         if (mouseButton == 0) {
             if (element == this.sellingSectionButton)
                 this.screen.getSellingSection().open();
-            else if (element == this.searchButton)
+            else if (element == this.searchButton) {
                 this.searchField.enableFull();
-            else if (element instanceof OfferGUIButton) {
+                this.searchButton.disableFull();
+            } else if (element instanceof OfferGUIButton) {
                 this.currentOfferButton = (OfferGUIButton) element;
-                MerchantsManagerClient.instance().performBuySynced(this.screen.merchantProfile.getId(), this.currentOfferButton.id);
+                MerchantsManagerClient.instance().performBuySynced(this.screen.merchantProfile.getId(), this.currentOfferButton.index);
             }
         }
     }
@@ -185,7 +184,7 @@ public class BuyGUISection extends AbstractGUISection {
         this.mc.player.playSound(OxygenSoundEffects.SELL.soundEvent, 0.5F, 1.0F);
 
         if (this.currentOfferButton != null) {
-            MerchantOffer offer = this.screen.merchantProfile.getOffer(this.currentOfferButton.id);
+            MerchantOffer offer = this.screen.merchantProfile.getOffer(this.currentOfferButton.index);
 
             this.simulateBuy(ClientReference.getClientPlayer(), this.screen.merchantProfile, offer);
             this.updateInventoryState();
@@ -199,15 +198,15 @@ public class BuyGUISection extends AbstractGUISection {
         }
 
         for (GUIButton button : this.buyOffersPanel.buttonsBuffer)
-            button.setEnabled(!this.overloaded && this.balance >= this.screen.merchantProfile.getOffer(((IndexedGUIButton) button).id).getBuyCost());
+            button.setEnabled(!this.overloaded && this.balance >= this.screen.merchantProfile.getOffer(((IndexedGUIButton<Long>) button).index).getBuyCost());
     }
 
     public void updateOffer(long offerId, int amount) {
         OfferGUIButton offerButton;
         for (GUIButton button : this.buyOffersPanel.buttonsBuffer) {
             offerButton = (OfferGUIButton) button;
-            button.setEnabled(!this.overloaded && this.balance >= this.screen.merchantProfile.getOffer(offerButton.id).getBuyCost());
-            if (offerButton.id == offerId)
+            button.setEnabled(!this.overloaded && this.balance >= this.screen.merchantProfile.getOffer(offerButton.index).getBuyCost());
+            if (offerButton.index == offerId)
                 offerButton.setPlayerStock(amount);
         }
     }

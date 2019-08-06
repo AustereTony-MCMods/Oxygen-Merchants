@@ -9,24 +9,25 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 
-public class OfferGUIButton extends IndexedGUIButton {
+public class OfferGUIButton extends IndexedGUIButton<Long> {
 
     private final ItemStack offeredStack, currencyStack;
 
-    private final int amount, cost;
+    private String amount, cost, playerStock;
 
-    private int playerStock;
+    private int stock;
 
     private final boolean useCurrencyStack;
 
     public OfferGUIButton(long id, int playerStock, ItemStack offeredStack, int amount, int cost, ItemStack currencyStack) {
         super(id);
-        this.playerStock = playerStock;
+        this.stock = playerStock;
+        this.playerStock = String.valueOf(playerStock);
         this.offeredStack = offeredStack;
         this.currencyStack = currencyStack;
         this.useCurrencyStack = currencyStack != null;
-        this.amount = amount;
-        this.cost = cost;
+        this.amount = String.valueOf(amount);
+        this.cost = String.valueOf(cost);
         this.setDisplayText(this.offeredStack.getDisplayName());//for search
     }
 
@@ -60,20 +61,20 @@ public class OfferGUIButton extends IndexedGUIButton {
                 GlStateManager.pushMatrix();           
                 GlStateManager.translate(20.0F, 1.0F, 0.0F);            
                 GlStateManager.scale(textScale, textScale, 0.0F);   
-                this.mc.fontRenderer.drawString(String.valueOf(this.playerStock), 0, 0, color, this.isTextShadowEnabled()); 
+                this.mc.fontRenderer.drawString(this.playerStock, 0, 0, color, this.isTextShadowEnabled()); 
                 GlStateManager.popMatrix();
             }
 
             GlStateManager.pushMatrix();           
             GlStateManager.translate(20.0F, 10.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F);   
-            this.mc.fontRenderer.drawString(String.valueOf(this.amount), 0, 0, color, this.isTextShadowEnabled()); 
+            this.mc.fontRenderer.drawString(this.amount, 0, 0, color, this.isTextShadowEnabled()); 
             GlStateManager.popMatrix();      
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(this.getWidth() - 12.0F - this.textWidth(String.valueOf(this.cost), textScale), (this.getHeight() - this.textHeight(textScale)) / 2.0F + 1.0F, 0.0F);            
+            GlStateManager.translate(this.getWidth() - 12.0F - this.textWidth(this.cost, textScale), (this.getHeight() - this.textHeight(textScale)) / 2.0F + 1.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F); 
-            this.mc.fontRenderer.drawString(String.valueOf(this.cost), 0, 0, this.isEnabled() ? color : 0xFFCC0000, this.isTextShadowEnabled());
+            this.mc.fontRenderer.drawString(this.cost, 0, 0, this.isEnabled() ? color : 0xFFCC0000, this.isTextShadowEnabled());
             GlStateManager.popMatrix();      
 
             textScale = GUISettings.instance().getTextScale();
@@ -100,8 +101,8 @@ public class OfferGUIButton extends IndexedGUIButton {
                 GlStateManager.popMatrix();
             } else {
                 GlStateManager.enableBlend(); 
-                this.mc.getTextureManager().bindTexture(OxygenGUITextures.GOLD_COIN_ICON);
-                GUIAdvancedElement.drawCustomSizedTexturedRect(this.getWidth() - 9, 5, 0, 0, 6, 6, 6, 6);          
+                this.mc.getTextureManager().bindTexture(OxygenGUITextures.COIN_ICON);
+                GUIAdvancedElement.drawCustomSizedTexturedRect(this.getWidth() - 10, 5, 0, 0, 6, 6, 6, 6);          
                 GlStateManager.disableBlend();
             } 
 
@@ -122,11 +123,12 @@ public class OfferGUIButton extends IndexedGUIButton {
     }
 
     public int getPlayerStock() {
-        return this.playerStock;
+        return this.stock;
     }
 
     public void setPlayerStock(int value) {
-        this.playerStock = value;
+        this.stock = value;
+        this.playerStock = String.valueOf(value);
     }
 
     public ItemStack getOfferedStack() {

@@ -4,9 +4,9 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import austeretony.oxygen.common.api.OxygenHelperServer;
 import austeretony.oxygen.common.api.WatcherHelperServer;
 import austeretony.oxygen.common.core.api.CommonReference;
+import austeretony.oxygen.common.currency.CurrencyHelperServer;
 import austeretony.oxygen.common.itemstack.InventoryHelper;
 import austeretony.oxygen.common.main.OxygenPlayerData;
 import austeretony.oxygen_merchants.common.MerchantsManagerServer;
@@ -32,8 +32,7 @@ public class OperationsProcessor {
         MerchantProfile profile = null;
         MerchantOffer offer;
         EntityPlayerMP playerMP;
-        OxygenPlayerData playerData = null;
-        boolean savePlayerData = false;
+        boolean save = false;
         while (!this.operations.isEmpty()) {
             operation = this.operations.poll();
             if (profile == null) {
@@ -42,43 +41,39 @@ public class OperationsProcessor {
                 else
                     break;
             } 
-
             if (profile != null) {
                 if (profile.offerExist(operation.offerId)) {
                     playerMP = CommonReference.playerByUUID(this.playerUUID);
-                    if (profile.isUsingCurrency())
-                        playerData = OxygenHelperServer.getPlayerData(this.playerUUID);
                     offer = profile.getOffer(operation.offerId);
                     switch (operation.operation) {
                     case BUY:
-                        savePlayerData = this.buy(playerMP, playerData, profile, offer);
+                        save = this.buy(playerMP, profile, offer);
                         break;
                     case SELLING:
                         if (offer.isSellingEnabled())
-                            savePlayerData = this.sell(playerMP, playerData, profile, offer);
+                            save = this.sell(playerMP, profile, offer);
                         break;
                     }
                 }
             }
         }   
-        if (savePlayerData) {
-            OxygenHelperServer.savePersistentDataDelegated(playerData);
-            WatcherHelperServer.setValue(this.playerUUID, OxygenPlayerData.CURRENCY_GOLD_ID, playerData.getCurrency(OxygenPlayerData.CURRENCY_GOLD_INDEX));
+        if (save) {
+            CurrencyHelperServer.save(this.playerUUID);
+            WatcherHelperServer.setValue(this.playerUUID, OxygenPlayerData.CURRENCY_COINS_WATCHER_ID, (int) CurrencyHelperServer.getCurrency(this.playerUUID));
         }
     }
 
-    private boolean buy(EntityPlayerMP playerMP, OxygenPlayerData playerData, MerchantProfile profile, MerchantOffer offer) {
-        boolean needSave = false;
+    private boolean buy(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
+        boolean save = false;
         if (!InventoryHelper.haveEnoughSpace(playerMP, offer.getAmount()))
             return false;
 
         if (profile.isUsingCurrency()) {
-            if (playerData.getCurrency(OxygenPlayerData.CURRENCY_GOLD_INDEX) < offer.getBuyCost())//abort if not enough currency
+            if (!CurrencyHelperServer.enoughCurrency(this.playerUUID, offer.getBuyCost()))//abort if not enough currency
                 return false;
 
-            playerData.removeCurrency(OxygenPlayerData.CURRENCY_GOLD_INDEX, offer.getBuyCost());
-
-            needSave = true;
+            CurrencyHelperServer.removeCurrency(this.playerUUID, offer.getBuyCost());
+            save = true;
         } else {
             if (InventoryHelper.getEqualStackAmount(playerMP, profile.getCurrencyStack()) < offer.getBuyCost())//abort if not enough currency
                 return false;
@@ -89,11 +84,11 @@ public class OperationsProcessor {
         InventoryHelper.addItemStack(playerMP, offer.getOfferedStack().getItemStack(), offer.getAmount());
         this.notifyPlayer(playerMP, EnumOperation.BUY);
 
-        return needSave;
+        return save;
     }
 
-    private boolean sell(EntityPlayerMP playerMP, OxygenPlayerData playerData, MerchantProfile profile, MerchantOffer offer) {
-        boolean needSave = false;
+    private boolean sell(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
+        boolean save = false;
 
         if (!profile.isUsingCurrency() && !InventoryHelper.haveEnoughSpace(playerMP, offer.getSellingCost()))
             return false;
@@ -102,15 +97,15 @@ public class OperationsProcessor {
             return false;
 
         if (profile.isUsingCurrency()) {
-            playerData.addCurrency(OxygenPlayerData.CURRENCY_GOLD_INDEX, offer.getSellingCost());
-            needSave = true;;
+            CurrencyHelperServer.addCurrency(this.playerUUID, offer.getSellingCost());
+            save = true;
         } else
             InventoryHelper.addItemStack(playerMP, profile.getCurrencyStack().getItemStack(), offer.getSellingCost());
 
         InventoryHelper.removeEqualStack(playerMP, offer.getOfferedStack(), offer.getAmount());
         this.notifyPlayer(playerMP, EnumOperation.SELLING);
 
-        return needSave;
+        return save;
     }
 
     public void notifyPlayer(EntityPlayerMP playerMP, EnumOperation operation) {

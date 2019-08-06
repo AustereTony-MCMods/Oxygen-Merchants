@@ -29,7 +29,7 @@ public class InventoryItemGUIButton extends GUIButton {
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
         if (mouseX >= this.getX() + 4 && mouseY >= this.getY() && mouseX < this.getX() + 20 && mouseY < this.getY() + this.getHeight())
-            this.screen.drawToolTip(this.itemStack, mouseX + 6, mouseY);
+            this.screen.drawToolTip(this.itemStack, mouseX, mouseY);
     }
 
     public ItemStack getItemStack() {

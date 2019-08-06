@@ -1,6 +1,6 @@
 package austeretony.oxygen_merchants.common.config;
 
-import java.util.Queue;
+import java.util.List;
 
 import austeretony.oxygen.common.api.config.AbstractConfigHolder;
 import austeretony.oxygen.common.api.config.ConfigValue;
@@ -9,8 +9,7 @@ import austeretony.oxygen_merchants.common.main.MerchantsMain;
 
 public class MerchantsConfig extends AbstractConfigHolder {
 
-    public static final ConfigValue
-    ALLOW_INGAME_MANAGEMENT = new ConfigValue(ConfigValue.EnumValueType.BOOLEAN, "main", "allow_ingame_management");
+    public static final ConfigValue ALLOW_INGAME_MANAGEMENT = new ConfigValue(ConfigValue.EnumValueType.BOOLEAN, "main", "allow_ingame_management");
 
     @Override
     public String getModId() {
@@ -33,7 +32,7 @@ public class MerchantsConfig extends AbstractConfigHolder {
     }
 
     @Override
-    public void getValues(Queue<ConfigValue> values) {
+    public void getValues(List<ConfigValue> values) {
         values.add(ALLOW_INGAME_MANAGEMENT);
     }
 

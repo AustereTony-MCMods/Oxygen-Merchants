@@ -5,9 +5,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 import austeretony.oxygen.common.itemstack.ItemStackWrapper;
+import austeretony.oxygen.util.MathUtils;
 import austeretony.oxygen.util.StreamUtils;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
 
 public class MerchantOffer {
 
@@ -56,7 +56,7 @@ public class MerchantOffer {
     }
 
     public void setBuyCost(int value) {
-        this.buyCost = MathHelper.clamp(value, 0, Integer.MAX_VALUE);
+        this.buyCost = MathUtils.clamp(value, 0, Integer.MAX_VALUE);
     }
 
     public int getSellingCost() {
@@ -64,7 +64,7 @@ public class MerchantOffer {
     }
 
     public void setSellingCost(int value) {
-        this.sellingCost = MathHelper.clamp(value, 0, Integer.MAX_VALUE);
+        this.sellingCost = MathUtils.clamp(value, 0, Integer.MAX_VALUE);
     }
 
     public void write(BufferedOutputStream bos) throws IOException {

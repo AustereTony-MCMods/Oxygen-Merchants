@@ -4,16 +4,15 @@ import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.image.GUIImageLabel;
 import austeretony.alternateui.screen.text.GUITextField;
 import austeretony.alternateui.screen.text.GUITextLabel;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import austeretony.oxygen.common.main.OxygenSoundEffects;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
 import austeretony.oxygen_merchants.common.main.MerchantProfile;
-import net.minecraft.client.resources.I18n;
 
 public class ProfileNameEditGUICallback extends AbstractGUICallback {
 
@@ -35,22 +34,21 @@ public class ProfileNameEditGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new GUIImageLabel(- 1, - 1, this.getWidth() + 2, this.getHeight() + 2).enableStaticBackground(GUISettings.instance().getBaseGUIBackgroundColor()));//main background 1st layer
-        this.addElement(new GUIImageLabel(0, 0, this.getWidth(), 11).enableStaticBackground(GUISettings.instance().getAdditionalGUIBackgroundColor()));//main background 2nd layer
-        this.addElement(new GUIImageLabel(0, 12, this.getWidth(), this.getHeight() - 12).enableStaticBackground(GUISettings.instance().getAdditionalGUIBackgroundColor()));//main background 2nd layer
+        this.addElement(new ProfileNameEditCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.nameEditingCallback"), true, GUISettings.instance().getTitleScale()));   
+        this.addElement(new GUITextLabel(2, 16).setDisplayText(ClientReference.localize("oxygen.gui.name"), false, GUISettings.instance().getSubTextScale()));    
 
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(I18n.format("merchants.gui.management.nameEditingCallback"), true, GUISettings.instance().getTitleScale()));   
-        this.addElement(new GUITextLabel(2, 16).setDisplayText(I18n.format("oxygen.gui.name"), false, GUISettings.instance().getSubTextScale()));    
+        this.addElement(this.nameField = new GUITextField(2, 25, 136, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH).setTextScale(GUISettings.instance().getSubTextScale())
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setLineOffset(3).cancelDraggedElementLogic());
 
-        this.addElement(this.nameField = new GUITextField(2, 25, 187, MerchantProfile.MAX_PROFILE_NAME_LENGTH).setScale(0.7F).enableDynamicBackground().cancelDraggedElementLogic());
-
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()).disable());
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()).disable());
+        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
     }
 
     @Override
     protected void onOpen() {
-        this.nameField.setText(this.oldName = MerchantsManagerClient.instance().getMerchantProfilesManager().getProfile(this.section.getCurrentProfileButton().id).getName());
+        this.nameField.setText(this.oldName = MerchantsManagerClient.instance().getMerchantProfilesManager().getProfile(this.section.getCurrentProfileButton().index).getName());
     }
 
     @Override

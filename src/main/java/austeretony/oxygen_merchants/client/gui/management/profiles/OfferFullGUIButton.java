@@ -10,26 +10,23 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 
-public class OfferFullGUIButton extends IndexedGUIButton {
+public class OfferFullGUIButton extends IndexedGUIButton<Long> {
 
     private final ItemStack offeredStack, currencyStack;
 
-    private final int amount, buyCost, sellingCost;
-
     private final boolean useCurrencyStack, sellingEnabled;
 
-    private final String sellingNotice;
+    private final String amount, buyCost, sellingNotice;
 
     public OfferFullGUIButton(long id, ItemStack offeredStack, int amount, int buyCost, int sellingCost, ItemStack currencyStack) {
         super(id);
         this.offeredStack = offeredStack;
         this.currencyStack = currencyStack;
         this.useCurrencyStack = currencyStack != null;
-        this.amount = amount;
-        this.buyCost = buyCost;
-        this.sellingCost = sellingCost;
+        this.amount = String.valueOf(amount);
+        this.buyCost = String.valueOf(buyCost);
         this.sellingEnabled = sellingCost > 0;
-        this.sellingNotice = sellingCost > 0 ? ClientReference.localize("merchants.gui.management.sellFor", sellingCost) : ClientReference.localize("merchants.gui.management.noSelling");
+        this.sellingNotice = sellingCost > 0 ? ClientReference.localize("oxygen_merchants.gui.management.sellFor", sellingCost) : ClientReference.localize("oxygen_merchants.gui.management.noSelling");
         this.setDisplayText(this.offeredStack.getDisplayName());
     }
 
@@ -62,13 +59,13 @@ public class OfferFullGUIButton extends IndexedGUIButton {
             GlStateManager.pushMatrix();           
             GlStateManager.translate(20.0F, 10.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F);   
-            this.mc.fontRenderer.drawString(String.valueOf(this.amount), 0, 0, color, this.isTextShadowEnabled()); 
+            this.mc.fontRenderer.drawString(this.amount, 0, 0, color, this.isTextShadowEnabled()); 
             GlStateManager.popMatrix();      
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(this.getWidth() - 12 - this.textWidth(String.valueOf(this.buyCost), textScale), 1.0F, 0.0F);            
+            GlStateManager.translate(this.getWidth() - 12 - this.textWidth(this.buyCost, textScale), 1.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F); 
-            this.mc.fontRenderer.drawString(String.valueOf(this.buyCost), 0, 0, color, this.isTextShadowEnabled());
+            this.mc.fontRenderer.drawString(this.buyCost, 0, 0, color, this.isTextShadowEnabled());
             GlStateManager.popMatrix();      
 
             GlStateManager.pushMatrix();           
@@ -85,6 +82,8 @@ public class OfferFullGUIButton extends IndexedGUIButton {
             this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, color, this.isTextShadowEnabled());
             GlStateManager.popMatrix();     
 
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
+
             if (this.useCurrencyStack) {                
                 GlStateManager.pushMatrix();           
                 GlStateManager.translate(this.getWidth() - 10.0F, 0.0F, 0.0F);            
@@ -99,7 +98,7 @@ public class OfferFullGUIButton extends IndexedGUIButton {
                 GlStateManager.popMatrix();
             } else {
                 GlStateManager.enableBlend(); 
-                this.mc.getTextureManager().bindTexture(OxygenGUITextures.GOLD_COIN_ICON);
+                this.mc.getTextureManager().bindTexture(OxygenGUITextures.COIN_ICON);
                 GUIAdvancedElement.drawCustomSizedTexturedRect(this.getWidth() - 9, 0, 0, 0, 6, 6, 6, 6);          
                 GlStateManager.disableBlend();
             } 

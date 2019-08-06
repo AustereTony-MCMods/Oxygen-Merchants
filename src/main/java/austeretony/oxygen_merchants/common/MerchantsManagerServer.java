@@ -4,18 +4,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import austeretony.oxygen.common.api.OxygenHelperServer;
 import austeretony.oxygen.common.core.api.CommonReference;
-import austeretony.oxygen_merchants.common.config.MerchantsConfig;
 import austeretony.oxygen_merchants.common.main.BoundEntityEntry;
-import austeretony.oxygen_merchants.common.main.EnumMerchantsChatMessages;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import austeretony.oxygen_merchants.common.main.OperationsProcessor;
 import austeretony.oxygen_merchants.common.main.OperationsProcessor.EnumOperation;
 import austeretony.oxygen_merchants.common.network.client.CPMerchantsCommand;
 import austeretony.oxygen_merchants.common.network.client.CPSyncDataOpenMenu;
 import austeretony.oxygen_merchants.common.network.client.CPSyncValidEntitiesIds;
-import austeretony.oxygen_merchants.common.network.client.CPSyncValidIdsManagement;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -84,28 +80,12 @@ public class MerchantsManagerServer {
         this.removeOperationsContainer(CommonReference.getPersistentUUID(player));
     }
 
-    public void openManagementMenu(EntityPlayerMP playerMP) {
-        if (CommonReference.isOpped(playerMP)
-                && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()) {
-            OxygenHelperServer.setSyncing(CommonReference.getPersistentUUID(playerMP), true);
-            MerchantsMain.network().sendTo(new CPSyncValidIdsManagement(), playerMP); 
-        }
-    }
-
-    public void openManagementMenuSynced(EntityPlayerMP playerMP) {
-        if (CommonReference.isOpped(playerMP)
-                && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue())
-            MerchantsMain.network().sendTo(new CPMerchantsCommand(CPMerchantsCommand.EnumCommand.OPEN_MANAGER_MENU), playerMP); 
-        else
-            OxygenHelperServer.sendMessage(playerMP, MerchantsMain.MERCHANTS_MOD_INDEX, EnumMerchantsChatMessages.INGAME_MANAGEMENT_DISABLED.ordinal());
-    }
-
     public void openMerchantMenu(EntityPlayerMP playerMP, int entityId, long profileId) {
-        Entity entity = CommonReference.getEntityById(entityId);
+        Entity entity = CommonReference.getEntityById(playerMP, entityId);
         if (entity != null) {
-            if (this.entitiesManager.bondExist(CommonReference.getPersistentUUID(entity))
+            if (this.entitiesManager.entryExist(CommonReference.getPersistentUUID(entity))
                     && CommonReference.isEntitiesNear(playerMP, entity, 5.0D)) {
-                BoundEntityEntry entry = this.entitiesManager.getBond(CommonReference.getPersistentUUID(entity));
+                BoundEntityEntry entry = this.entitiesManager.getBoundEntityEntry(CommonReference.getPersistentUUID(entity));
                 if (entry.getProfileId() != profileId) {
                     if (entry.getProfileId() != 0L)
                         MerchantsMain.network().sendTo(new CPSyncDataOpenMenu(entry, this.profilesManager.getProfile(entry.getProfileId())), playerMP); 

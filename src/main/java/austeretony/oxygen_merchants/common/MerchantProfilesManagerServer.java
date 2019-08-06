@@ -21,6 +21,10 @@ public class MerchantProfilesManagerServer implements IPersistentData {
 
     private final Map<Long, MerchantProfile> merchantProfiles = new ConcurrentHashMap<Long, MerchantProfile>();
 
+    public void load() {
+        OxygenHelperServer.loadPersistentDataDelegated(this);
+    }
+
     public int getProfilesAmount() {
         return this.merchantProfiles.size();
     }

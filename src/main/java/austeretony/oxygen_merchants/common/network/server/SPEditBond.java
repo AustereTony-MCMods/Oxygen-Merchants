@@ -31,7 +31,7 @@ public class SPEditBond extends ProxyPacket {
 
     @Override
     public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getBoundEntitiesManager().editBond(getEntityPlayerMP(netHandler), 
+        MerchantsManagerServer.instance().getBoundEntitiesManager().editEntry(getEntityPlayerMP(netHandler), 
                 buffer.readLong(), PacketBufferUtils.readString(buffer), PacketBufferUtils.readString(buffer), buffer.readLong());
     }
 }

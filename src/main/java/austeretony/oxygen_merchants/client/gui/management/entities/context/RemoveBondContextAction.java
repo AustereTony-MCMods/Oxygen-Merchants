@@ -2,8 +2,8 @@ package austeretony.oxygen_merchants.client.gui.management.entities.context;
 
 import austeretony.alternateui.screen.contextmenu.AbstractContextAction;
 import austeretony.alternateui.screen.core.GUIBaseElement;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen_merchants.client.gui.management.EntitiesManagementGUISection;
-import net.minecraft.client.resources.I18n;
 
 public class RemoveBondContextAction extends AbstractContextAction {
 
@@ -13,7 +13,7 @@ public class RemoveBondContextAction extends AbstractContextAction {
 
     public RemoveBondContextAction(EntitiesManagementGUISection section) {
         this.section = section;
-        this.name = I18n.format("merchants.gui.management.remove");
+        this.name = ClientReference.localize("oxygen_merchants.gui.management.remove");
     }
 
     @Override
@@ -28,6 +28,6 @@ public class RemoveBondContextAction extends AbstractContextAction {
 
     @Override
     protected void execute(GUIBaseElement currElement) {
-        this.section.openBondRemoveCallback();
+        this.section.openRemoveEntryCallback();
     }
 }

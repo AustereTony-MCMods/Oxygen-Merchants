@@ -8,15 +8,14 @@ import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.panel.GUIButtonPanel.GUIEnumOrientation;
 import austeretony.alternateui.screen.text.GUITextLabel;
+import austeretony.alternateui.util.EnumGUIOrientation;
 import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import austeretony.oxygen.common.main.OxygenSoundEffects;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.profiles.InventoryItemGUIButton;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 
 public class CurrencyManagementGUICallback extends AbstractGUICallback {
@@ -43,7 +42,7 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
     public void init() {
         this.addElement(new CurrencyManagementCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));//main background 1st layer
 
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(I18n.format("merchants.gui.management.currencyManagementCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.currencyManagementCallback"), true, GUISettings.instance().getTitleScale()));
 
         this.addElement(this.useCurrencyButton = new GUICheckBoxButton(4, 14, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor())
@@ -51,10 +50,10 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
         this.addElement(this.useItemButton = new GUICheckBoxButton(4, 24, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()));
 
-        this.addElement(new GUITextLabel(14, 13).setDisplayText(I18n.format("merchants.gui.management.useCurrency"), false, GUISettings.instance().getSubTextScale()));
-        this.addElement(new GUITextLabel(14, 23).setDisplayText(I18n.format("merchants.gui.management.useItem"), false, GUISettings.instance().getSubTextScale()));
+        this.addElement(new GUITextLabel(14, 13).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.useCurrency"), false, GUISettings.instance().getSubTextScale()));
+        this.addElement(new GUITextLabel(14, 23).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.useItem"), false, GUISettings.instance().getSubTextScale()));
 
-        this.itemsPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 33, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
+        this.itemsPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 33, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.itemsPanel);       
         GUIScroller scroller = new GUIScroller(27, 5);
         this.itemsPanel.initScroller(scroller);
@@ -64,8 +63,8 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
 
         this.loadItems();
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
     }
 
     @Override

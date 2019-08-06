@@ -22,6 +22,6 @@ public class SPRemoveBond extends ProxyPacket {
 
     @Override
     public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getBoundEntitiesManager().removeBond(getEntityPlayerMP(netHandler), buffer.readLong());
+        MerchantsManagerServer.instance().getBoundEntitiesManager().removeEntry(getEntityPlayerMP(netHandler), buffer.readLong());
     }
 }

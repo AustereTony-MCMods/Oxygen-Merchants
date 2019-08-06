@@ -2,7 +2,6 @@ package austeretony.oxygen_merchants.client.gui.management;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,15 +14,14 @@ import austeretony.alternateui.screen.contextmenu.GUIContextMenu;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.panel.GUIButtonPanel.GUIEnumOrientation;
 import austeretony.alternateui.screen.text.GUITextField;
 import austeretony.alternateui.screen.text.GUITextLabel;
 import austeretony.alternateui.util.EnumGUIAlignment;
+import austeretony.alternateui.util.EnumGUIOrientation;
 import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.IndexedGUIButton;
 import austeretony.oxygen.client.gui.OxygenGUITextures;
 import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.api.OxygenGUIHelper;
 import austeretony.oxygen.common.itemstack.ItemStackWrapper;
 import austeretony.oxygen.common.main.OxygenSoundEffects;
 import austeretony.oxygen.util.MathUtils;
@@ -33,7 +31,6 @@ import austeretony.oxygen_merchants.client.gui.management.profiles.GUICurrency;
 import austeretony.oxygen_merchants.client.gui.management.profiles.OfferFullGUIButton;
 import austeretony.oxygen_merchants.client.gui.management.profiles.ProfilesSectionGUIFiller;
 import austeretony.oxygen_merchants.client.gui.management.profiles.callback.CurrencyManagementGUICallback;
-import austeretony.oxygen_merchants.client.gui.management.profiles.callback.DownloadingGUICallback;
 import austeretony.oxygen_merchants.client.gui.management.profiles.callback.OfferCreationGUICallback;
 import austeretony.oxygen_merchants.client.gui.management.profiles.callback.OfferEditingGUICallback;
 import austeretony.oxygen_merchants.client.gui.management.profiles.callback.ProfileCreationGUICallback;
@@ -48,17 +45,13 @@ import austeretony.oxygen_merchants.client.gui.management.profiles.context.Remov
 import austeretony.oxygen_merchants.client.gui.management.profiles.context.RemoveProfileContextAction;
 import austeretony.oxygen_merchants.common.main.MerchantOffer;
 import austeretony.oxygen_merchants.common.main.MerchantProfile;
-import austeretony.oxygen_merchants.common.main.MerchantsMain;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
 
 public class ProfilesManagementGUISection extends AbstractGUISection {
 
     private final ManagementMenuGUIScreen screen;
 
-    private GUIButton entitiesSectionButton, downloadButton, searchButton, refreshButton, sortUpButton, sortDownButton, createButton;
+    private GUIButton entitiesSectionButton, searchButton, refreshButton, sortUpButton, sortDownButton, createButton;
 
     private GUIButtonPanel profilesPanel;
 
@@ -66,7 +59,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     private GUITextField searchField;
 
-    private AbstractGUICallback downloadingCallback, profileCreationCallback, removeProfileCallback, profileNameEditingCallback, 
+    private AbstractGUICallback profileCreationCallback, removeProfileCallback, profileNameEditingCallback, 
     profileCurrencyManagementCallback, offerCreationCallback, offerEditingCallback, saveChangesCallback;
 
     private IndexedGUIButton currentProfileButton;
@@ -95,12 +88,11 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
     @Override
     public void init() {
         this.addElement(new ProfilesSectionGUIFiller(0, 0, this.getWidth(), this.getHeight()));
-        String title = ClientReference.localize("merchants.gui.management.profiles.title");
+        String title = ClientReference.localize("oxygen_merchants.gui.management.profiles.title");
         this.addElement(new GUITextLabel(2, 4).setDisplayText(title, false, GUISettings.instance().getTitleScale()));
-        this.addElement(this.downloadButton = new GUIButton(this.textWidth(title, GUISettings.instance().getTitleScale()) + 4, 4, 8, 8).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.DOWNLOAD_ICONS, 8, 8).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.download"), GUISettings.instance().getTooltipScale()));
 
-        this.addElement(new GUIButton(this.getWidth() - 28, 0, 12, 12).setTexture(MerchantsGUITextures.LIST_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("merchants.tooltip.profiles"), GUISettings.instance().getTooltipScale()).toggle());    
-        this.addElement(this.entitiesSectionButton = new GUIButton(this.getWidth() - 14, 0, 12, 12).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(MerchantsGUITextures.USER_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("merchants.tooltip.entities"), GUISettings.instance().getTooltipScale()));     
+        this.addElement(new GUIButton(this.getWidth() - 28, 0, 12, 12).setTexture(MerchantsGUITextures.LIST_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.tooltip.profiles"), GUISettings.instance().getTooltipScale()).toggle());    
+        this.addElement(this.entitiesSectionButton = new GUIButton(this.getWidth() - 14, 0, 12, 12).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(MerchantsGUITextures.USER_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.tooltip.entities"), GUISettings.instance().getTooltipScale()));     
 
         this.addElement(this.searchButton = new GUIButton(7, 15, 7, 7).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SEARCH_ICONS, 7, 7).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.search"), GUISettings.instance().getTooltipScale()));   
         this.addElement(this.sortDownButton = new GUIButton(2, 19, 3, 3).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SORT_DOWN_ICONS, 3, 3).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.sort"), GUISettings.instance().getTooltipScale())); 
@@ -108,9 +100,11 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.addElement(this.refreshButton = new GUIButton(0, 14, 10, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.REFRESH_ICONS, 9, 9).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.refresh"), GUISettings.instance().getTooltipScale()));
         this.addElement(this.profilesAmountTextLabel = new GUITextLabel(0, 15).setTextScale(GUISettings.instance().getSubTextScale()));   
 
-        this.profilesPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 0, 24, 82, 10).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
+        this.profilesPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 24, 82, 10).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.profilesPanel);
-        this.addElement(this.searchField = new GUITextField(0, 15, 113, MerchantProfile.MAX_PROFILE_NAME_LENGTH).setScale(0.7F).enableDynamicBackground().setDisplayText("...", false, GUISettings.instance().getTextScale()).cancelDraggedElementLogic().disableFull());
+        this.addElement(this.searchField = new GUITextField(0, 14, 85, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH)
+                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
+                .setDisplayText("...", false, GUISettings.instance().getSubTextScale()).setLineOffset(3).cancelDraggedElementLogic().disableFull());
         this.profilesPanel.initSearchField(this.searchField);
         GUIScroller scroller = new GUIScroller(MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesManager().getProfilesAmount(), 10, 100), 10);
         this.profilesPanel.initScroller(scroller);
@@ -120,11 +114,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
         this.addElement(this.createButton = new GUIButton(22, 137,  40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor())
-                .setDisplayText(ClientReference.localize("merchants.gui.management.create"), true, GUISettings.instance().getButtonTextScale())); 
-
-        //Protection
-        if (!OxygenGUIHelper.isNeedSync(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID) || OxygenGUIHelper.isDataRecieved(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID))
-            this.sortProfiles(0);
+                .setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.create"), true, GUISettings.instance().getButtonTextScale())); 
 
         GUIContextMenu menu = new GUIContextMenu(GUISettings.instance().getContextMenuWidth(), 10).setScale(GUISettings.instance().getContextMenuScale()).setTextScale(GUISettings.instance().getTextScale()).setTextAlignment(EnumGUIAlignment.LEFT, 2);
         menu.setOpenSound(OxygenSoundEffects.CONTEXT_OPEN.soundEvent);
@@ -137,22 +127,16 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         menu.addElement(new OfferCreationContextAction(this));
         menu.addElement(new RemoveProfileContextAction(this));
 
-        this.downloadingCallback = new DownloadingGUICallback(this.screen, this, 140, 40).enableDefaultBackground();
         this.profileCreationCallback = new ProfileCreationGUICallback(this.screen, this, 140, 50).enableDefaultBackground();
         this.removeProfileCallback = new RemoveProfileGUICallback(this.screen, this, 140, 50).enableDefaultBackground();
-
         this.profileNameEditingCallback = new ProfileNameEditGUICallback(this.screen, this, 140, 50).enableDefaultBackground();
-
         this.profileCurrencyManagementCallback = new CurrencyManagementGUICallback(this.screen, this, 140, 132).enableDefaultBackground();
-
-        this.offerCreationCallback = new OfferCreationGUICallback(this.screen, this, 140, 170);
-        this.offerEditingCallback = new OfferEditingGUICallback(this.screen, this, 140, 170);
+        this.offerCreationCallback = new OfferCreationGUICallback(this.screen, this, 140, 174);
+        this.offerEditingCallback = new OfferEditingGUICallback(this.screen, this, 140, 174);
 
         this.saveChangesCallback = new SaveChangesGUICallback(this.screen, this, 140, 40).enableDefaultBackground();
 
         this.initProfileElements();
-
-        OxygenGUIHelper.screenInitialized(MerchantsMain.PROFILES_MANAGEMENT_MENU_SCREEN_ID);
     }
 
     private void initProfileElements() {
@@ -163,13 +147,13 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
         this.addElement(this.profileSaveChangesButton = new GUIButton(90, 137, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor())
-                .setDisplayText(ClientReference.localize("merchants.gui.management.saveChangesButton"), true, GUISettings.instance().getButtonTextScale()).disableFull());
+                .setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.saveChangesButton"), true, GUISettings.instance().getButtonTextScale()).disableFull());
 
         this.addElement(this.profileOpenButton = new GUIButton(134, 137, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
                 .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor())
-                .setDisplayText(ClientReference.localize("merchants.gui.management.openProfileButton"), true, GUISettings.instance().getButtonTextScale()).disableFull());
+                .setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.openProfileButton"), true, GUISettings.instance().getButtonTextScale()).disableFull());
 
-        this.profileOffersPanel = new GUIButtonPanel(GUIEnumOrientation.VERTICAL, 86, 32, 200, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale()).disableFull();
+        this.profileOffersPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 86, 32, 200, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale()).disableFull();
         this.addElement(this.profileOffersPanel);
         GUIScroller scroller = new GUIScroller(100, 6);
         this.profileOffersPanel.initScroller(scroller);
@@ -189,19 +173,14 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     public void sortProfiles(int mode) {
         List<MerchantProfile> profiles = new ArrayList<MerchantProfile>(MerchantsManagerClient.instance().getMerchantProfilesManager().getProfiles());
-        Collections.sort(profiles, new Comparator<MerchantProfile>() {
 
-            @Override
-            public int compare(MerchantProfile profile1, MerchantProfile profile2) {
-                if (mode == 0)
-                    return profile1.getName().compareTo(profile2.getName());
-                else
-                    return profile2.getName().compareTo(profile1.getName());
-            }
-        });
+        if (mode == 0)
+            Collections.sort(profiles, (p1, p2)->p1.getName().compareTo(p2.getName()));
+        else
+            Collections.sort(profiles, (p1, p2)->p2.getName().compareTo(p1.getName()));
 
         this.profilesPanel.reset();
-        IndexedGUIButton button;
+        IndexedGUIButton<Long> button;
         for (MerchantProfile profile : profiles) {
             button = new IndexedGUIButton(profile.getId());
             button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
@@ -216,6 +195,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.profilesAmountTextLabel.setX(83 - this.textWidth(this.profilesAmountTextLabel.getDisplayText(), GUISettings.instance().getSubTextScale()));
         this.refreshButton.setX(this.profilesAmountTextLabel.getX() - 11);
 
+        this.searchField.reset();
+
         this.profilesPanel.getScroller().resetPosition();
         this.profilesPanel.getScroller().getSlider().reset();
 
@@ -225,23 +206,30 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (this.searchField.isEnabled() && !this.searchField.isHovered())
+        if (this.searchField.isEnabled() && !this.searchField.isHovered()) {
+            this.sortUpButton.enableFull();
+            this.sortDownButton.enableFull();
+            this.searchButton.enableFull();
+            this.refreshButton.enableFull();
             this.searchField.disableFull();
+        }
         return super.mouseClicked(mouseX, mouseY, mouseButton);                 
     }
 
     @Override
     public void handleElementClick(AbstractGUISection section, GUIBaseElement element, int mouseButton) {
         if (mouseButton == 0) { 
-            if (element == this.downloadButton)
-                this.downloadingCallback.open();
-            else if (element == this.entitiesSectionButton) 
+            if (element == this.entitiesSectionButton) 
                 this.screen.getEntitiesSection().open();
             else if (element == this.createButton)
                 this.profileCreationCallback.open();
-            else if (element == this.searchButton)
+            else if (element == this.searchButton) {
                 this.searchField.enableFull();
-            else if (element == this.sortDownButton) {
+                this.sortUpButton.disableFull();
+                this.sortDownButton.disableFull();
+                this.searchButton.disableFull();
+                this.refreshButton.disableFull();
+            } else if (element == this.sortDownButton) {
                 if (!this.sortDownButton.isToggled()) {
                     this.sortProfiles(1);
                     this.sortUpButton.setToggled(false);
@@ -254,7 +242,6 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
                     this.sortUpButton.toggle();
                 }
             } else if (element == this.refreshButton) {
-                this.searchField.reset();
                 this.sortProfiles(0);
                 this.resetProfileData();
             } else if (element == this.profileSaveChangesButton)
@@ -267,13 +254,13 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
             if (this.currentOfferButton != button)                
                 this.currentOfferButton = button;
         } else if (element instanceof IndexedGUIButton) {
-            IndexedGUIButton button = (IndexedGUIButton) element;
+            IndexedGUIButton<Long> button = (IndexedGUIButton) element;
             if (this.currentProfileButton != button) {
                 if (this.currentProfileButton != null)
                     this.currentProfileButton.setToggled(false);
                 button.toggle();                    
                 this.currentProfileButton = button;
-                this.initProfileData(button.id);
+                this.initProfileData(button.index);
             }
         }
     }
@@ -311,13 +298,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     private void loadOffers(MerchantProfile profile) {
         List<MerchantOffer> offers = new ArrayList<MerchantOffer>(profile.getOffers());
-        Collections.sort(offers, new Comparator<MerchantOffer>() {
 
-            @Override
-            public int compare(MerchantOffer offer1, MerchantOffer offer2) {
-                return (int) ((offer1.offerId - offer2.offerId) / 10000L);
-            }
-        });
+        Collections.sort(offers, (o1, o2)->(int) ((o1.offerId - o2.offerId) / 5_000L));
 
         this.profileOffersPanel.reset();
         OfferFullGUIButton button;
@@ -325,17 +307,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         if (!profile.isUsingCurrency()) {
             if (ITEMSTACK_CACHE.containsKey(profile.getId()))
                 currencyItemStack = ITEMSTACK_CACHE.get(profile.getId());
-            else {
-                currencyItemStack = new ItemStack(Item.getItemById(this.changesBuffer.getCurrencyStack().itemId), 1, this.changesBuffer.getCurrencyStack().meta);
-                if (!this.changesBuffer.getCurrencyStack().nbtStr.isEmpty()) {
-                    try {
-                        currencyItemStack.setTagCompound(JsonToNBT.getTagFromJson(this.changesBuffer.getCurrencyStack().nbtStr));
-                    } catch (NBTException exception) {
-                        exception.printStackTrace();    
-                    }
-                }
-                ITEMSTACK_CACHE.put(profile.getId(), currencyItemStack);  
-            }
+            else
+                ITEMSTACK_CACHE.put(profile.getId(), currencyItemStack = this.changesBuffer.getCurrencyStack().getItemStack());  
         }
 
         for (MerchantOffer offer : offers) {
@@ -398,7 +371,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.loadOffers(this.changesBuffer);
     }
 
-    public IndexedGUIButton getCurrentProfileButton() {
+    public IndexedGUIButton<Long> getCurrentProfileButton() {
         return this.currentProfileButton;
     }
 

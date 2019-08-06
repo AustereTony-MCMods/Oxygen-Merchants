@@ -16,12 +16,12 @@ public class MerchantInteraction implements IInteraction {
         this.pointed = ClientReference.getPointedEntity();
         return this.pointed != null 
                 && this.pointed instanceof EntityLiving 
-                && MerchantsManagerClient.instance().getBoundEntitiesManager().bondExist(ClientReference.getPersistentUUID(this.pointed));
+                && MerchantsManagerClient.instance().getBoundEntitiesManager().entryExist(ClientReference.getPersistentUUID(this.pointed));
     }
 
     @Override
     public void execute() {
-        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesManager().getBond(ClientReference.getPersistentUUID(this.pointed));   
+        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesManager().getBoundEntityEntry(ClientReference.getPersistentUUID(this.pointed));   
         MerchantsManagerClient.instance().openMerchantMenuSynced(ClientReference.getEntityId(this.pointed), 
                 MerchantsManagerClient.instance().getMerchantProfilesManager().profileExist(entry.getProfileId()) ? entry.getProfileId() : 0L);
     }

@@ -32,31 +32,35 @@ public class BoundEntitiesManagerServer implements IPersistentData {
     // <profileId, ConcurrentSetWrapper<bondId>>
     private final Map<Long, ConcurrentSetWrapper<Long>> entriesAccess = new ConcurrentHashMap<Long, ConcurrentSetWrapper<Long>>();
 
-    public int getBondsAmount() {
+    public void load() {
+        OxygenHelperServer.loadPersistentDataDelegated(this);
+    }
+
+    public int getEntriesAmount() {
         return this.entities.size();
     }
 
-    public Set<Long> getBondIds() {
+    public Set<Long> getEntriesIds() {
         return this.entities.keySet();
     }
 
-    public Collection<BoundEntityEntry> getBonds() {
+    public Collection<BoundEntityEntry> getEntries() {
         return this.entities.values();
     }
 
-    public boolean bondExist(long bondId) {
+    public boolean entryExist(long bondId) {
         return this.entities.containsKey(bondId);
     }
 
-    public boolean bondExist(UUID entityUUID) {
+    public boolean entryExist(UUID entityUUID) {
         return this.access.containsKey(entityUUID);
     }
 
-    public BoundEntityEntry getBond(long bondId) {
+    public BoundEntityEntry getBoundEntityEntry(long bondId) {
         return this.entities.get(bondId);
     }
 
-    public BoundEntityEntry getBond(UUID entityUUID) {
+    public BoundEntityEntry getBoundEntityEntry(UUID entityUUID) {
         return this.entities.get(this.access.get(entityUUID));
     }
 
@@ -114,13 +118,13 @@ public class BoundEntitiesManagerServer implements IPersistentData {
         }
     }
 
-    public void createBond(EntityPlayerMP playerMP, long bondId, int entityId, String name, String profession, long profileId) {
+    public void createEntry(EntityPlayerMP playerMP, long bondId, int entityId, String name, String profession, long profileId) {
         if (CommonReference.isOpped(playerMP)
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()) {
             Entity pointed = playerMP.world.getEntityByID(entityId);
             if (pointed != null 
                     && pointed instanceof EntityLiving
-                    && !this.bondExist(CommonReference.getPersistentUUID(pointed))) {
+                    && !this.entryExist(CommonReference.getPersistentUUID(pointed))) {
                 BoundEntityEntry entry = new BoundEntityEntry(CommonReference.getPersistentUUID(pointed), pointed.dimension, (int) pointed.posX, (int) pointed.posY, (int) pointed.posZ);
                 entry.setId(bondId);
                 entry.setName(name);
@@ -135,11 +139,11 @@ public class BoundEntitiesManagerServer implements IPersistentData {
         }
     }
 
-    public void editBond(EntityPlayerMP playerMP, long oldBondId, String name, String profession, long profileId) {
+    public void editEntry(EntityPlayerMP playerMP, long oldBondId, String name, String profession, long profileId) {
         if (CommonReference.isOpped(playerMP) 
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()
-                && this.bondExist(oldBondId)) {
-            BoundEntityEntry entry = this.getBond(oldBondId);
+                && this.entryExist(oldBondId)) {
+            BoundEntityEntry entry = this.getBoundEntityEntry(oldBondId);
             this.removeBoundEntityEntry(oldBondId);
             entry.setId(oldBondId + 1L);
             entry.setName(name);
@@ -154,24 +158,24 @@ public class BoundEntitiesManagerServer implements IPersistentData {
     public void visitEntity(EntityPlayerMP playerMP, long bondId) {
         if (CommonReference.isOpped(playerMP)
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()
-                && this.bondExist(bondId)) {
-            BoundEntityEntry entry = this.getBond(bondId);
-            CommonReference.teleportPlayer(playerMP, entry.dimId, entry.xPos, entry.yPos, entry.zPos);
+                && this.entryExist(bondId)) {
+            BoundEntityEntry entry = this.getBoundEntityEntry(bondId);
+            CommonReference.delegateToServerThread(()->CommonReference.teleportPlayer(playerMP, entry.dimId, entry.xPos, entry.yPos, entry.zPos));
         }
     }
 
-    public void removeBond(EntityPlayerMP playerMP, long bondId) {
+    public void removeEntry(EntityPlayerMP playerMP, long bondId) {
         if (CommonReference.isOpped(playerMP)
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()
-                && this.bondExist(bondId)) {
+                && this.entryExist(bondId)) {
             this.removeBoundEntityEntry(bondId);
             OxygenHelperServer.savePersistentDataDelegated(this);
         }
     }
 
     public void entityLivingDied(UUID entityUUID) {
-        if (this.bondExist(entityUUID)) {
-            BoundEntityEntry entry = this.getBond(entityUUID);
+        if (this.entryExist(entityUUID)) {
+            BoundEntityEntry entry = this.getBoundEntityEntry(entityUUID);
             long oldBondId = entry.getId();
             this.removeBoundEntityEntry(oldBondId);
             entry.setId(oldBondId + 1L);

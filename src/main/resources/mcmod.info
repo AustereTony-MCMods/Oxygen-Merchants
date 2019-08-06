@@ -2,10 +2,10 @@
 {
   "modid": "oxygen_merchants",
   "name": "Oxygen: Merchants",
-  "description": "Powerful trading system.",
-  "version": "0.1.1",
+  "description": "Merchants creating system.",
+  "version": "0.8.0",
   "mcversion": "1.12.2",
-  "url": "https://minecraft.curseforge.com/projects/teleportation",
+  "url": "https://www.curseforge.com/minecraft/mc-mods/oxygen-teleportation",
   "updateUrl": "",
   "authorList": ["AustereTony"],
   "credits": "",

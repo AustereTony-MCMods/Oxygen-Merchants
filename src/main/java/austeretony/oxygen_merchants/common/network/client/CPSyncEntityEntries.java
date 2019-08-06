@@ -1,7 +1,7 @@
 package austeretony.oxygen_merchants.common.network.client;
 
+import austeretony.oxygen.client.api.OxygenGUIHelper;
 import austeretony.oxygen.client.api.OxygenHelperClient;
-import austeretony.oxygen.common.api.OxygenGUIHelper;
 import austeretony.oxygen.common.network.ProxyPacket;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.common.MerchantsManagerServer;
@@ -24,7 +24,7 @@ public class CPSyncEntityEntries extends ProxyPacket {
     public void write(PacketBuffer buffer, INetHandler netHandler) {
         buffer.writeShort(this.ids.length);
         for (long id : this.ids)
-            MerchantsManagerServer.instance().getBoundEntitiesManager().getBond(id).write(buffer);
+            MerchantsManagerServer.instance().getBoundEntitiesManager().getBoundEntityEntry(id).write(buffer);
     }
 
     @Override
@@ -34,6 +34,6 @@ public class CPSyncEntityEntries extends ProxyPacket {
             MerchantsManagerClient.instance().getBoundEntitiesManager().addBoundEntityEntry(BoundEntityEntry.read(buffer));
         OxygenHelperClient.savePersistentDataDelegated(MerchantsManagerClient.instance().getBoundEntitiesManager());
 
-        OxygenGUIHelper.dataRecieved(MerchantsMain.ENTITIES_MANAGEMENT_MENU_SCREEN_ID);
+        OxygenGUIHelper.dataReceived(MerchantsMain.MANAGEMENT_MENU_SCREEN_ID);
     }
 }

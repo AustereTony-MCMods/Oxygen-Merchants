@@ -37,7 +37,7 @@ public class SPCreateBond extends ProxyPacket {
 
     @Override
     public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getBoundEntitiesManager().createBond(getEntityPlayerMP(netHandler), 
+        MerchantsManagerServer.instance().getBoundEntitiesManager().createEntry(getEntityPlayerMP(netHandler), 
                 buffer.readLong(), buffer.readInt(), PacketBufferUtils.readString(buffer), PacketBufferUtils.readString(buffer), buffer.readLong());
     }
 }

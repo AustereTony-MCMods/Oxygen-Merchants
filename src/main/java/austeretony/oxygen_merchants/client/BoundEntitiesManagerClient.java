@@ -33,31 +33,31 @@ public class BoundEntitiesManagerClient implements IPersistentData {
     // <profileId, ConcurrentSetWrapper<bondId>>
     private final Map<Long, ConcurrentSetWrapper<Long>> entriesAccess = new ConcurrentHashMap<Long, ConcurrentSetWrapper<Long>>();
 
-    public int getBondsAmount() {
+    public int getEntriesAmount() {
         return this.entities.size();
     }
 
-    public Set<Long> getBondIds() {
+    public Set<Long> getEntriesIds() {
         return this.entities.keySet();
     }
 
-    public Collection<BoundEntityEntry> getBonds() {
+    public Collection<BoundEntityEntry> getEntries() {
         return this.entities.values();
     }
 
-    public boolean bondExist(long bondId) {
+    public boolean entryExist(long bondId) {
         return this.entities.containsKey(bondId);
     }
 
-    public boolean bondExist(UUID entityUUID) {
+    public boolean entryExist(UUID entityUUID) {
         return this.access.containsKey(entityUUID);
     }
 
-    public BoundEntityEntry getBond(long bondId) {
+    public BoundEntityEntry getBoundEntityEntry(long bondId) {
         return this.entities.get(bondId);
     }
 
-    public BoundEntityEntry getBond(UUID entityUUID) {
+    public BoundEntityEntry getBoundEntityEntry(UUID entityUUID) {
         return this.entities.get(this.access.get(entityUUID));
     }
 
@@ -115,9 +115,8 @@ public class BoundEntitiesManagerClient implements IPersistentData {
         }
     }
 
-    public void createBondSynced(String name, String profession, long profileId) {
-        Entity entity = MerchantsManagerClient.instance().getPointedEntity();
-        if (!this.bondExist(ClientReference.getPersistentUUID(entity))) {
+    public void createEntrySynced(Entity entity, String name, String profession, long profileId) {
+        if (!this.entryExist(ClientReference.getPersistentUUID(entity))) {
             BoundEntityEntry entry = new BoundEntityEntry(ClientReference.getPersistentUUID(entity), entity.dimension, (int) entity.posX, (int) entity.posY, (int) entity.posZ);
             entry.createId();
             entry.setName(name);
@@ -133,8 +132,8 @@ public class BoundEntitiesManagerClient implements IPersistentData {
         }
     }
 
-    public void editBondSynced(long oldBondId, String name, String profession, long profileId) {
-        BoundEntityEntry entry = this.getBond(oldBondId);
+    public void editEntrySynced(long oldBondId, String name, String profession, long profileId) {
+        BoundEntityEntry entry = this.getBoundEntityEntry(oldBondId);
         this.removeBoundEntityEntry(oldBondId);
         entry.setId(oldBondId + 1L);
         entry.setName(name);
@@ -150,7 +149,7 @@ public class BoundEntitiesManagerClient implements IPersistentData {
         MerchantsMain.network().sendToServer(new SPVisitEntity(bondId));
     }
 
-    public void removeBondSynced(long bondId) {
+    public void removeEntrySynced(long bondId) {
         this.removeBoundEntityEntry(bondId);
         MerchantsMain.network().sendToServer(new SPRemoveBond(bondId));
 

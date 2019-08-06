@@ -2,9 +2,9 @@ package austeretony.oxygen_merchants.client.gui.overlay;
 
 import austeretony.alternateui.screen.core.GUISimpleElement;
 import austeretony.oxygen.client.core.api.ClientReference;
+import austeretony.oxygen.client.gui.overlay.IOverlay;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import austeretony.oxygen.client.input.OxygenKeyHandler;
-import austeretony.oxygen.client.interaction.IInteractionOverlay;
 import austeretony.oxygen.common.config.OxygenConfig;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.common.main.BoundEntityEntry;
@@ -14,17 +14,17 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 
-public class MerchantInteractionOverlay implements IInteractionOverlay {
+public class MerchantInteractionOverlay implements IOverlay {
 
     private Entity pointed;
 
     @Override
-    public boolean isValid() {
+    public boolean shouldDraw() {
         this.pointed = ClientReference.getPointedEntity();
         return this.pointed != null 
                 && this.pointed instanceof EntityLiving 
                 && ClientReference.isEntitiesNear(this.pointed, ClientReference.getClientPlayer(), 3.0D)
-                && MerchantsManagerClient.instance().getBoundEntitiesManager().bondExist(ClientReference.getPersistentUUID(this.pointed));
+                && MerchantsManagerClient.instance().getBoundEntitiesManager().entryExist(ClientReference.getPersistentUUID(this.pointed));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MerchantInteractionOverlay implements IInteractionOverlay {
         GlStateManager.translate(x, y, 0.0F);          
         GlStateManager.scale(GUISettings.instance().getOverlayScale(), GUISettings.instance().getOverlayScale(), 0.0F);         
 
-        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesManager().getBond(ClientReference.getPersistentUUID(this.pointed));
+        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesManager().getBoundEntityEntry(ClientReference.getPersistentUUID(this.pointed));
         mc.fontRenderer.drawString(entry.getName() + ", " + entry.getProfession(), 0, 0, GUISettings.instance().getAdditionalOverlayTextColor(), true);
 
         if (!OxygenConfig.INTERACT_WITH_RMB.getBooleanValue()) {

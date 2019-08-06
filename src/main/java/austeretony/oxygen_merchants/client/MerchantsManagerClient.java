@@ -1,14 +1,11 @@
 package austeretony.oxygen_merchants.client;
 
 import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.merchant.MerchantMenuGUIScreen;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import austeretony.oxygen_merchants.common.main.OperationsProcessor;
 import austeretony.oxygen_merchants.common.network.server.SPMerchantOperation;
-import austeretony.oxygen_merchants.common.network.server.SPMerchantsRequest;
 import austeretony.oxygen_merchants.common.network.server.SPOpenMerchantMenu;
-import net.minecraft.entity.Entity;
 
 public class MerchantsManagerClient {
 
@@ -17,8 +14,6 @@ public class MerchantsManagerClient {
     private final MerchantProfilesManagerClient profilesManager;
 
     private final BoundEntitiesManagerClient entitiesManager;      
-
-    private Entity pointedEntity;
 
     private long lastRequestedProfileId;
 
@@ -42,31 +37,6 @@ public class MerchantsManagerClient {
 
     public BoundEntitiesManagerClient getBoundEntitiesManager() {
         return this.entitiesManager;
-    }
-
-    public void downloadProfilesData() {
-        this.profilesManager.reset();
-        MerchantsMain.network().sendToServer(new SPMerchantsRequest(SPMerchantsRequest.EnumRequest.OPEN_MANAGEMENT_MENU));
-    }
-
-    public void downloadEntitiesData() {
-        this.entitiesManager.reset();
-        MerchantsMain.network().sendToServer(new SPMerchantsRequest(SPMerchantsRequest.EnumRequest.OPEN_MANAGEMENT_MENU));
-    }
-
-    public void openManagementMenuDelegated() {
-        ClientReference.getMinecraft().addScheduledTask(new Runnable() {
-
-            @Override
-            public void run() {
-                openManagementMenu();
-            }
-        });
-    }
-
-    public void openManagementMenu() {
-        this.pointedEntity = ClientReference.getMinecraft().pointedEntity;
-        ClientReference.displayGuiScreen(new ManagementMenuGUIScreen());
     }
 
     public void openMerchantMenuSynced(int entityId, long profileId) {
@@ -115,10 +85,6 @@ public class MerchantsManagerClient {
                 break;
             }
         }
-    }
-
-    public Entity getPointedEntity() {
-        return this.pointedEntity;
     }
 
     public void reset() {

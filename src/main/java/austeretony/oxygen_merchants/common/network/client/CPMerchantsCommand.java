@@ -24,9 +24,6 @@ public class CPMerchantsCommand extends ProxyPacket {
     public void read(PacketBuffer buffer, INetHandler netHandler) {
         this.command = EnumCommand.values()[buffer.readByte()];
         switch (this.command) {
-        case OPEN_MANAGER_MENU:
-            MerchantsManagerClient.instance().openManagementMenuDelegated();
-            break;
         case OPEN_LAST_REQUESTED_MERCHANT_MENU:
             MerchantsManagerClient.instance().openLastRequestedMerchantMenuDelegated();
             break;
@@ -35,7 +32,6 @@ public class CPMerchantsCommand extends ProxyPacket {
 
     public enum EnumCommand {
 
-        OPEN_MANAGER_MENU,
         OPEN_LAST_REQUESTED_MERCHANT_MENU
     }
 }

@@ -4,14 +4,13 @@ import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.image.GUIImageLabel;
 import austeretony.alternateui.screen.text.GUITextLabel;
+import austeretony.oxygen.client.core.api.ClientReference;
 import austeretony.oxygen.client.gui.settings.GUISettings;
 import austeretony.oxygen.common.main.OxygenSoundEffects;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
-import net.minecraft.client.resources.I18n;
 
 public class RemoveProfileGUICallback extends AbstractGUICallback {
 
@@ -31,21 +30,18 @@ public class RemoveProfileGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new GUIImageLabel(- 1, - 1, this.getWidth() + 2, this.getHeight() + 2).enableStaticBackground(GUISettings.instance().getBaseGUIBackgroundColor()));//main background 1st layer
-        this.addElement(new GUIImageLabel(0, 0, this.getWidth(), 11).enableStaticBackground(GUISettings.instance().getAdditionalGUIBackgroundColor()));//main background 2nd layer
-        this.addElement(new GUIImageLabel(0, 12, this.getWidth(), this.getHeight() - 12).enableStaticBackground(GUISettings.instance().getAdditionalGUIBackgroundColor()));//main background 2nd layer
-
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(I18n.format("merchants.gui.management.removeProfileCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(new RemoveProfileCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.removeProfileCallback"), true, GUISettings.instance().getTitleScale()));
 
         this.addElement(this.requestLabel = new GUITextLabel(2, 16));     
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(I18n.format("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
     }
 
     @Override   
     protected void onOpen() {
-        this.requestLabel.setDisplayText(I18n.format("merchants.gui.management.removeProfileCallback.request", this.section.getCurrentProfileChangesBuffer().getName()), false, GUISettings.instance().getTextScale());
+        this.requestLabel.setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.removeProfileCallback.request", this.section.getCurrentProfileChangesBuffer().getName()), false, GUISettings.instance().getTextScale());
     }
 
     @Override
