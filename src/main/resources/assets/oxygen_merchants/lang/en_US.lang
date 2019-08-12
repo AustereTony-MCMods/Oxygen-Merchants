@@ -25,6 +25,7 @@ oxygen_merchants.gui.management.useItem=Use Item
 oxygen_merchants.gui.management.amount=Amount
 oxygen_merchants.gui.management.cost=Cost
 oxygen_merchants.gui.management.enableSelling=Enable Selling
+oxygen_merchants.gui.management.sellingOnly=Selling Only
 oxygen_merchants.gui.management.sellingCost=Selling Cost
 oxygen_merchants.gui.management.noSelling=No Selling
 oxygen_merchants.gui.management.edit=Edit
@@ -32,7 +33,7 @@ oxygen_merchants.gui.management.openProfileButton=Open
 oxygen_merchants.gui.management.entityBondCreationCallback=Entry Creation
 oxygen_merchants.gui.management.entityBondEditCallback=Edit Entry
 oxygen_merchants.gui.management.profession=Profession
-oxygen_merchants.gui.management.genericProfession=Merchant
+oxygen_merchants.gui.management.merchantProfession=Merchant
 oxygen_merchants.gui.management.profile=Merchant Profile
 oxygen_merchants.gui.management.visitEntityCallback=Visit Merchant
 oxygen_merchants.gui.management.visitEntityCallback.request=Teleport to %s?
@@ -52,7 +53,5 @@ oxygen_merchants.tooltip.edit=Edit
 
 oxygen_merchants.message.ingameManagementDisabled=Ingame management disabled.
 oxygen_merchants.message.merchantsDataReloaded=Merchants data reloaded.
-oxygen_merchants.message.bought=You bought %sx[%s].
-oxygen_merchants.message.sold=You sold %sx[%s].
 
 oxygen_merchants.command.dataReset=<oxygen: merchants> client data reset.

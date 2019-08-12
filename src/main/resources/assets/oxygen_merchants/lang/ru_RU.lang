@@ -24,7 +24,8 @@ oxygen_merchants.gui.management.useCurrency=Использовать Валют�
 oxygen_merchants.gui.management.useItem=Использовать Предмет
 oxygen_merchants.gui.management.amount=Количество
 oxygen_merchants.gui.management.cost=Стоимость
-oxygen_merchants.gui.management.enableBuyUp=Разрешить Скупку
+oxygen_merchants.gui.management.enableSelling=Разрешить Скупку
+oxygen_merchants.gui.management.sellingOnly=Только скупка
 oxygen_merchants.gui.management.sellingCost=Стоимость Скупки
 oxygen_merchants.gui.management.noSellingp=Нет Скупки
 oxygen_merchants.gui.management.edit=Изменить
@@ -32,7 +33,7 @@ oxygen_merchants.gui.management.openProfileButton=Открыть
 oxygen_merchants.gui.management.entityBondCreationCallback=Создание Торговца
 oxygen_merchants.gui.management.entityBondEditCallback=Редактирование Торговца
 oxygen_merchants.gui.management.profession=Профессия
-oxygen_merchants.gui.management.genericProfession=Торговец
+oxygen_merchants.gui.management.merchantProfession=Торговец
 oxygen_merchants.gui.management.profile=Профиль Торговца
 oxygen_merchants.gui.management.visitEntityCallback=Посетить Торговца
 oxygen_merchants.gui.management.visitEntityCallback.request=Переместиться к %s?
@@ -52,7 +53,5 @@ oxygen_merchants.tooltip.edit=Редактировать
 
 oxygen_merchants.message.ingameManagementDisabled=Редактирование торговцев отключено.
 oxygen_merchants.message.merchantsDataReloaded=Данные торговцев перезагружены.
-oxygen_merchants.message.bought=Вы купили %sx[%s].
-oxygen_merchants.message.sold=Вы продали %sx[%s].
 
 oxygen_merchants.command.dataReset=Данные <oxygen: merchants> сброшены для клиента.

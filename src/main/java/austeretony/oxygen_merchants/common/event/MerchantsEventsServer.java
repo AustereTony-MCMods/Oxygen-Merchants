@@ -2,6 +2,7 @@ package austeretony.oxygen_merchants.common.event;
 
 import austeretony.oxygen.common.api.event.OxygenPlayerLoadedEvent;
 import austeretony.oxygen.common.api.event.OxygenPlayerUnloadedEvent;
+import austeretony.oxygen.common.api.event.OxygenWorldLoadedEvent;
 import austeretony.oxygen.common.core.api.CommonReference;
 import austeretony.oxygen_merchants.common.MerchantsManagerServer;
 import net.minecraft.entity.EntityLiving;
@@ -9,6 +10,13 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class MerchantsEventsServer {
+
+    @SubscribeEvent
+    public void onWorldLoaded(OxygenWorldLoadedEvent event) {
+        MerchantsManagerServer.instance().reset();
+        MerchantsManagerServer.instance().getMerchantProfilesManager().load();;
+        MerchantsManagerServer.instance().getBoundEntitiesManager().load();
+    }
 
     @SubscribeEvent
     public void onPlayerLoaded(OxygenPlayerLoadedEvent event) {         

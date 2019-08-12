@@ -14,9 +14,9 @@ public class OfferFullGUIButton extends IndexedGUIButton<Long> {
 
     private final ItemStack offeredStack, currencyStack;
 
-    private final boolean useCurrencyStack, sellingEnabled;
+    private final boolean useCurrencyStack, sellingEnabled, sellingOnly;
 
-    private final String amount, buyCost, sellingNotice;
+    private final String amount, buyCost, sellingCostNotice, sellingOnlyNotice;
 
     public OfferFullGUIButton(long id, ItemStack offeredStack, int amount, int buyCost, int sellingCost, ItemStack currencyStack) {
         super(id);
@@ -26,7 +26,9 @@ public class OfferFullGUIButton extends IndexedGUIButton<Long> {
         this.amount = String.valueOf(amount);
         this.buyCost = String.valueOf(buyCost);
         this.sellingEnabled = sellingCost > 0;
-        this.sellingNotice = sellingCost > 0 ? ClientReference.localize("oxygen_merchants.gui.management.sellFor", sellingCost) : ClientReference.localize("oxygen_merchants.gui.management.noSelling");
+        this.sellingOnly = buyCost == 0;
+        this.sellingCostNotice = sellingCost > 0 ? ClientReference.localize("oxygen_merchants.gui.management.sellFor", sellingCost) : ClientReference.localize("oxygen_merchants.gui.management.noSelling");
+        this.sellingOnlyNotice = ClientReference.localize("oxygen_merchants.gui.management.sellingOnly");
         this.setDisplayText(this.offeredStack.getDisplayName());
     }
 
@@ -63,17 +65,44 @@ public class OfferFullGUIButton extends IndexedGUIButton<Long> {
             GlStateManager.popMatrix();      
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(this.getWidth() - 12 - this.textWidth(this.buyCost, textScale), 1.0F, 0.0F);            
+            GlStateManager.translate(this.getWidth() - 4 - this.textWidth(this.sellingCostNotice, textScale), 10.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F); 
-            this.mc.fontRenderer.drawString(this.buyCost, 0, 0, color, this.isTextShadowEnabled());
+            this.mc.fontRenderer.drawString(this.sellingCostNotice, 0, 0, color, this.isTextShadowEnabled());
             GlStateManager.popMatrix();      
 
-            GlStateManager.pushMatrix();           
-            GlStateManager.translate(this.getWidth() - 4 - this.textWidth(this.sellingNotice, textScale), 10.0F, 0.0F);            
-            GlStateManager.scale(textScale, textScale, 0.0F); 
-            this.mc.fontRenderer.drawString(this.sellingNotice, 0, 0, color, this.isTextShadowEnabled());
-            GlStateManager.popMatrix();     
+            if (!this.sellingOnly) {
+                GlStateManager.pushMatrix();           
+                GlStateManager.translate(this.getWidth() - 12 - this.textWidth(this.buyCost, textScale), 1.0F, 0.0F);            
+                GlStateManager.scale(textScale, textScale, 0.0F); 
+                this.mc.fontRenderer.drawString(this.buyCost, 0, 0, color, this.isTextShadowEnabled());
+                GlStateManager.popMatrix(); 
 
+                if (this.useCurrencyStack) {                
+                    GlStateManager.pushMatrix();           
+                    GlStateManager.translate(this.getWidth() - 10.0F, 0.0F, 0.0F);            
+                    GlStateManager.scale(0.5F, 0.5F, 0.5F);    
+
+                    RenderHelper.enableGUIStandardItemLighting();            
+                    GlStateManager.enableDepth();
+                    ItemRenderHelper.renderItemWithoutEffectIntoGUI(this.currencyStack, 0, 0);                              
+                    GlStateManager.disableDepth();
+                    RenderHelper.disableStandardItemLighting();
+
+                    GlStateManager.popMatrix();
+                } else {
+                    GlStateManager.enableBlend(); 
+                    this.mc.getTextureManager().bindTexture(OxygenGUITextures.COIN_ICON);
+                    GUIAdvancedElement.drawCustomSizedTexturedRect(this.getWidth() - 9, 0, 0, 0, 6, 6, 6, 6);          
+                    GlStateManager.disableBlend();
+                } 
+            } else {
+                GlStateManager.pushMatrix();           
+                GlStateManager.translate(this.getWidth() - 4 - this.textWidth(this.sellingOnlyNotice, textScale), 1.0F, 0.0F);            
+                GlStateManager.scale(textScale, textScale, 0.0F); 
+                this.mc.fontRenderer.drawString(this.sellingOnlyNotice, 0, 0, color, this.isTextShadowEnabled());
+                GlStateManager.popMatrix(); 
+            }    
+            
             textScale = GUISettings.instance().getTextScale();
 
             GlStateManager.pushMatrix();           
@@ -82,26 +111,7 @@ public class OfferFullGUIButton extends IndexedGUIButton<Long> {
             this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, color, this.isTextShadowEnabled());
             GlStateManager.popMatrix();     
 
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
-
-            if (this.useCurrencyStack) {                
-                GlStateManager.pushMatrix();           
-                GlStateManager.translate(this.getWidth() - 10.0F, 0.0F, 0.0F);            
-                GlStateManager.scale(0.5F, 0.5F, 0.5F);    
-
-                RenderHelper.enableGUIStandardItemLighting();            
-                GlStateManager.enableDepth();
-                ItemRenderHelper.renderItemWithoutEffectIntoGUI(this.currencyStack, 0, 0);                              
-                GlStateManager.disableDepth();
-                RenderHelper.disableStandardItemLighting();
-
-                GlStateManager.popMatrix();
-            } else {
-                GlStateManager.enableBlend(); 
-                this.mc.getTextureManager().bindTexture(OxygenGUITextures.COIN_ICON);
-                GUIAdvancedElement.drawCustomSizedTexturedRect(this.getWidth() - 9, 0, 0, 0, 6, 6, 6, 6);          
-                GlStateManager.disableBlend();
-            } 
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F); 
 
             GlStateManager.popMatrix();
 

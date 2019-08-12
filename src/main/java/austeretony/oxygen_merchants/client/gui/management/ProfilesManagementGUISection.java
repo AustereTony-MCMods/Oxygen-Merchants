@@ -131,8 +131,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.removeProfileCallback = new RemoveProfileGUICallback(this.screen, this, 140, 50).enableDefaultBackground();
         this.profileNameEditingCallback = new ProfileNameEditGUICallback(this.screen, this, 140, 50).enableDefaultBackground();
         this.profileCurrencyManagementCallback = new CurrencyManagementGUICallback(this.screen, this, 140, 132).enableDefaultBackground();
-        this.offerCreationCallback = new OfferCreationGUICallback(this.screen, this, 140, 174);
-        this.offerEditingCallback = new OfferEditingGUICallback(this.screen, this, 140, 174);
+        this.offerCreationCallback = new OfferCreationGUICallback(this.screen, this, 140, 184);
+        this.offerEditingCallback = new OfferEditingGUICallback(this.screen, this, 140, 184);
 
         this.saveChangesCallback = new SaveChangesGUICallback(this.screen, this, 140, 40).enableDefaultBackground();
 
@@ -312,7 +312,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         }
 
         for (MerchantOffer offer : offers) {
-            button = new OfferFullGUIButton(offer.offerId, offer.getOfferedStack().getItemStack(), offer.getAmount(), offer.getBuyCost(), offer.isSellingEnabled() ? offer.getSellingCost() : 0, currencyItemStack);
+            button = new OfferFullGUIButton(offer.offerId, offer.getOfferedStack().getItemStack(), offer.getAmount(), 
+                    offer.isSellingOnly() ? 0 : offer.getBuyCost(), offer.isSellingEnabled() ? offer.getSellingCost() : 0, currencyItemStack);
             button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
             button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
             this.profileOffersPanel.addButton(button);
@@ -397,5 +398,9 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     public void openSaveChangesCallback() {
         this.saveChangesCallback.open();
+    }
+
+    public GUIButtonPanel getOffersPanel() {
+        return this.profileOffersPanel;
     }
 }

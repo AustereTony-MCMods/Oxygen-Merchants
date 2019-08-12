@@ -127,7 +127,7 @@ public class EntryEditGUICallback extends AbstractGUICallback {
                 if (this.currentProfile != null) {
                     String 
                     name = this.nameField.getTypedText().isEmpty() ? this.oldName : this.nameField.getTypedText(),
-                            profession = this.professionField.getTypedText().isEmpty() ? this.oldProfession : this.professionField.getTypedText();
+                            profession = this.professionField.getTypedText();
                     MerchantsManagerClient.instance().getBoundEntitiesManager().editEntrySynced(this.section.getCurrentEntryButton().index, name, profession, this.currentProfile.index);
                     this.section.sortEntries(0);
                     this.close();

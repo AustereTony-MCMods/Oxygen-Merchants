@@ -34,7 +34,7 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
 
     private GUITextField amountField, buyCostField, sellingCostField;
 
-    private GUICheckBoxButton enableSellingButton;
+    private GUICheckBoxButton enableSellingButton, sellingOnlyButton;
 
     private InventoryItemGUIButton currentButton;
 
@@ -66,6 +66,9 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
         this.addElement(this.sellingCostField = new GUITextField(2, 147, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
                 .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
                 .setText("0").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE).disable());
+        this.addElement(this.sellingOnlyButton = new GUICheckBoxButton(2, 159, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
+                .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()).disable());
+        this.addElement(new GUITextLabel(12, 158).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.sellingOnly"), true, GUISettings.instance().getSubTextScale()));
 
         this.itemsPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 12, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
         this.addElement(this.itemsPanel);       
@@ -109,6 +112,8 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
         this.enableSellingButton.setToggled(false);
         this.sellingCostField.setText("0");
         this.sellingCostField.disable();
+        this.sellingOnlyButton.setToggled(false);
+        this.sellingOnlyButton.disable();
 
         this.loadItems();
     }
@@ -123,14 +128,19 @@ public class OfferCreationGUICallback extends AbstractGUICallback {
                 offer.setAmount(this.amountField.getTypedNumber());
                 offer.setBuyCost(this.buyCostField.getTypedNumber());
                 offer.setSellingEnabled(this.enableSellingButton.isToggled());
+                offer.setSellingOnly(this.sellingOnlyButton.isToggled());
                 offer.setSellingCost(this.sellingCostField.getTypedNumber());
                 this.section.addOfferToCurrentProfile(offer);
                 this.close();
             } else if (element == this.enableSellingButton) {
-                if (this.enableSellingButton.isToggled())
+                if (this.enableSellingButton.isToggled()) {
                     this.sellingCostField.enable();
-                else
+                    this.sellingOnlyButton.enable();
+                } else {
                     this.sellingCostField.disable();
+                    this.sellingOnlyButton.disable();
+                    this.sellingOnlyButton.setToggled(false);
+                }
             } else if (element instanceof InventoryItemGUIButton) {
                 InventoryItemGUIButton button = (InventoryItemGUIButton) element;
                 if (this.currentButton != button) {

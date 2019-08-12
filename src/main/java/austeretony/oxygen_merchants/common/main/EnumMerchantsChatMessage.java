@@ -6,9 +6,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 public enum EnumMerchantsChatMessage {
 
     INGAME_MANAGEMENT_DISABLED,
-    MERCHANTS_DATA_RELOADED,
-    BOUGHT_ITEM,
-    SOLD_ITEM;
+    MERCHANTS_DATA_RELOADED;
 
     public void show(String... args) {
         switch (this) {
@@ -17,12 +15,6 @@ public enum EnumMerchantsChatMessage {
             break;
         case MERCHANTS_DATA_RELOADED:
             ClientReference.showMessage(new TextComponentTranslation("oxygen_merchants.message.merchantsDataReloaded"));
-            break;
-        case BOUGHT_ITEM:
-            ClientReference.showMessage(new TextComponentTranslation("oxygen_merchants.message.bought", args[0], args[1]));
-            break;
-        case SOLD_ITEM:
-            ClientReference.showMessage(new TextComponentTranslation("oxygen_merchants.message.sold", args[0], args[1]));
             break;
         }
     }

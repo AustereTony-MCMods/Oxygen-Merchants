@@ -128,31 +128,34 @@ public class BuyGUISection extends AbstractGUISection {
 
         int 
         stock,
+        buyOfferCounter = 0,
         sellingOfferCounter = 0;
         for (MerchantOffer offer : offers) {
             stock = InventoryHelper.getEqualStackAmount(this.mc.player, offer.getOfferedStack());
             offeredStack = offer.getOfferedStack().getItemStack();
-            button = new OfferGUIButton(offer.offerId, stock, offeredStack, offer.getAmount(), offer.getBuyCost(), currencyItemStack);
-            button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
-            button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
-            button.setEnabled(!this.overloaded && this.balance >= offer.getBuyCost());
-            button.requireDoubleClick();
 
-            this.buyOffersPanel.addButton(button);
+            if (!offer.isSellingOnly()) {
+                button = new OfferGUIButton(offer.offerId, stock, offeredStack, offer.getAmount(), offer.getBuyCost(), currencyItemStack);
+                button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
+                button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
+                button.setEnabled(!this.overloaded && this.balance >= offer.getBuyCost());
+                button.requireDoubleClick();
+                this.buyOffersPanel.addButton(button);              
+                buyOfferCounter++;
+            }
 
             if (offer.isSellingEnabled()) {
                 button = new OfferGUIButton(offer.offerId, stock, offeredStack, offer.getAmount(), offer.getSellingCost(), currencyItemStack);
                 button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
                 button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
-                button.setEnabled(!this.overloaded && stock >= offer.getAmount());
+                button.setEnabled((this.screen.merchantProfile.isUsingCurrency() || !this.overloaded) && stock >= offer.getAmount());
                 button.requireDoubleClick();
-
                 this.screen.getSellingSection().getSellingOffersPanel().addButton(button);
-
                 sellingOfferCounter++;
             }
         }
 
+        this.buyOffersPanel.getScroller().updateRowsAmount(MathUtils.clamp(buyOfferCounter, 9, 100));
         this.screen.getSellingSection().getSellingOffersPanel().getScroller().updateRowsAmount(MathUtils.clamp(sellingOfferCounter, 9, 100));
     }
 

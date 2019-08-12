@@ -143,7 +143,8 @@ public class EntitiesManagementGUISection extends AbstractGUISection {
                 profileName = MerchantsManagerClient.instance().getMerchantProfilesManager().getProfile(entry.getProfileId()).getName();
             else
                 profileName = ClientReference.localize("oxygen_merchants.gui.management.emptyProfile");
-            button = new EntityEntryGUIButton(entry.getId(), entry.getName() + ", " + entry.getProfession(), profileName, entry.isDead(), entry.getProfileId() == 0L);
+            button = new EntityEntryGUIButton(entry.getId(), entry.getProfession().isEmpty() ? entry.getName() : entry.getName() + ", " + entry.getProfession(),
+                    profileName, entry.isDead(), entry.getProfileId() == 0L);
             button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
             button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
             button.setDisplayText(entry.getName());
@@ -180,7 +181,7 @@ public class EntitiesManagementGUISection extends AbstractGUISection {
                 this.screen.getProfilesSection().open();
             else if (element == this.searchButton) {
                 this.searchField.enableFull();
-                
+
                 this.searchButton.disableFull();
             } else if (element == this.sortDownNameButton) {
                 if (!this.sortDownNameButton.isToggled()) {

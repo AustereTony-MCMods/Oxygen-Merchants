@@ -47,7 +47,8 @@ public class OperationsProcessor {
                     offer = profile.getOffer(operation.offerId);
                     switch (operation.operation) {
                     case BUY:
-                        save = this.buy(playerMP, profile, offer);
+                        if (!offer.isSellingOnly())
+                            save = this.buy(playerMP, profile, offer);
                         break;
                     case SELLING:
                         if (offer.isSellingEnabled())
@@ -69,13 +70,13 @@ public class OperationsProcessor {
             return false;
 
         if (profile.isUsingCurrency()) {
-            if (!CurrencyHelperServer.enoughCurrency(this.playerUUID, offer.getBuyCost()))//abort if not enough currency
+            if (!CurrencyHelperServer.enoughCurrency(this.playerUUID, offer.getBuyCost()))
                 return false;
 
             CurrencyHelperServer.removeCurrency(this.playerUUID, offer.getBuyCost());
             save = true;
         } else {
-            if (InventoryHelper.getEqualStackAmount(playerMP, profile.getCurrencyStack()) < offer.getBuyCost())//abort if not enough currency
+            if (InventoryHelper.getEqualStackAmount(playerMP, profile.getCurrencyStack()) < offer.getBuyCost())
                 return false;
 
             InventoryHelper.removeEqualStack(playerMP, profile.getCurrencyStack(), offer.getBuyCost());
@@ -93,7 +94,7 @@ public class OperationsProcessor {
         if (!profile.isUsingCurrency() && !InventoryHelper.haveEnoughSpace(playerMP, offer.getSellingCost()))
             return false;
 
-        if (InventoryHelper.getEqualStackAmount(playerMP, offer.getOfferedStack()) < offer.getAmount())//abort if not enough currency
+        if (InventoryHelper.getEqualStackAmount(playerMP, offer.getOfferedStack()) < offer.getAmount())
             return false;
 
         if (profile.isUsingCurrency()) {

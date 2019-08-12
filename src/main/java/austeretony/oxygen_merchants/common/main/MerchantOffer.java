@@ -20,7 +20,7 @@ public class MerchantOffer {
     buyCost,//if buying from merchant 
     sellingCost;//if selling to merchant
 
-    private boolean sellingEnabled;
+    private boolean sellingEnabled, sellingOnly;
 
     public MerchantOffer(long offerId, ItemStackWrapper offeredStack) {
         this.offerId = offerId;
@@ -51,6 +51,14 @@ public class MerchantOffer {
         this.sellingEnabled = flag;
     }
 
+    public boolean isSellingOnly() {
+        return this.sellingOnly;
+    }
+
+    public void setSellingOnly(boolean flag) {
+        this.sellingOnly = flag;
+    }
+
     public int getBuyCost() {
         return this.buyCost;
     }
@@ -72,6 +80,7 @@ public class MerchantOffer {
         this.offeredStack.write(bos);
         StreamUtils.write((short) this.amount, bos);
         StreamUtils.write(this.sellingEnabled, bos);
+        StreamUtils.write(this.sellingOnly, bos);
         StreamUtils.write(this.buyCost, bos);
         StreamUtils.write(this.sellingCost, bos);
     }
@@ -80,6 +89,7 @@ public class MerchantOffer {
         MerchantOffer offer = new MerchantOffer(StreamUtils.readLong(bis), ItemStackWrapper.read(bis));
         offer.amount = StreamUtils.readShort(bis);
         offer.sellingEnabled = StreamUtils.readBoolean(bis);
+        offer.sellingOnly = StreamUtils.readBoolean(bis);
         offer.buyCost = StreamUtils.readInt(bis);
         offer.sellingCost = StreamUtils.readInt(bis);
         return offer;
@@ -90,6 +100,7 @@ public class MerchantOffer {
         this.offeredStack.write(buffer);
         buffer.writeShort((short) this.amount);
         buffer.writeBoolean(this.sellingEnabled);
+        buffer.writeBoolean(this.sellingOnly);
         buffer.writeInt(this.buyCost);
         buffer.writeInt(this.sellingCost);
     }
@@ -98,6 +109,7 @@ public class MerchantOffer {
         MerchantOffer offer = new MerchantOffer(buffer.readLong(), ItemStackWrapper.read(buffer));
         offer.amount = buffer.readShort();
         offer.sellingEnabled = buffer.readBoolean();      
+        offer.sellingOnly = buffer.readBoolean();      
         offer.buyCost = buffer.readInt();
         offer.sellingCost = buffer.readInt();
         return offer;
@@ -106,7 +118,8 @@ public class MerchantOffer {
     public MerchantOffer copy() {
         MerchantOffer offer = new MerchantOffer(this.offerId, this.offeredStack.copy());
         offer.amount = this.amount;
-        offer.sellingEnabled = this.sellingEnabled;      
+        offer.sellingEnabled = this.sellingEnabled;    
+        offer.sellingOnly = this.sellingOnly;      
         offer.buyCost = this.buyCost;
         offer.sellingCost = this.sellingCost;
         return offer;

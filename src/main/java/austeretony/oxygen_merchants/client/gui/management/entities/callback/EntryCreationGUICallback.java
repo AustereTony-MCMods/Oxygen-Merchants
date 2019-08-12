@@ -124,7 +124,7 @@ public class EntryCreationGUICallback extends AbstractGUICallback {
                 if (this.currentProfile != null) {
                     String 
                     name = this.nameField.getTypedText().isEmpty() ? this.section.pointedEntity.getName() : this.nameField.getTypedText(),
-                            profession = this.professionField.getTypedText().isEmpty() ? ClientReference.localize("oxygen_merchants.gui.management.genericProfession") : this.professionField.getTypedText();
+                            profession = this.professionField.getTypedText().isEmpty() ? "" : this.professionField.getTypedText();
                             MerchantsManagerClient.instance().getBoundEntitiesManager().createEntrySynced(this.section.pointedEntity, name, profession, this.currentProfile.index);
                             this.section.sortEntries(0);
                             this.close();

@@ -12,6 +12,7 @@ import austeretony.oxygen.common.api.network.OxygenNetwork;
 import austeretony.oxygen.common.command.CommandOxygenServer;
 import austeretony.oxygen.common.core.api.CommonReference;
 import austeretony.oxygen.common.sync.gui.api.ComplexGUIHandlerServer;
+import austeretony.oxygen.common.update.UpdateAdaptersManager;
 import austeretony.oxygen_merchants.client.ManagementMenuHandlerClient;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.command.MerchantsArgumentExecutorClient;
@@ -40,18 +41,18 @@ import austeretony.oxygen_merchants.common.network.server.SPRemoveProfile;
 import austeretony.oxygen_merchants.common.network.server.SPSendAbsentEntitiesIds;
 import austeretony.oxygen_merchants.common.network.server.SPSendMerchantProfile;
 import austeretony.oxygen_merchants.common.network.server.SPVisitEntity;
+import austeretony.oxygen_merchants.common.update.MerchantsUpdateAdapter;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(
         modid = MerchantsMain.MODID, 
         name = MerchantsMain.NAME, 
         version = MerchantsMain.VERSION,
-        dependencies = "required-after:oxygen@[0.8.0,);",//TODO Always check required Oxygen version before build
+        dependencies = "required-after:oxygen@[0.8.2,);",//TODO Always check required Oxygen version before build
         certificateFingerprint = "@FINGERPRINT@",
         updateJSON = MerchantsMain.VERSIONS_FORGE_URL)
 public class MerchantsMain {
@@ -59,7 +60,7 @@ public class MerchantsMain {
     public static final String 
     MODID = "oxygen_merchants",
     NAME = "Oxygen: Merchants",
-    VERSION = "0.8.0",
+    VERSION = "0.8.1",
     VERSION_CUSTOM = VERSION + ":beta:0",
     GAME_VERSION = "1.12.2",
     VERSIONS_FORGE_URL = "https://raw.githubusercontent.com/AustereTony-MCMods/Oxygen-Merchants/info/mod_versions_forge.json";
@@ -79,6 +80,7 @@ public class MerchantsMain {
         OxygenHelperServer.registerConfig(new MerchantsConfig());
         if (event.getSide() == Side.CLIENT)
             CommandOxygenClient.registerArgumentExecutor(new MerchantsArgumentExecutorClient("merchants", true));
+        UpdateAdaptersManager.register(new MerchantsUpdateAdapter());//TODO for 0.8.1b - patches old data to make it compatible with 0.8.1b
     }
 
     @EventHandler
@@ -98,13 +100,6 @@ public class MerchantsMain {
             ComplexGUIHandlerClient.registerScreen(MANAGEMENT_MENU_SCREEN_ID, new ManagementMenuHandlerClient());
             OxygenGUIHelper.registerOverlay(new MerchantInteractionOverlay());
         }
-    }
-
-    @EventHandler
-    public void serverStarting(FMLServerStartingEvent event) {
-        MerchantsManagerServer.instance().reset();
-        MerchantsManagerServer.instance().getMerchantProfilesManager().load();;
-        MerchantsManagerServer.instance().getBoundEntitiesManager().load();
     }
 
     private void initNetwork() {
