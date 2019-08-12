@@ -1,3 +1,9 @@
+0.8.1b [2019-08-12]
++Added option to enable selling only mode for an offer.
++Fixed issue with disabled selling offers if your inventory overloaded and merchant uses currency.
++Specifying merchant "profession" is now optional.
++Redesign of the overlay.
+
 0.8.0b
 +Performance improvements.
 
