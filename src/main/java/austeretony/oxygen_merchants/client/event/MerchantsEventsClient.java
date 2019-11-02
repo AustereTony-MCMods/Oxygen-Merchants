@@ -1,8 +1,7 @@
 package austeretony.oxygen_merchants.client.event;
 
-import austeretony.oxygen.client.api.OxygenHelperClient;
-import austeretony.oxygen.client.api.event.OxygenChatMessageEvent;
-import austeretony.oxygen.client.api.event.OxygenClientInitEvent;
+import austeretony.oxygen_core.client.api.event.OxygenChatMessageEvent;
+import austeretony.oxygen_core.client.api.event.OxygenClientInitEvent;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.common.main.EnumMerchantsChatMessage;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
@@ -18,8 +17,6 @@ public class MerchantsEventsClient {
 
     @SubscribeEvent
     public void onClientInit(OxygenClientInitEvent event) {
-        MerchantsManagerClient.instance().reset();
-        OxygenHelperClient.loadPersistentDataDelegated(MerchantsManagerClient.instance().getMerchantProfilesManager());
-        OxygenHelperClient.loadPersistentDataDelegated(MerchantsManagerClient.instance().getBoundEntitiesManager());
+        MerchantsManagerClient.instance().worldLoaded();
     } 
 }

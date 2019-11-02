@@ -1,10 +1,10 @@
 package austeretony.oxygen_merchants.common.event;
 
-import austeretony.oxygen.common.api.event.OxygenPlayerLoadedEvent;
-import austeretony.oxygen.common.api.event.OxygenPlayerUnloadedEvent;
-import austeretony.oxygen.common.api.event.OxygenWorldLoadedEvent;
-import austeretony.oxygen.common.core.api.CommonReference;
-import austeretony.oxygen_merchants.common.MerchantsManagerServer;
+import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.server.api.event.OxygenPlayerLoadedEvent;
+import austeretony.oxygen_core.server.api.event.OxygenPlayerUnloadedEvent;
+import austeretony.oxygen_core.server.api.event.OxygenWorldLoadedEvent;
+import austeretony.oxygen_merchants.server.MerchantsManagerServer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -13,19 +13,17 @@ public class MerchantsEventsServer {
 
     @SubscribeEvent
     public void onWorldLoaded(OxygenWorldLoadedEvent event) {
-        MerchantsManagerServer.instance().reset();
-        MerchantsManagerServer.instance().getMerchantProfilesManager().load();;
-        MerchantsManagerServer.instance().getBoundEntitiesManager().load();
+        MerchantsManagerServer.instance().worldLoaded();
     }
 
     @SubscribeEvent
     public void onPlayerLoaded(OxygenPlayerLoadedEvent event) {         
-        MerchantsManagerServer.instance().onPlayerLoaded(event.player);
+        MerchantsManagerServer.instance().onPlayerLoaded(event.playerMP);
     }
 
     @SubscribeEvent
     public void onPlayerUnloaded(OxygenPlayerUnloadedEvent event) {         
-        MerchantsManagerServer.instance().onPlayerUnloaded(event.player);
+        MerchantsManagerServer.instance().onPlayerUnloaded(event.playerMP);
     }
 
     @SubscribeEvent

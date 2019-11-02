@@ -1,25 +1,29 @@
-oxygen_merchants.gui.management.profiles.title=Управление Профилями Торговцев
-oxygen_merchants.gui.management.entities.title=Управление Привязанными Сущностями
+oxygen_merchants.sorting.profile=Профиль
+
+oxygen_merchants.gui.management.title=Управление
+oxygen_merchants.gui.management.profiles.title=Профили
+oxygen_merchants.gui.management.entities.title=Сущности
 oxygen_merchants.gui.management.create=Создать
 
 oxygen_merchants.gui.management.saveChangesButton=Сохранить
 oxygen_merchants.gui.management.changeCurrencyButton=Изменить
-oxygen_merchants.gui.management.createOfferButton=Нов. Сделка
 
-oxygen_merchants.gui.management.profileCreationCallback=Создание Профиля
+oxygen_merchants.gui.management.callback.profileCreation=Создание Профиля
+oxygen_merchants.gui.management.callback.profileCreation.request=Название Профиля
 oxygen_merchants.gui.management.profileGenericName=Профиль
-oxygen_merchants.gui.management.removeProfileCallback=Удаление Профиля
-oxygen_merchants.gui.management.removeProfileCallback.request=Профиль %s будет удалён.
+oxygen_merchants.gui.management.callback.removeProfile=Удаление Профиля
+oxygen_merchants.gui.management.callback.removeProfile.request=Профиль будет удалён.
+oxygen_merchants.gui.management.callback.editName=Редактирование Названия
+oxygen_merchants.gui.management.callback.editName.request=Название Профиля
+oxygen_merchants.gui.management.callback.currencyManagement=Настройка Валюты
+oxygen_merchants.gui.management.callback.offerCreation=Создание Сделки
+oxygen_merchants.gui.management.callback.editOffer=Редактирование Сделки
+oxygen_merchants.gui.management.callback.saveChanges=Сохранение Профиля
+oxygen_merchants.gui.management.callback.saveChanges.request=Синхронизировать изменения с сервером?
 oxygen_merchants.gui.management.editProfileName=Изменить Имя
 oxygen_merchants.gui.management.editProfileCurrency=Изменить Валюту
 oxygen_merchants.gui.management.newOffer=Новая Сделка
 oxygen_merchants.gui.management.remove=Удалить
-oxygen_merchants.gui.management.nameEditingCallback=Редактирование Названия Профиля
-oxygen_merchants.gui.management.saveCallback=Сохранение Изменений
-oxygen_merchants.gui.management.saveCallback.request=Синхронизировать с сервером?
-oxygen_merchants.gui.management.currencyManagementCallback=Настройка Валюты
-oxygen_merchants.gui.management.offerCreationCallback=Создание Сделки
-oxygen_merchants.gui.management.offerEditingCallback=Изменение Сделки
 oxygen_merchants.gui.management.useCurrency=Использовать Валюту
 oxygen_merchants.gui.management.useItem=Использовать Предмет
 oxygen_merchants.gui.management.amount=Количество
@@ -30,8 +34,8 @@ oxygen_merchants.gui.management.sellingCost=Стоимость Скупки
 oxygen_merchants.gui.management.noSellingp=Нет Скупки
 oxygen_merchants.gui.management.edit=Изменить
 oxygen_merchants.gui.management.openProfileButton=Открыть
-oxygen_merchants.gui.management.entityBondCreationCallback=Создание Торговца
-oxygen_merchants.gui.management.entityBondEditCallback=Редактирование Торговца
+oxygen_merchants.gui.management.callback.entityCreation=Создание Торговца
+oxygen_merchants.gui.management.callback.entityEdit=Редактирование Торговца
 oxygen_merchants.gui.management.profession=Профессия
 oxygen_merchants.gui.management.merchantProfession=Торговец
 oxygen_merchants.gui.management.profile=Профиль Торговца
@@ -55,3 +59,10 @@ oxygen_merchants.message.ingameManagementDisabled=Редактирование �
 oxygen_merchants.message.merchantsDataReloaded=Данные торговцев перезагружены.
 
 oxygen_merchants.command.dataReset=Данные <oxygen: merchants> сброшены для клиента.
+
+oxygen_merchants.status.profileCreated=Создан профиль торговца
+oxygen_merchants.status.profileUpdated=Профиль торговца обновлён
+oxygen_merchants.status.profileRemoved=Профиль торговца удалён
+oxygen_merchants.status.entityCreated=Торговец создан
+oxygen_merchants.status.entityUpdated=Торговец обновлён
+oxygen_merchants.status.entityRemoved=Торговец удалён

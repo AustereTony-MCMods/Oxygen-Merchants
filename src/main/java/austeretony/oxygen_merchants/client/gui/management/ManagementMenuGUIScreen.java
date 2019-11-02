@@ -1,34 +1,33 @@
 package austeretony.oxygen_merchants.client.gui.management;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import austeretony.alternateui.screen.core.AbstractGUIScreen;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.core.GUIWorkspace;
-import austeretony.oxygen.client.gui.SynchronizedGUIScreen;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.api.OxygenHelperClient;
+import austeretony.oxygen_core.common.item.ItemStackWrapper;
+import austeretony.oxygen_merchants.common.BoundEntityEntry;
+import austeretony.oxygen_merchants.common.MerchantProfile;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemStack;
 
-public class ManagementMenuGUIScreen extends SynchronizedGUIScreen {
-
-    public static final ResourceLocation 
-    PROFILES_MENU_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profiles_menu.png"),
-    PROFILE_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profile_creation_callback.png"),
-    REMOVE_PROFILE_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/remove_profile_callback.png"),
-    PROFILE_NAME_EDIT_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/profile_name_edit_callback.png"),
-    CURRENCY_MANAGEMENT_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/currency_management_callback.png"),
-    OFFER_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/offer_creation_callback.png"),
-    SAVE_CHANGES_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/save_changes_callback.png"),
-
-    ENTITIES_MENU_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/entities_menu.png"),
-    ENTRY_CREATION_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/entry_creation_callback.png"),
-    VISIT_ENTITY_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/visit_entity_callback.png"),
-    REMOVE_ENTRY_CALLBACK_BACKGROUND = new ResourceLocation(MerchantsMain.MODID, "textures/gui/management/remove_entry_callback.png");
+public class ManagementMenuGUIScreen extends AbstractGUIScreen {
 
     private ProfilesManagementGUISection profilesSection;
 
     private EntitiesManagementGUISection entitiesSection;
 
+    public final List<ItemStackWrapper> inventoryContent = new ArrayList<>();
+
     public ManagementMenuGUIScreen() {
-        super(MerchantsMain.MANAGEMENT_MENU_SCREEN_ID);
+        OxygenHelperClient.syncData(MerchantsMain.MERCHANT_PROFILES_DATA_ID);
+        OxygenHelperClient.syncData(MerchantsMain.ENTITIES_DATA_ID);
+
+        this.updateInventoryContent();
     }
 
     @Override
@@ -38,8 +37,8 @@ public class ManagementMenuGUIScreen extends SynchronizedGUIScreen {
 
     @Override
     protected void initSections() {
-        this.getWorkspace().initSection(this.profilesSection = new ProfilesManagementGUISection(this));   
-        this.getWorkspace().initSection(this.entitiesSection = new EntitiesManagementGUISection(this));    
+        this.getWorkspace().initSection(this.profilesSection = (ProfilesManagementGUISection) new ProfilesManagementGUISection(this).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.profiles.title")).enable());   
+        this.getWorkspace().initSection(this.entitiesSection = (EntitiesManagementGUISection) new EntitiesManagementGUISection(this).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.entities.title")).enable());    
     }
 
     @Override
@@ -55,10 +54,36 @@ public class ManagementMenuGUIScreen extends SynchronizedGUIScreen {
         return false;
     }
 
-    @Override
-    public void loadData() {
-        this.profilesSection.sortProfiles(0);
-        this.entitiesSection.sortEntries(0);
+    public void profilesSynchronized() {
+        this.profilesSection.profilesSynchronized();
+    }
+
+    public void entitiesSynchronized() {
+        this.entitiesSection.entitiesSynchronized();
+    }
+
+    public void profileCreated(MerchantProfile profile) {
+        this.profilesSection.profileCreated(profile);
+    }
+
+    public void profileUpdated(MerchantProfile profile) {
+        this.profilesSection.profileUpdated(profile);
+    }
+
+    public void profileRemoved(MerchantProfile profile) {
+        this.profilesSection.profileRemoved(profile);
+    }
+
+    public void entityCreated(BoundEntityEntry entry) {
+        this.entitiesSection.entityCreated(entry);
+    }
+
+    public void entityUpdated(BoundEntityEntry entry) {
+        this.entitiesSection.entityUpdated(entry);
+    }
+
+    public void entityRemoved(BoundEntityEntry entry) {
+        this.entitiesSection.entityRemoved(entry);
     }
 
     public ProfilesManagementGUISection getProfilesSection() {
@@ -67,5 +92,17 @@ public class ManagementMenuGUIScreen extends SynchronizedGUIScreen {
 
     public EntitiesManagementGUISection getEntitiesSection() {
         return this.entitiesSection;
+    }
+
+    public void updateInventoryContent() {
+        this.inventoryContent.clear();
+        ItemStackWrapper wrapper;
+        for (ItemStack itemStack : ClientReference.getClientPlayer().inventory.mainInventory) {
+            if (!itemStack.isEmpty()) {
+                wrapper = ItemStackWrapper.getFromStack(itemStack);
+                if (!this.inventoryContent.contains(wrapper))
+                    this.inventoryContent.add(wrapper);
+            }
+        }
     }
 }

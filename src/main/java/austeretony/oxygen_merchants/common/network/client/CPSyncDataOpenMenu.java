@@ -1,15 +1,14 @@
 package austeretony.oxygen_merchants.common.network.client;
 
-import austeretony.oxygen.client.api.OxygenHelperClient;
-import austeretony.oxygen.common.network.ProxyPacket;
+import austeretony.oxygen_core.client.api.OxygenHelperClient;
+import austeretony.oxygen_core.common.network.Packet;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
-import austeretony.oxygen_merchants.common.main.BoundEntityEntry;
-import austeretony.oxygen_merchants.common.main.MerchantProfile;
-import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_merchants.common.BoundEntityEntry;
+import austeretony.oxygen_merchants.common.MerchantProfile;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
-public class CPSyncDataOpenMenu extends ProxyPacket {
+public class CPSyncDataOpenMenu extends Packet {
 
     private BoundEntityEntry entry;
 
@@ -23,22 +22,17 @@ public class CPSyncDataOpenMenu extends ProxyPacket {
     }
 
     @Override
-    public void write(PacketBuffer buffer, INetHandler netHandler) {
+    public void write(ByteBuf buffer, INetHandler netHandler) {
         this.entry.write(buffer);
         this.merchantProfile.write(buffer);
     }
 
     @Override
-    public void read(PacketBuffer buffer, INetHandler netHandler) {
-        this.entry = BoundEntityEntry.read(buffer);
-        MerchantsManagerClient.instance().getBoundEntitiesManager().addBoundEntityEntry(this.entry);
-        this.merchantProfile = MerchantProfile.read(buffer);
-        MerchantsManagerClient.instance().getMerchantProfilesManager().addProfile(this.merchantProfile);
-        MerchantsManagerClient.instance().openMerchantMenuDelegated(this.merchantProfile.getId());
-
-        OxygenHelperClient.savePersistentDataDelegated(MerchantsManagerClient.instance().getBoundEntitiesManager());
-        OxygenHelperClient.savePersistentDataDelegated(MerchantsManagerClient.instance().getMerchantProfilesManager());
-
-        MerchantsMain.LOGGER.info("Synchronized merchant profile <{}>.", this.merchantProfile.getName());
+    public void read(ByteBuf buffer, INetHandler netHandler) {
+        final BoundEntityEntry entry = new BoundEntityEntry();
+        entry.read(buffer);
+        final MerchantProfile profile = new MerchantProfile();
+        profile.read(buffer);
+        OxygenHelperClient.addRoutineTask(()->MerchantsManagerClient.instance().getMenuManager().updateDataOpenMerchantMenu(entry, profile));
     }
 }

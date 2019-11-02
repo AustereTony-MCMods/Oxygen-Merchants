@@ -1,14 +1,17 @@
 package austeretony.oxygen_merchants.common.network.server;
 
-import austeretony.oxygen.common.network.ProxyPacket;
-import austeretony.oxygen.util.PacketBufferUtils;
-import austeretony.oxygen_merchants.common.MerchantsManagerServer;
+import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.common.network.Packet;
+import austeretony.oxygen_core.common.util.ByteBufUtils;
+import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_core.server.api.RequestsFilterHelper;
+import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_merchants.server.MerchantsManagerServer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
-public class SPCreateBond extends ProxyPacket {
-
-    private long bondId;
+public class SPCreateBond extends Packet {
 
     private int entityId;
 
@@ -18,8 +21,7 @@ public class SPCreateBond extends ProxyPacket {
 
     public SPCreateBond() {}
 
-    public SPCreateBond(long bondId, int entityId, String name, String profession, long profileId) {
-        this.bondId = bondId;
+    public SPCreateBond(int entityId, String name, String profession, long profileId) {
         this.entityId = entityId;
         this.name = name;
         this.profession = profession;
@@ -27,17 +29,23 @@ public class SPCreateBond extends ProxyPacket {
     }
 
     @Override
-    public void write(PacketBuffer buffer, INetHandler netHandler) {
-        buffer.writeLong(this.bondId);
+    public void write(ByteBuf buffer, INetHandler netHandler) {
         buffer.writeInt(this.entityId);
-        PacketBufferUtils.writeString(this.name, buffer);
-        PacketBufferUtils.writeString(this.profession, buffer);
+        ByteBufUtils.writeString(this.name, buffer);
+        ByteBufUtils.writeString(this.profession, buffer);
         buffer.writeLong(this.profileId);
     }
 
     @Override
-    public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getBoundEntitiesManager().createEntry(getEntityPlayerMP(netHandler), 
-                buffer.readLong(), buffer.readInt(), PacketBufferUtils.readString(buffer), PacketBufferUtils.readString(buffer), buffer.readLong());
+    public void read(ByteBuf buffer, INetHandler netHandler) {
+        final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
+        if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.ENTITY_MANAGEMENT_REQUEST_ID)) {
+            final int entityId = buffer.readInt();
+            final String 
+            name = ByteBufUtils.readString(buffer),
+            profession = ByteBufUtils.readString(buffer);
+            final long profileId = buffer.readLong();
+            OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getBoundEntitiesManager().createEntry(playerMP, entityId, name, profession, profileId));
+        }
     }
 }

@@ -1,32 +1,37 @@
 package austeretony.oxygen_merchants.common.network.server;
 
-import austeretony.oxygen.common.network.ProxyPacket;
-import austeretony.oxygen.util.PacketBufferUtils;
-import austeretony.oxygen_merchants.common.MerchantsManagerServer;
+import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.common.network.Packet;
+import austeretony.oxygen_core.common.util.ByteBufUtils;
+import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_core.server.api.RequestsFilterHelper;
+import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_merchants.server.MerchantsManagerServer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
-public class SPCreateProfile extends ProxyPacket {
-
-    private long id;
+public class SPCreateProfile extends Packet {
 
     private String name;
 
     public SPCreateProfile() {}
 
-    public SPCreateProfile(long id, String name) {
-        this.id = id;
+    public SPCreateProfile(String name) {
         this.name = name;
     }
 
     @Override
-    public void write(PacketBuffer buffer, INetHandler netHandler) {
-        buffer.writeLong(this.id);
-        PacketBufferUtils.writeString(this.name, buffer);
+    public void write(ByteBuf buffer, INetHandler netHandler) {
+        ByteBufUtils.writeString(this.name, buffer);
     }
 
     @Override   
-    public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getMerchantProfilesManager().createProfile(getEntityPlayerMP(netHandler), buffer.readLong(), PacketBufferUtils.readString(buffer));
+    public void read(ByteBuf buffer, INetHandler netHandler) {
+        final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
+        if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.PROFILE_MANAGEMENT_REQUEST_ID)) {
+            final String name = ByteBufUtils.readString(buffer);
+            OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getMerchantProfilesManager().createProfile(playerMP, name));
+        }
     }
 }

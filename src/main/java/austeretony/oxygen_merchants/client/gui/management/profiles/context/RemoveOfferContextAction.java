@@ -1,12 +1,12 @@
 package austeretony.oxygen_merchants.client.gui.management.profiles.context;
 
-import austeretony.alternateui.screen.contextmenu.AbstractContextAction;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.oxygen.client.core.api.ClientReference;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIContextMenuElement.ContextMenuAction;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
-import austeretony.oxygen_merchants.client.gui.management.profiles.OfferFullGUIButton;
+import austeretony.oxygen_merchants.client.gui.management.profiles.OfferManagementGUIButton;
 
-public class RemoveOfferContextAction extends AbstractContextAction {
+public class RemoveOfferContextAction implements ContextMenuAction {
 
     private final ProfilesManagementGUISection section;
 
@@ -18,17 +18,17 @@ public class RemoveOfferContextAction extends AbstractContextAction {
     }
 
     @Override
-    protected String getName(GUIBaseElement currElement) {
+    public String getName(GUIBaseElement currElement) {
         return this.name;
     }
 
     @Override
-    protected boolean isValid(GUIBaseElement currElement) {
+    public boolean isValid(GUIBaseElement currElement) {
         return true;
     }
 
     @Override
-    protected void execute(GUIBaseElement currElement) {
-        this.section.removeOfferFromCurrentProfile(((OfferFullGUIButton) currElement).index); 
+    public void execute(GUIBaseElement currElement) {
+        this.section.removeOfferFromCurrentProfile(((OfferManagementGUIButton) currElement).index); 
     }
 }

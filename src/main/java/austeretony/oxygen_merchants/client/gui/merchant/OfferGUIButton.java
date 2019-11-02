@@ -1,10 +1,14 @@
 package austeretony.oxygen_merchants.client.gui.merchant;
 
 import austeretony.alternateui.screen.core.GUIAdvancedElement;
-import austeretony.oxygen.client.api.ItemRenderHelper;
-import austeretony.oxygen.client.gui.IndexedGUIButton;
-import austeretony.oxygen.client.gui.OxygenGUITextures;
-import austeretony.oxygen.client.gui.settings.GUISettings;
+import austeretony.alternateui.util.EnumGUIAlignment;
+import austeretony.oxygen_core.client.api.ItemRenderHelper;
+import austeretony.oxygen_core.client.gui.IndexedGUIButton;
+import austeretony.oxygen_core.client.gui.OxygenGUITextures;
+import austeretony.oxygen_core.client.gui.elements.CustomRectUtils;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.common.util.OxygenUtils;
+import austeretony.oxygen_merchants.common.MerchantOffer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -13,76 +17,91 @@ public class OfferGUIButton extends IndexedGUIButton<Long> {
 
     private final ItemStack offeredStack, currencyStack;
 
-    private String amount, cost, playerStock;
+    private final String amountStr, costStr;
 
-    private int stock;
+    private String playerStockStr;
 
-    private final boolean useCurrencyStack;
+    public final long cost;
 
-    public OfferGUIButton(long id, int playerStock, ItemStack offeredStack, int amount, int cost, ItemStack currencyStack) {
-        super(id);
-        this.stock = playerStock;
-        this.playerStock = String.valueOf(playerStock);
-        this.offeredStack = offeredStack;
+    private final boolean singleItem;
+
+    private boolean useCurrencyStack, available;
+
+    public OfferGUIButton(MerchantOffer offer, long cost, int playerStock, ItemStack currencyStack) {
+        super(offer.offerId);
+        this.playerStockStr = String.valueOf(playerStock);
+        this.offeredStack = offer.getOfferedStack().getCachedItemStack();
         this.currencyStack = currencyStack;
         this.useCurrencyStack = currencyStack != null;
-        this.amount = String.valueOf(amount);
-        this.cost = String.valueOf(cost);
+        this.amountStr = String.valueOf(offer.getAmount());
+        this.cost = cost;
+        this.costStr = OxygenUtils.formatCurrencyValue(String.valueOf(cost));
+        this.singleItem = offer.getAmount() == 1;
         this.setDisplayText(this.offeredStack.getDisplayName());//for search
+        this.enableDynamicBackground(GUISettings.get().getEnabledElementColor(), GUISettings.get().getEnabledElementColor(), GUISettings.get().getHoveredElementColor());
+        this.setTextDynamicColor(GUISettings.get().getEnabledTextColor(), GUISettings.get().getDisabledTextColor(), GUISettings.get().getHoveredTextColor());
+        this.requireDoubleClick();
     }
 
     @Override
     public void draw(int mouseX, int mouseY) {
-        if (this.isVisible()) {          
+        if (this.isVisible()) {      
+            RenderHelper.enableGUIStandardItemLighting();            
+            GlStateManager.enableDepth();
+            this.itemRender.renderItemAndEffectIntoGUI(this.offeredStack, this.getX() + 2, this.getY());                              
+            GlStateManager.disableDepth();
+            RenderHelper.disableStandardItemLighting();
+
             GlStateManager.pushMatrix();           
             GlStateManager.translate(this.getX(), this.getY(), 0.0F);            
             GlStateManager.scale(this.getScale(), this.getScale(), 0.0F);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
 
-            int color;                      
+            int color = this.getEnabledBackgroundColor();                     
             if (!this.isEnabled())                  
                 color = this.getDisabledBackgroundColor();
-            else if (this.isHovered() || this.isToggled())                  
-                color = this.getHoveredBackgroundColor();
-            else                    
-                color = this.getEnabledBackgroundColor();                                   
-            drawRect(0, 0, this.getWidth(), this.getHeight(), color);
+            else if (this.isHovered())                  
+                color = this.getHoveredBackgroundColor();      
 
+            int third = this.getWidth() / 3;
+            CustomRectUtils.drawGradientRect(0.0D, 0.0D, third, this.getHeight(), 0x00000000, color, EnumGUIAlignment.RIGHT);
+            drawRect(third, 0, this.getWidth() - third, this.getHeight(), color);
+            CustomRectUtils.drawGradientRect(this.getWidth() - third, 0.0D, this.getWidth(), this.getHeight(), 0x00000000, color, EnumGUIAlignment.LEFT);
+
+            color = this.getEnabledTextColor();
             if (!this.isEnabled())                  
                 color = this.getDisabledTextColor();           
-            else if (this.isHovered() || this.isToggled())                                          
+            else if (this.isHovered())                                          
                 color = this.getHoveredTextColor();
-            else                    
-                color = this.getEnabledTextColor();
 
-            float textScale = GUISettings.instance().getSubTextScale();
+            float textScale = GUISettings.get().getSubTextScale() - 0.05F;
 
             if (this.isHovered()) {
                 GlStateManager.pushMatrix();           
-                GlStateManager.translate(20.0F, 1.0F, 0.0F);            
+                GlStateManager.translate(16.0F, 1.0F, 0.0F);            
                 GlStateManager.scale(textScale, textScale, 0.0F);   
-                this.mc.fontRenderer.drawString(this.playerStock, 0, 0, color, this.isTextShadowEnabled()); 
+                this.mc.fontRenderer.drawString(this.playerStockStr, 0, 0, color, true); 
                 GlStateManager.popMatrix();
             }
 
-            GlStateManager.pushMatrix();           
-            GlStateManager.translate(20.0F, 10.0F, 0.0F);            
-            GlStateManager.scale(textScale, textScale, 0.0F);   
-            this.mc.fontRenderer.drawString(this.amount, 0, 0, color, this.isTextShadowEnabled()); 
-            GlStateManager.popMatrix();      
+            if (!this.singleItem) {
+                GlStateManager.pushMatrix();           
+                GlStateManager.translate(16.0F, 10.0F, 0.0F);            
+                GlStateManager.scale(textScale, textScale, 0.0F);   
+                this.mc.fontRenderer.drawString(this.amountStr, 0, 0, color, true);           
+                GlStateManager.popMatrix();      
+            }
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(this.getWidth() - 12.0F - this.textWidth(this.cost, textScale), (this.getHeight() - this.textHeight(textScale)) / 2.0F + 1.0F, 0.0F);            
+            GlStateManager.translate(this.getWidth() - 12.0F - this.textWidth(this.costStr, textScale), (this.getHeight() - this.textHeight(textScale)) / 2.0F, 0.0F);            
             GlStateManager.scale(textScale, textScale, 0.0F); 
-            this.mc.fontRenderer.drawString(this.cost, 0, 0, this.isEnabled() ? color : 0xFFCC0000, this.isTextShadowEnabled());
-            GlStateManager.popMatrix();      
-
-            textScale = GUISettings.instance().getTextScale();
+            this.mc.fontRenderer.drawString(this.costStr, 0, 0, this.available ? color : 0xFFCC0000, false);
+            GlStateManager.popMatrix();    
 
             GlStateManager.pushMatrix();           
-            GlStateManager.translate(34.0F, (this.getHeight() - this.textHeight(textScale)) / 2.0F + 1.0F, 0.0F);            
-            GlStateManager.scale(textScale, textScale, 0.0F);           
-            this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, color, this.isTextShadowEnabled());
+            GlStateManager.translate(28.0F, (this.getHeight() - this.textHeight(textScale)) / 2.0F, 0.0F);            
+            GlStateManager.scale(textScale + 0.1F, textScale + 0.1F, 0.0F);           
+            this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, this.available ? color : GUISettings.get().getInactiveElementColor(), false);
             GlStateManager.popMatrix();     
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
@@ -107,31 +126,29 @@ public class OfferGUIButton extends IndexedGUIButton<Long> {
             } 
 
             GlStateManager.popMatrix();
-
-            RenderHelper.enableGUIStandardItemLighting();            
-            GlStateManager.enableDepth();
-            this.itemRender.renderItemAndEffectIntoGUI(this.offeredStack, this.getX() + 4, this.getY());                              
-            GlStateManager.disableDepth();
-            RenderHelper.disableStandardItemLighting();
         }     
     }
 
     @Override
     public void drawTooltip(int mouseX, int mouseY) {
-        if (mouseX >= this.getX() + 4 && mouseY >= this.getY() && mouseX < this.getX() + 20 && mouseY < this.getY() + this.getHeight())
+        if (mouseX >= this.getX() + 2 && mouseY >= this.getY() && mouseX < this.getX() + 18 && mouseY < this.getY() + this.getHeight())
             this.screen.drawToolTip(this.offeredStack, mouseX + 6, mouseY);
     }
 
-    public int getPlayerStock() {
-        return this.stock;
-    }
-
     public void setPlayerStock(int value) {
-        this.stock = value;
-        this.playerStock = String.valueOf(value);
+        this.playerStockStr = String.valueOf(value);
     }
 
     public ItemStack getOfferedStack() {
         return this.offeredStack;
+    }
+
+    public OfferGUIButton setAvailable(boolean flag) {
+        this.available = flag;
+        return this;
+    }
+
+    public boolean isAvailable() {
+        return this.available;
     }
 }

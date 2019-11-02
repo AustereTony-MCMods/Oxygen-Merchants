@@ -1,10 +1,12 @@
 package austeretony.oxygen_merchants.client.gui.management.entities;
 
-import austeretony.oxygen.client.gui.IndexedGUIButton;
-import austeretony.oxygen.client.gui.settings.GUISettings;
+import austeretony.alternateui.util.EnumGUIAlignment;
+import austeretony.oxygen_core.client.gui.IndexedGUIButton;
+import austeretony.oxygen_core.client.gui.elements.CustomRectUtils;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class EntityEntryGUIButton extends IndexedGUIButton {
+public class EntityEntryGUIButton extends IndexedGUIButton<Long> {
 
     private final String entityName, merchantProfile;
 
@@ -16,6 +18,9 @@ public class EntityEntryGUIButton extends IndexedGUIButton {
         this.merchantProfile = merchantProfile;
         this.isDead = isDead;
         this.emptyProfile = emptyProfile;
+        this.enableDynamicBackground(GUISettings.get().getEnabledElementColor(), GUISettings.get().getEnabledElementColor(), GUISettings.get().getHoveredElementColor());
+        this.setTextDynamicColor(GUISettings.get().getEnabledTextColor(), GUISettings.get().getDisabledTextColor(), GUISettings.get().getHoveredTextColor());
+        this.setDisplayText(entityName);
     }
 
     @Override
@@ -32,8 +37,12 @@ public class EntityEntryGUIButton extends IndexedGUIButton {
             else if (this.isHovered() || this.isToggled())                  
                 color = this.getHoveredBackgroundColor();
             else                    
-                color = this.getEnabledBackgroundColor();                                   
-            drawRect(0, 0, this.getWidth(), this.getHeight(), color);
+                color = this.getEnabledBackgroundColor();   
+
+            int third = this.getWidth() / 3;
+            CustomRectUtils.drawGradientRect(0.0D, 0.0D, third, this.getHeight(), 0x00000000, color, EnumGUIAlignment.RIGHT);
+            drawRect(third, 0, this.getWidth() - third, this.getHeight(), color);
+            CustomRectUtils.drawGradientRect(this.getWidth() - third, 0.0D, this.getWidth(), this.getHeight(), 0x00000000, color, EnumGUIAlignment.LEFT);
 
             if (!this.isEnabled())                  
                 color = this.getDisabledTextColor();           
@@ -42,7 +51,7 @@ public class EntityEntryGUIButton extends IndexedGUIButton {
             else                    
                 color = this.getEnabledTextColor();
 
-            float textScale = GUISettings.instance().getTextScale();
+            float textScale = GUISettings.get().getPanelTextScale();
 
             if (this.emptyProfile)
                 color = 0xFFFF6A00;

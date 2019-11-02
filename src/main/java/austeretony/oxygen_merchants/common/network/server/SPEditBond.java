@@ -1,37 +1,50 @@
 package austeretony.oxygen_merchants.common.network.server;
 
-import austeretony.oxygen.common.network.ProxyPacket;
-import austeretony.oxygen.util.PacketBufferUtils;
-import austeretony.oxygen_merchants.common.MerchantsManagerServer;
+import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.common.network.Packet;
+import austeretony.oxygen_core.common.util.ByteBufUtils;
+import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_core.server.api.RequestsFilterHelper;
+import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_merchants.server.MerchantsManagerServer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
-public class SPEditBond extends ProxyPacket {
+public class SPEditBond extends Packet {
 
-    private long oldBondId, profileId;
+    private long bondId, profileId;
 
     private String name, profession;
 
     public SPEditBond() {}
 
     public SPEditBond(long bondId, String name, String profession, long profileId) {
-        this.oldBondId = bondId;
+        this.bondId = bondId;
         this.name = name;
         this.profession = profession;
         this.profileId = profileId;
     }
 
     @Override
-    public void write(PacketBuffer buffer, INetHandler netHandler) {
-        buffer.writeLong(this.oldBondId);
-        PacketBufferUtils.writeString(this.name, buffer);
-        PacketBufferUtils.writeString(this.profession, buffer);
+    public void write(ByteBuf buffer, INetHandler netHandler) {
+        buffer.writeLong(this.bondId);
         buffer.writeLong(this.profileId);
+        ByteBufUtils.writeString(this.name, buffer);
+        ByteBufUtils.writeString(this.profession, buffer);
     }
 
     @Override
-    public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getBoundEntitiesManager().editEntry(getEntityPlayerMP(netHandler), 
-                buffer.readLong(), PacketBufferUtils.readString(buffer), PacketBufferUtils.readString(buffer), buffer.readLong());
+    public void read(ByteBuf buffer, INetHandler netHandler) {
+        final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
+        if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.ENTITY_MANAGEMENT_REQUEST_ID)) {
+            final long 
+            bondId = buffer.readLong(),
+            profileId = buffer.readLong();
+            final String 
+            name = ByteBufUtils.readString(buffer),
+            profession = ByteBufUtils.readString(buffer);
+            OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getBoundEntitiesManager().editEntry(playerMP, bondId, name, profession, profileId));
+        }
     }
 }

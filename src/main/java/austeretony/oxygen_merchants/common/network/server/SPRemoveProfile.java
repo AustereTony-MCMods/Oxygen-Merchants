@@ -1,27 +1,36 @@
 package austeretony.oxygen_merchants.common.network.server;
 
-import austeretony.oxygen.common.network.ProxyPacket;
-import austeretony.oxygen_merchants.common.MerchantsManagerServer;
+import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.common.network.Packet;
+import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_core.server.api.RequestsFilterHelper;
+import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_merchants.server.MerchantsManagerServer;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
-public class SPRemoveProfile extends ProxyPacket {
+public class SPRemoveProfile extends Packet {
 
-    private long id;
+    private long profileId;
 
     public SPRemoveProfile() {}
 
     public SPRemoveProfile(long id) {
-        this.id = id;
+        this.profileId = id;
     }
 
     @Override
-    public void write(PacketBuffer buffer, INetHandler netHandler) {
-        buffer.writeLong(this.id);
+    public void write(ByteBuf buffer, INetHandler netHandler) {
+        buffer.writeLong(this.profileId);
     }
 
     @Override   
-    public void read(PacketBuffer buffer, INetHandler netHandler) {
-        MerchantsManagerServer.instance().getMerchantProfilesManager().removeProfile(getEntityPlayerMP(netHandler), buffer.readLong());
+    public void read(ByteBuf buffer, INetHandler netHandler) {
+        final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
+        if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.PROFILE_MANAGEMENT_REQUEST_ID)) {
+            final long id = buffer.readLong();
+            OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getMerchantProfilesManager().removeProfile(playerMP, id));
+        }
     }
 }

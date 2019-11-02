@@ -1,25 +1,29 @@
-oxygen_merchants.gui.management.profiles.title=Merchants Profiles Management
-oxygen_merchants.gui.management.entities.title=Bound Entities Management
+oxygen_merchants.sorting.profile=Profile
+
+oxygen_merchants.gui.management.title=Management
+oxygen_merchants.gui.management.profiles.title=Profiles
+oxygen_merchants.gui.management.entities.title=Entities
 oxygen_merchants.gui.management.create=Create
 
 oxygen_merchants.gui.management.saveChangesButton=Save
 oxygen_merchants.gui.management.changeCurrencyButton=Change
-oxygen_merchants.gui.management.createOfferButton=New Offer
 
-oxygen_merchants.gui.management.profileCreationCallback=Profile Creation
+oxygen_merchants.gui.management.callback.profileCreation=Profile Creation
+oxygen_merchants.gui.management.callback.profileCreation.request=Profile Name
 oxygen_merchants.gui.management.profileGenericName=Profile
-oxygen_merchants.gui.management.removeProfileCallback=Remove Profile
-oxygen_merchants.gui.management.removeProfileCallback.request=Profile %s will be removed.
+oxygen_merchants.gui.management.callback.removeProfile=Remove Profile
+oxygen_merchants.gui.management.callback.removeProfile.request=Profile will be removed.
+oxygen_merchants.gui.management.callback.editName=Edit Name
+oxygen_merchants.gui.management.callback.editName.request=Profile Name
+oxygen_merchants.gui.management.callback.currencyManagement=Currency Management
+oxygen_merchants.gui.management.callback.offerCreation=Offer Creation
+oxygen_merchants.gui.management.callback.editOffer=Edit Offer
+oxygen_merchants.gui.management.callback.saveChanges=Save Profile
+oxygen_merchants.gui.management.callback.saveChanges.request=Sync changes with server?
 oxygen_merchants.gui.management.editProfileName=Edit Name
 oxygen_merchants.gui.management.editProfileCurrency=Edit Currency
 oxygen_merchants.gui.management.newOffer=New Offer
 oxygen_merchants.gui.management.remove=Remove
-oxygen_merchants.gui.management.nameEditingCallback=Profile Name Editing
-oxygen_merchants.gui.management.saveCallback=Save Changes
-oxygen_merchants.gui.management.saveCallback.request=Sync changes with server?
-oxygen_merchants.gui.management.currencyManagementCallback=Currency Management
-oxygen_merchants.gui.management.offerCreationCallback=Offer Creation
-oxygen_merchants.gui.management.offerEditingCallback=Edit Offer
 oxygen_merchants.gui.management.useCurrency=Use Currency
 oxygen_merchants.gui.management.useItem=Use Item
 oxygen_merchants.gui.management.amount=Amount
@@ -30,16 +34,16 @@ oxygen_merchants.gui.management.sellingCost=Selling Cost
 oxygen_merchants.gui.management.noSelling=No Selling
 oxygen_merchants.gui.management.edit=Edit
 oxygen_merchants.gui.management.openProfileButton=Open
-oxygen_merchants.gui.management.entityBondCreationCallback=Entry Creation
-oxygen_merchants.gui.management.entityBondEditCallback=Edit Entry
+oxygen_merchants.gui.management.callback.entityCreation=Merchant Creation
+oxygen_merchants.gui.management.callback.entityEditk=Edit Merchant
+oxygen_merchants.gui.management.callback.visitEntity=Visit Merchant
+oxygen_merchants.gui.management.callback.visitEntity.request=Player will be teleported to entity.
+oxygen_merchants.gui.management.callback.removeEntity=Remove Merchant
+oxygen_merchants.gui.management.callback.removeEntity.request=Merchant entry will be removed.
 oxygen_merchants.gui.management.profession=Profession
 oxygen_merchants.gui.management.merchantProfession=Merchant
 oxygen_merchants.gui.management.profile=Merchant Profile
-oxygen_merchants.gui.management.visitEntityCallback=Visit Merchant
-oxygen_merchants.gui.management.visitEntityCallback.request=Teleport to %s?
 oxygen_merchants.gui.management.visit=Visit
-oxygen_merchants.gui.management.bondRemoveCallback=Remove Merchant
-oxygen_merchants.gui.management.bondRemoveCallback.request=Remove %s?
 oxygen_merchants.gui.management.emptyProfile=No Profile
 
 oxygen_merchants.gui.management.sellFor=Sell for %s
@@ -55,3 +59,10 @@ oxygen_merchants.message.ingameManagementDisabled=Ingame management disabled.
 oxygen_merchants.message.merchantsDataReloaded=Merchants data reloaded.
 
 oxygen_merchants.command.dataReset=<oxygen: merchants> client data reset.
+
+oxygen_merchants.status.profileCreated=Merchant profile created
+oxygen_merchants.status.profileUpdated=Merchant profile updated
+oxygen_merchants.status.profileRemoved=Merchant profile removed
+oxygen_merchants.status.entityCreated=Entity bound
+oxygen_merchants.status.entityUpdated=Entity updated
+oxygen_merchants.status.entityRemoved=Entity removed

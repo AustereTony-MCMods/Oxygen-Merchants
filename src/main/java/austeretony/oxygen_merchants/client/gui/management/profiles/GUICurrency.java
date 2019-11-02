@@ -2,10 +2,10 @@ package austeretony.oxygen_merchants.client.gui.management.profiles;
 
 import austeretony.alternateui.screen.core.GUIAdvancedElement;
 import austeretony.alternateui.screen.core.GUISimpleElement;
-import austeretony.oxygen.client.api.ItemRenderHelper;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.OxygenGUITextures;
-import austeretony.oxygen.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.api.ItemRenderHelper;
+import austeretony.oxygen_core.client.gui.OxygenGUITextures;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
@@ -34,7 +34,7 @@ public class GUICurrency extends GUISimpleElement<GUICurrency> {
                 GlStateManager.disableBlend();
                 GlStateManager.pushMatrix();           
                 GlStateManager.translate(8.0F, 0.0F, 0.0F);            
-                GlStateManager.scale(GUISettings.instance().getSubTextScale(), GUISettings.instance().getSubTextScale(), 0.0F);                                      
+                GlStateManager.scale(GUISettings.get().getSubTextScale(), GUISettings.get().getSubTextScale(), 0.0F);                                      
                 this.mc.fontRenderer.drawString(ClientReference.localize("oxygen.currency.coins"), 0, 0, this.getEnabledTextColor(), false);
                 GlStateManager.popMatrix();
             } else {
@@ -51,7 +51,7 @@ public class GUICurrency extends GUISimpleElement<GUICurrency> {
                 GlStateManager.popMatrix();
                 GlStateManager.pushMatrix();           
                 GlStateManager.translate(10.0F, 0.0F, 0.0F);            
-                GlStateManager.scale(GUISettings.instance().getSubTextScale(), GUISettings.instance().getSubTextScale(), 0.0F);                                      
+                GlStateManager.scale(GUISettings.get().getSubTextScale(), GUISettings.get().getSubTextScale(), 0.0F);                                      
                 this.mc.fontRenderer.drawString(this.itemStack.getDisplayName(), 0, 0, this.getEnabledTextColor(), false);
                 GlStateManager.popMatrix();
             } 

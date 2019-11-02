@@ -2,30 +2,26 @@ package austeretony.oxygen_merchants.client.gui.management.entities.callback;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import austeretony.alternateui.screen.browsing.GUIScroller;
-import austeretony.alternateui.screen.button.GUIButton;
-import austeretony.alternateui.screen.button.GUISlider;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.text.GUITextField;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.alternateui.util.EnumGUIAlignment;
-import austeretony.alternateui.util.EnumGUIOrientation;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.IndexedGUIButton;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
-import austeretony.oxygen.util.MathUtils;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.IndexedGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenCallbackGUIFiller;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUITextField;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.common.util.MathUtils;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.gui.management.EntitiesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
-import austeretony.oxygen_merchants.common.main.BoundEntityEntry;
-import austeretony.oxygen_merchants.common.main.MerchantProfile;
+import austeretony.oxygen_merchants.client.gui.management.ProfileGUIButton;
+import austeretony.oxygen_merchants.common.BoundEntityEntry;
+import austeretony.oxygen_merchants.common.MerchantProfile;
 
 public class EntryEditGUICallback extends AbstractGUICallback {
 
@@ -33,11 +29,13 @@ public class EntryEditGUICallback extends AbstractGUICallback {
 
     private final EntitiesManagementGUISection section;
 
-    private GUITextField nameField, professionField;
+    private OxygenGUITextField nameField, professionField;
 
-    private GUIButton confirmButton, cancelButton;
+    private OxygenGUIButton confirmButton, cancelButton;
 
-    private GUIButtonPanel profilesPanel;
+    private OxygenGUIButtonPanel profilesPanel;
+
+    //cache
 
     private IndexedGUIButton<Long> currentProfile;
 
@@ -51,62 +49,49 @@ public class EntryEditGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new EntryCreationCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.entityBondEditCallback"), true, GUISettings.instance().getTitleScale())); 
-        this.addElement(new GUITextLabel(2, 16).setDisplayText(ClientReference.localize("oxygen.gui.name"), false, GUISettings.instance().getSubTextScale())); 
-        this.addElement(new GUITextLabel(2, 36).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.profession"), false, GUISettings.instance().getSubTextScale()));    
+        this.addElement(new OxygenCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenGUIText(4, 5, ClientReference.localize("oxygen_merchants.gui.management.callback.entityEdit"), GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(new OxygenGUIText(6, 18, ClientReference.localize("oxygen.gui.name"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(new OxygenGUIText(6, 38, ClientReference.localize("oxygen_merchants.gui.management.profession"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(this.nameField = new GUITextField(2, 25, 136, 9, BoundEntityEntry.MAX_NAME_LENGTH).setTextScale(GUISettings.instance().getSubTextScale()).setLineOffset(3)
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .cancelDraggedElementLogic());
-        this.addElement(this.professionField = new GUITextField(2, 45, 136, 9, BoundEntityEntry.MAX_PROFESSION_LENGTH).setTextScale(GUISettings.instance().getSubTextScale()).setLineOffset(3)
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .cancelDraggedElementLogic());
+        this.addElement(this.nameField = new OxygenGUITextField(6, 25, this.getWidth() - 12, 9, BoundEntityEntry.MAX_NAME_LENGTH, "", 3, false, - 1L));
+        this.addElement(this.professionField = new OxygenGUITextField(6, 45, this.getWidth() - 12, 9, BoundEntityEntry.MAX_PROFESSION_LENGTH, "", 3, false, - 1L));
 
-        this.addElement(new GUITextLabel(2, 56).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.profile"), false, GUISettings.instance().getSubTextScale()));    
+        this.addElement(new OxygenGUIText(6, 58, ClientReference.localize("oxygen_merchants.gui.management.profile"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(this.profilesPanel = new OxygenGUIButtonPanel(this.screen, 6, 66, this.getWidth() - 15, 10, 1, MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfilesAmount(), 5, 100), 10, GUISettings.get().getPanelTextScale(), false));        
 
-        this.profilesPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 66, 137, 10).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
-        this.addElement(this.profilesPanel);       
-        GUIScroller scroller = new GUIScroller(MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesManager().getProfilesAmount(), 5, 100), 5);
-        this.profilesPanel.initScroller(scroller);
-        GUISlider slider = new GUISlider(this.getX() + 138, this.getY() + 66, 2, 54);
-        slider.setDynamicBackgroundColor(GUISettings.instance().getEnabledSliderColor(), GUISettings.instance().getDisabledSliderColor(), GUISettings.instance().getHoveredSliderColor());
-        scroller.initSlider(slider);
+        this.profilesPanel.<IndexedGUIButton<Long>>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
+            if (this.currentProfile != clicked) {
+                if (this.currentProfile != null)
+                    this.currentProfile.setToggled(false);
+                clicked.toggle();                    
+                this.currentProfile = clicked;
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()).disable());
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+                this.confirmButton.enable();
+            }
+        });
+
+        this.addElement(this.confirmButton = new OxygenGUIButton(15, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.confirmButton")));
+        this.addElement(this.cancelButton = new OxygenGUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.cancelButton")));
     }
 
     private void loadProfiles() {
-        List<MerchantProfile> profiles = new ArrayList<MerchantProfile>(MerchantsManagerClient.instance().getMerchantProfilesManager().getProfiles());
-        Collections.sort(profiles, new Comparator<MerchantProfile>() {
+        List<MerchantProfile> profiles = new ArrayList<MerchantProfile>(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfiles());
 
-            @Override
-            public int compare(MerchantProfile profile1, MerchantProfile profile2) {
-                return profile1.getName().compareTo(profile2.getName());
-            }
-        });
+        Collections.sort(profiles, (p1, p2)->p1.getName().compareTo(p2.getName()));
 
         this.profilesPanel.reset();
 
         this.profilesPanel.getScroller().resetPosition();
         this.profilesPanel.getScroller().getSlider().reset();
 
-        ProfileCallbackGUIButton button;
-        for (MerchantProfile profile : profiles) {
-            button = new ProfileCallbackGUIButton(profile.getId());
-            button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
-            button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
-            button.setDisplayText(profile.getName());
-            button.setTextAlignment(EnumGUIAlignment.LEFT, 1);
-
-            this.profilesPanel.addButton(button);            
-        }
+        for (MerchantProfile profile : profiles)
+            this.profilesPanel.addButton(new ProfileGUIButton(profile));
     }
 
     @Override
     protected void onOpen() {
-        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesManager().getBoundEntityEntry(this.section.getCurrentEntryButton().index);
+        BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesContainer().getBoundEntityEntry(this.section.getCurrentEntryButton().index);
         this.nameField.setText(this.oldName = entry.getName());
         this.professionField.setText(this.oldProfession = entry.getProfession());
 
@@ -129,18 +114,7 @@ public class EntryEditGUICallback extends AbstractGUICallback {
                     name = this.nameField.getTypedText().isEmpty() ? this.oldName : this.nameField.getTypedText(),
                             profession = this.professionField.getTypedText();
                     MerchantsManagerClient.instance().getBoundEntitiesManager().editEntrySynced(this.section.getCurrentEntryButton().index, name, profession, this.currentProfile.index);
-                    this.section.sortEntries(0);
                     this.close();
-                }
-            } else if (element instanceof ProfileCallbackGUIButton) {
-                ProfileCallbackGUIButton button = (ProfileCallbackGUIButton) element;
-                if (this.currentProfile != button) {
-                    if (this.currentProfile != null)
-                        this.currentProfile.setToggled(false);
-                    button.toggle();                    
-                    this.currentProfile = button;
-
-                    this.confirmButton.enable();
                 }
             }
         }

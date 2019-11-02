@@ -1,22 +1,19 @@
 package austeretony.oxygen_merchants.client.gui.management.profiles.callback;
 
-import austeretony.alternateui.screen.browsing.GUIScroller;
-import austeretony.alternateui.screen.button.GUIButton;
-import austeretony.alternateui.screen.button.GUICheckBoxButton;
-import austeretony.alternateui.screen.button.GUISlider;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.alternateui.util.EnumGUIOrientation;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.elements.OxygenCallbackGUIFiller;
+import austeretony.oxygen_core.client.gui.elements.OxygenCheckBoxGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.common.item.ItemStackWrapper;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.profiles.InventoryItemGUIButton;
-import net.minecraft.item.ItemStack;
 
 public class CurrencyManagementGUICallback extends AbstractGUICallback {
 
@@ -24,11 +21,11 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
 
     private final ProfilesManagementGUISection section; 
 
-    private GUICheckBoxButton useCurrencyButton, useItemButton;
+    private OxygenCheckBoxGUIButton useCurrencyButton, useItemButton;
 
-    private GUIButton confirmButton, cancelButton;
+    private OxygenGUIButton confirmButton, cancelButton;
 
-    private GUIButtonPanel itemsPanel;
+    private OxygenGUIButtonPanel itemsPanel;
 
     private InventoryItemGUIButton currentButton;
 
@@ -40,31 +37,33 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new CurrencyManagementCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));//main background 1st layer
+        this.addElement(new OxygenCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenGUIText(4, 5, ClientReference.localize("oxygen_merchants.gui.management.callback.currencyManagement"), GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.currencyManagementCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(this.useCurrencyButton = new OxygenCheckBoxGUIButton(6, 18));
+        this.addElement(this.useItemButton = new OxygenCheckBoxGUIButton(6, 28));
 
-        this.addElement(this.useCurrencyButton = new GUICheckBoxButton(4, 14, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
-                .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor())
-                .toggle());
-        this.addElement(this.useItemButton = new GUICheckBoxButton(4, 24, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
-                .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()));
+        this.addElement(new OxygenGUIText(18, 17, ClientReference.localize("oxygen_merchants.gui.management.useCurrency"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(new OxygenGUIText(18, 27, ClientReference.localize("oxygen_merchants.gui.management.useItem"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(new GUITextLabel(14, 13).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.useCurrency"), false, GUISettings.instance().getSubTextScale()));
-        this.addElement(new GUITextLabel(14, 23).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.useItem"), false, GUISettings.instance().getSubTextScale()));
+        this.addElement(this.itemsPanel = new OxygenGUIButtonPanel(this.screen, 6, 38, this.getWidth() - 12, 16, 1, 36, 5, GUISettings.get().getPanelTextScale(), false));   
 
-        this.itemsPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 33, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
-        this.addElement(this.itemsPanel);       
-        GUIScroller scroller = new GUIScroller(27, 5);
-        this.itemsPanel.initScroller(scroller);
-        GUISlider slider = new GUISlider(this.getX() + 138, this.getY() + 33, 2, 84);
-        slider.setDynamicBackgroundColor(GUISettings.instance().getEnabledSliderColor(), GUISettings.instance().getDisabledSliderColor(), GUISettings.instance().getHoveredSliderColor());
-        scroller.initSlider(slider);
+        this.itemsPanel.<InventoryItemGUIButton>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
+            if (this.currentButton != clicked) {       
+                if (this.currentButton != null)
+                    this.currentButton.setToggled(false);
+                clicked.toggle();    
+                this.currentButton = clicked;
+
+                this.useCurrencyButton.setToggled(false);
+                this.useItemButton.toggle();
+            }
+        });
 
         this.loadItems();
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.confirmButton = new OxygenGUIButton(15, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.confirmButton")));
+        this.addElement(this.cancelButton = new OxygenGUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.cancelButton")));
     }
 
     @Override
@@ -75,23 +74,14 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
             this.currentButton.setToggled(false);
             this.currentButton = null;
         }
-        this.loadItems();
     }
 
     private void loadItems() {
         this.itemsPanel.reset();
         this.itemsPanel.getScroller().resetPosition();
-        this.itemsPanel.getScroller().getSlider().reset();
 
-        InventoryItemGUIButton button;
-        for (ItemStack itemStack : ClientReference.getClientPlayer().inventory.mainInventory) {
-            if (!itemStack.isEmpty()) {
-                button = new InventoryItemGUIButton(itemStack);
-                button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
-                button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
-                this.itemsPanel.addButton(button);
-            }              
-        }
+        for (ItemStackWrapper wrapper : this.screen.inventoryContent)
+            this.itemsPanel.addButton(new InventoryItemGUIButton(wrapper.getCachedItemStack()));     
     }
 
     @Override
@@ -116,17 +106,6 @@ public class CurrencyManagementGUICallback extends AbstractGUICallback {
             } else if (element == this.useItemButton) {
                 if (this.useItemButton.isToggled())
                     this.useCurrencyButton.setToggled(false);
-            } else if (element instanceof InventoryItemGUIButton) {
-                InventoryItemGUIButton button = (InventoryItemGUIButton) element;
-                if (this.currentButton != button) {
-                    if (this.currentButton != null)
-                        this.currentButton.setToggled(false);
-                    button.toggle();                    
-                    this.currentButton = button;
-
-                    this.useCurrencyButton.setToggled(false);
-                    this.useItemButton.toggle();
-                }
             }
         }
     }

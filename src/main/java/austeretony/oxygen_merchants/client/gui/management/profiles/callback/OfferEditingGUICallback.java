@@ -1,25 +1,22 @@
 package austeretony.oxygen_merchants.client.gui.management.profiles.callback;
 
-import austeretony.alternateui.screen.browsing.GUIScroller;
-import austeretony.alternateui.screen.button.GUIButton;
-import austeretony.alternateui.screen.button.GUICheckBoxButton;
-import austeretony.alternateui.screen.button.GUISlider;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.text.GUITextField;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.alternateui.util.EnumGUIOrientation;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.itemstack.ItemStackWrapper;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.elements.OxygenCallbackGUIFiller;
+import austeretony.oxygen_core.client.gui.elements.OxygenCheckBoxGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUITextField;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.common.item.ItemStackWrapper;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.profiles.InventoryItemGUIButton;
-import austeretony.oxygen_merchants.common.main.MerchantOffer;
-import net.minecraft.item.ItemStack;
+import austeretony.oxygen_merchants.common.MerchantOffer;
+import austeretony.oxygen_merchants.common.MerchantProfile;
 
 public class OfferEditingGUICallback extends AbstractGUICallback {
 
@@ -27,13 +24,13 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
 
     private final ProfilesManagementGUISection section; 
 
-    private GUIButton confirmButton, cancelButton;
+    private OxygenGUIButton confirmButton, cancelButton;
 
-    private GUIButtonPanel itemsPanel;
+    private OxygenGUIButtonPanel itemsPanel;
 
-    private GUITextField amountField, buyCostField, sellingCostField;
+    private OxygenGUITextField amountField, buyCostField, sellingCostField;
 
-    private GUICheckBoxButton enableSellingButton, sellingOnlyButton;
+    private OxygenCheckBoxGUIButton enableSellingButton, sellingOnlyButton;
 
     private InventoryItemGUIButton currentButton;
 
@@ -45,40 +42,41 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new OfferCreationCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));//main background 1st layer
+        this.addElement(new OxygenCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenGUIText(4, 5, ClientReference.localize("oxygen_merchants.gui.management.callback.editOffer"), GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.offerEditingCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(new OxygenGUIText(6, 105, ClientReference.localize("oxygen_merchants.gui.management.amount"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(this.amountField = new OxygenGUITextField(6, 112, 45, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH, "", 3, true, Integer.MAX_VALUE));
 
-        this.addElement(new GUITextLabel(2, 98).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.amount"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.amountField = new GUITextField(3, 108, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .setText("1").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(new OxygenGUIText(6, 126, ClientReference.localize("oxygen_merchants.gui.management.cost"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(this.buyCostField = new OxygenGUITextField(6, 132, 45, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH, "", 3, true, Integer.MAX_VALUE));
 
-        this.addElement(new GUITextLabel(2, 118).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.cost"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.buyCostField = new GUITextField(3, 128, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .setText("0").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE));
+        this.addElement(this.enableSellingButton = new OxygenCheckBoxGUIButton(6, 146));
+        this.addElement(new OxygenGUIText(14, 147, ClientReference.localize("oxygen_merchants.gui.management.enableSelling"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(this.enableSellingButton = new GUICheckBoxButton(2, 139, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
-                .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()));
-        this.addElement(new GUITextLabel(12, 138).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.enableSelling"), true, GUISettings.instance().getSubTextScale()));
-        this.addElement(this.sellingCostField = new GUITextField(3, 148, 50, 9, 10).setTextScale(GUISettings.instance().getSubTextScale())
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .setText("0").setLineOffset(3).cancelDraggedElementLogic().enableNumberFieldMode(Integer.MAX_VALUE).disable());
-        this.addElement(this.sellingOnlyButton = new GUICheckBoxButton(2, 161, 6).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent)
-                .enableDynamicBackground(GUISettings.instance().getEnabledButtonColor(), GUISettings.instance().getDisabledButtonColor(), GUISettings.instance().getHoveredButtonColor()).disable());
-        this.addElement(new GUITextLabel(12, 160).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.sellingOnly"), true, GUISettings.instance().getSubTextScale()));
+        this.addElement(new OxygenGUIText(6, 157, ClientReference.localize("oxygen_merchants.gui.management.cost"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(this.sellingCostField = new OxygenGUITextField(6, 163, 45, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH, "", 3, true, Integer.MAX_VALUE));
 
-        this.itemsPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 12, 137, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
-        this.addElement(this.itemsPanel);       
-        GUIScroller scroller = new GUIScroller(36, 5);
-        this.itemsPanel.initScroller(scroller);
-        GUISlider slider = new GUISlider(this.getX() + 138, this.getY() + 12, 2, 84);
-        slider.setDynamicBackgroundColor(GUISettings.instance().getEnabledSliderColor(), GUISettings.instance().getDisabledSliderColor(), GUISettings.instance().getHoveredSliderColor());
-        scroller.initSlider(slider);
+        this.addElement(this.sellingOnlyButton = new OxygenCheckBoxGUIButton(6, 177));
+        this.addElement(new OxygenGUIText(14, 178, ClientReference.localize("oxygen_merchants.gui.management.sellingOnly"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));    
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()).disable());
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.itemsPanel = new OxygenGUIButtonPanel(this.screen, 6, 17, this.getWidth() - 12, 16, 1, 36, 5, GUISettings.get().getPanelTextScale(), false));   
+
+        this.itemsPanel.<InventoryItemGUIButton>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
+            if (this.currentButton != clicked) {       
+                if (this.currentButton != null)
+                    this.currentButton.setToggled(false);
+                clicked.toggle();    
+                this.currentButton = clicked;
+
+                this.confirmButton.enable();
+            }
+        });
+
+        this.loadItems();
+
+        this.addElement(this.confirmButton = new OxygenGUIButton(15, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.confirmButton")));
+        this.addElement(this.cancelButton = new OxygenGUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.cancelButton")));
     }
 
     @Override
@@ -95,26 +93,14 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
         this.sellingCostField.disable();
         this.sellingOnlyButton.setToggled(false);
         this.sellingOnlyButton.disable();
-
-        this.loadItems();
     }
 
     private void loadItems() {
         this.itemsPanel.reset();
-
-        InventoryItemGUIButton button;
-        for (ItemStack itemStack : ClientReference.getClientPlayer().inventory.mainInventory) {
-            if (!itemStack.isEmpty()) {
-                button = new InventoryItemGUIButton(itemStack);
-                button.enableDynamicBackground(GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getEnabledElementColor(), GUISettings.instance().getHoveredElementColor());
-                button.setTextDynamicColor(GUISettings.instance().getEnabledTextColor(), GUISettings.instance().getDisabledTextColor(), GUISettings.instance().getHoveredTextColor());
-
-                this.itemsPanel.addButton(button);
-            }              
-        }
-
         this.itemsPanel.getScroller().resetPosition();
-        this.itemsPanel.getScroller().getSlider().reset();
+
+        for (ItemStackWrapper wrapper : this.screen.inventoryContent)
+            this.itemsPanel.addButton(new InventoryItemGUIButton(wrapper.getCachedItemStack()));    
     }
 
     @Override
@@ -124,7 +110,7 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
                 this.close();
             else if (element == this.confirmButton) {
                 MerchantOffer offer = new MerchantOffer(this.section.getCurrentOfferButton().index, ItemStackWrapper.getFromStack(this.currentButton.getItemStack()));
-                offer.setAmount(this.amountField.getTypedNumber());
+                offer.setAmount((int) this.amountField.getTypedNumber());
                 offer.setBuyCost(this.buyCostField.getTypedNumber());
                 offer.setSellingEnabled(this.enableSellingButton.isToggled());
                 offer.setSellingOnly(this.sellingOnlyButton.isToggled());
@@ -139,16 +125,6 @@ public class OfferEditingGUICallback extends AbstractGUICallback {
                     this.sellingCostField.disable();
                     this.sellingOnlyButton.disable();
                     this.sellingOnlyButton.setToggled(false);
-                }
-            } else if (element instanceof InventoryItemGUIButton) {
-                InventoryItemGUIButton button = (InventoryItemGUIButton) element;
-                if (this.currentButton != button) {
-                    if (this.currentButton != null)
-                        this.currentButton.setToggled(false);
-                    button.toggle();                    
-                    this.currentButton = button;
-
-                    this.confirmButton.enable();
                 }
             }
         }

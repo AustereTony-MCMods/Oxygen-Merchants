@@ -1,6 +1,6 @@
 package austeretony.oxygen_merchants.common.main;
 
-import austeretony.oxygen.client.core.api.ClientReference;
+import austeretony.oxygen_core.client.api.ClientReference;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public enum EnumMerchantsChatMessage {
@@ -11,10 +11,10 @@ public enum EnumMerchantsChatMessage {
     public void show(String... args) {
         switch (this) {
         case INGAME_MANAGEMENT_DISABLED:
-            ClientReference.showMessage(new TextComponentTranslation("oxygen_merchants.message.ingameManagementDisabled"));
+            ClientReference.showChatMessage(new TextComponentTranslation("oxygen_merchants.message.ingameManagementDisabled"));
             break;
         case MERCHANTS_DATA_RELOADED:
-            ClientReference.showMessage(new TextComponentTranslation("oxygen_merchants.message.merchantsDataReloaded"));
+            ClientReference.showChatMessage(new TextComponentTranslation("oxygen_merchants.message.merchantsDataReloaded"));
             break;
         }
     }

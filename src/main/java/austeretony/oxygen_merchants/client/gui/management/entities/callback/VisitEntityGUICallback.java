@@ -1,13 +1,13 @@
 package austeretony.oxygen_merchants.client.gui.management.entities.callback;
 
-import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.elements.OxygenCallbackGUIFiller;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.gui.management.EntitiesManagementGUISection;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
@@ -18,9 +18,7 @@ public class VisitEntityGUICallback extends AbstractGUICallback {
 
     private final EntitiesManagementGUISection section;
 
-    private GUITextLabel requestLabel;
-
-    private GUIButton confirmButton, cancelButton;
+    private OxygenGUIButton confirmButton, cancelButton;
 
     public VisitEntityGUICallback(ManagementMenuGUIScreen screen, EntitiesManagementGUISection section, int width, int height) {
         super(screen, section, width, height);
@@ -30,19 +28,12 @@ public class VisitEntityGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new VisitEntityCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.visitEntityCallback"), true, GUISettings.instance().getTitleScale()));
+        this.addElement(new OxygenCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenGUIText(4, 5, ClientReference.localize("oxygen_merchants.gui.management.callback.visitEntity"), GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(new OxygenGUIText(6, 18, ClientReference.localize("oxygen_merchants.gui.management.callback.visitEntity.request"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(this.requestLabel = new GUITextLabel(2, 16));     
-
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()));
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
-    }
-
-    @Override   
-    protected void onOpen() {
-        this.requestLabel.setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.visitEntityCallback.request", 
-                MerchantsManagerClient.instance().getBoundEntitiesManager().getBoundEntityEntry(this.section.getCurrentEntryButton().index).getName()), false, GUISettings.instance().getTextScale());
+        this.addElement(this.confirmButton = new OxygenGUIButton(15, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.confirmButton")));
+        this.addElement(this.cancelButton = new OxygenGUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.cancelButton")));
     }
 
     @Override

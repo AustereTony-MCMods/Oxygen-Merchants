@@ -1,47 +1,35 @@
 package austeretony.oxygen_merchants.client.gui.merchant;
 
-import austeretony.alternateui.screen.browsing.GUIScroller;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import austeretony.alternateui.screen.button.GUIButton;
-import austeretony.alternateui.screen.button.GUISlider;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
-import austeretony.alternateui.screen.panel.GUIButtonPanel;
-import austeretony.alternateui.screen.text.GUITextField;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.alternateui.util.EnumGUIOrientation;
-import austeretony.oxygen.client.api.WatcherHelperClient;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.OxygenGUITextures;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.itemstack.InventoryHelper;
-import austeretony.oxygen.common.main.OxygenPlayerData;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
-import austeretony.oxygen.util.MathUtils;
+import austeretony.alternateui.util.EnumGUIAlignment;
+import austeretony.oxygen_core.client.gui.elements.InventoryLoadGUIElement;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUITextField;
+import austeretony.oxygen_core.client.gui.elements.SectionsGUIDDList;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
+import austeretony.oxygen_core.common.util.MathUtils;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
-import austeretony.oxygen_merchants.client.gui.MerchantsGUITextures;
-import austeretony.oxygen_merchants.common.main.MerchantOffer;
-import austeretony.oxygen_merchants.common.main.MerchantProfile;
-import net.minecraft.entity.player.EntityPlayer;
+import austeretony.oxygen_merchants.common.MerchantOffer;
+import net.minecraft.item.ItemStack;
 
 public class SellingGUISection extends AbstractGUISection {
 
     private final MerchantMenuGUIScreen screen;
 
-    private GUIButton buySectionButton, searchButton;
+    private OxygenGUITextField searchField;
 
-    private GUITextField searchField;
+    private OxygenGUIButtonPanel offersPanel;
 
-    private GUITextLabel inventoryStateTextLabel;
+    private GUICurrencyBalance balanceElement;
 
-    private GUIButtonPanel sellingOffersPanel;
-
-    private GUICurrencyBalance currencyBalance;
-
-    private OfferGUIButton currentOfferButton;
-
-    private boolean overloaded;
-
-    private int balance, occupiedSlots;
+    private InventoryLoadGUIElement inventoryLoadElement;
 
     public SellingGUISection(MerchantMenuGUIScreen screen) {
         super(screen);
@@ -51,127 +39,85 @@ public class SellingGUISection extends AbstractGUISection {
     @Override
     public void init() {
         this.addElement(new MerchantBackgroundGUIFiller(0, 0, this.getWidth(), this.getHeight()));
-        this.addElement(new GUITextLabel(2, 4).setDisplayText(this.screen.merchantProfile.getName(), false, GUISettings.instance().getTitleScale()));
+        this.addElement(new OxygenGUIText(4, 5, this.screen.merchantProfile.getName(), GUISettings.get().getTitleScale(), GUISettings.get().getEnabledTextColor()));
 
-        String sectionName = ClientReference.localize("oxygen_merchants.gui.merchant.selling");
-        this.addElement(new GUITextLabel(this.getWidth() - 30 - this.textWidth(sectionName, GUISettings.instance().getTitleScale()), 4).setDisplayText(sectionName, false, GUISettings.instance().getTitleScale()));
-        this.addElement(this.buySectionButton = new GUIButton(this.getWidth() - 28, 0, 12, 12).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(MerchantsGUITextures.BUY_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.gui.merchant.buy"), GUISettings.instance().getTooltipScale()));  
-        this.addElement(new GUIButton(this.getWidth() - 14, 0, 12, 12).setTexture(MerchantsGUITextures.SELL_ICONS, 12, 12).initSimpleTooltip(ClientReference.localize("oxygen_merchants.gui.merchant.selling"), GUISettings.instance().getTooltipScale()).toggle());    
+        this.addElement(this.offersPanel = new OxygenGUIButtonPanel(this.screen, 6, 27, this.getWidth() - 15, 16, 1, MathUtils.clamp(this.getSellingOffersAmount(), 9, 100), 9, GUISettings.get().getPanelTextScale(), true));   
+        this.addElement(this.searchField = new OxygenGUITextField(6, 17, 65, 8, 24, "...", 3, false, - 1L));
+        this.offersPanel.initSearchField(this.searchField);
 
-        this.addElement(this.searchButton = new GUIButton(3, 15, 7, 7).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).setTexture(OxygenGUITextures.SEARCH_ICONS, 7, 7).initSimpleTooltip(ClientReference.localize("oxygen.tooltip.search"), GUISettings.instance().getTooltipScale()));   
+        this.offersPanel.<OfferGUIButton>setClickListener(
+                (previous, clicked, mouseX, mouseY, mouseButton)->MerchantsManagerClient.instance().getMenuManager().performSellingSynced(this.screen.merchantProfile.getId(), clicked.index));
 
-        this.sellingOffersPanel = new GUIButtonPanel(EnumGUIOrientation.VERTICAL, 0, 24, this.getWidth() - 3, 16).setButtonsOffset(1).setTextScale(GUISettings.instance().getTextScale());
-        this.addElement(this.sellingOffersPanel);
-        this.addElement(this.searchField = new GUITextField(0, 14, 85, 9, 20)
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .setDisplayText("...", false, GUISettings.instance().getSubTextScale()).setLineOffset(3).cancelDraggedElementLogic().disableFull());
-        this.sellingOffersPanel.initSearchField(this.searchField);
-        GUIScroller scroller = new GUIScroller(MathUtils.clamp(this.screen.merchantProfile.getOffersAmount(), 9, 100), 9);
-        this.sellingOffersPanel.initScroller(scroller);
-        GUISlider slider = new GUISlider(this.getWidth() - 2, 24, 2, 152);
-        slider.setDynamicBackgroundColor(GUISettings.instance().getEnabledSliderColor(), GUISettings.instance().getDisabledSliderColor(), GUISettings.instance().getHoveredSliderColor());
-        scroller.initSlider(slider);        
+        this.addElement(new SectionsGUIDDList(this.getWidth() - 4, 5, this, this.screen.getBuySection()));
 
-        this.addElement(this.inventoryStateTextLabel = new GUITextLabel(2, 179).setTextScale(GUISettings.instance().getSubTextScale()));   
-        this.addElement(this.currencyBalance = new GUICurrencyBalance(this.getWidth() - 13, 181));   
-
+        this.addElement(this.balanceElement = new GUICurrencyBalance(this.getWidth() - 10, this.getHeight() - 10));   
         if (!this.screen.merchantProfile.isUsingCurrency())
-            this.currencyBalance.setItemStack(this.screen.merchantProfile.getCurrencyStack().getItemStack());
+            this.balanceElement.setItemStack(this.screen.merchantProfile.getCurrencyStack().getItemStack());
+        this.balanceElement.setValue(this.screen.getBuySection().getBalanceElement().getValue());
+        this.balanceElement.setRed(this.balanceElement.getValue() == 0L);
+        this.addElement(this.inventoryLoadElement = new InventoryLoadGUIElement(4, this.getHeight() - 9, EnumGUIAlignment.RIGHT));
+        this.inventoryLoadElement.setLoad(this.screen.getBuySection().getInventoryLoadElement().getLoad());
 
-        this.updateInventoryState();
-        this.updateBalance();
-
-        this.screen.getBuySection().loadOffers();
+        this.loadOffers();
     }
 
-    public void updateInventoryState() {
-        this.setInventoryState(InventoryHelper.getOccupiedSlotsAmount(this.mc.player));
+    private int getSellingOffersAmount() {
+        return (int) this.screen.merchantProfile.getOffers()
+                .stream()
+                .filter((offer)->offer.isSellingEnabled())
+                .count();
     }
 
-    public void setInventoryState(int value) {
-        this.inventoryStateTextLabel.setDisplayText(String.valueOf(value) + "/" + String.valueOf(this.mc.player.inventory.mainInventory.size()));
-        this.occupiedSlots = value;
-        this.overloaded = value == this.mc.player.inventory.mainInventory.size();
-        this.inventoryStateTextLabel.setEnabledTextColor(this.overloaded ? 0xFFCC0000 : 0xFFD1D1D1);
-    }
+    private void loadOffers() {
+        List<MerchantOffer> offers = new ArrayList<>(this.screen.merchantProfile.getOffers());
 
-    public void updateBalance() {
-        int balance = 0;
-        if (this.screen.merchantProfile.isUsingCurrency())
-            balance = WatcherHelperClient.getInt(OxygenPlayerData.CURRENCY_COINS_WATCHER_ID);
-        else
-            balance = InventoryHelper.getEqualStackAmount(this.mc.player, this.screen.merchantProfile.getCurrencyStack());
-        this.setBalance(balance);
-    }
+        Collections.sort(offers, (o1, o2)->(int) ((o1.offerId - o2.offerId) / 5_000L));
 
-    public void setBalance(int value) {
-        this.currencyBalance.setBalance(value);
-        this.currencyBalance.setEnabledTextColor(value == 0 ? 0xFFCC0000 : 0xFFD1D1D1);
-        this.balance = value;
-    }
+        ItemStack currencyItemStack = null;
+        if (!this.screen.merchantProfile.isUsingCurrency())
+            currencyItemStack = this.screen.merchantProfile.getCurrencyStack().getItemStack();
 
-    @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (this.searchField.isEnabled() && !this.searchField.isHovered()) {
-            this.searchButton.enableFull();
-            this.searchField.disableFull();
-        }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);                 
-    }
-
-    @Override
-    public void handleElementClick(AbstractGUISection section, GUIBaseElement element, int mouseButton) {
-        if (mouseButton == 0) {
-            if (element == this.buySectionButton)
-                this.screen.getBuySection().open();
-            else if (element == this.searchButton) {
-                this.searchField.enableFull();
-                this.searchButton.disableFull();
-            } else if (element instanceof OfferGUIButton) {
-                this.currentOfferButton = (OfferGUIButton) element;
-                MerchantsManagerClient.instance().performSellingSynced(this.screen.merchantProfile.getId(), this.currentOfferButton.index);
+        int stock;
+        for (MerchantOffer offer : offers) {
+            if (offer.isSellingEnabled()) {
+                stock = this.screen.getEqualStackAmount(offer.getOfferedStack());
+                this.offersPanel.addButton(new OfferGUIButton(offer, offer.getSellingCost(), stock, currencyItemStack)
+                        .setAvailable((this.screen.merchantProfile.isUsingCurrency() || !this.inventoryLoadElement.isOverloaded()) && stock >= offer.getAmount()));        
             }
         }
     }
 
-    public void sold() {
-        this.mc.player.playSound(OxygenSoundEffects.SELL.soundEvent, 0.5F, 1.0F);
+    @Override
+    public void handleElementClick(AbstractGUISection section, GUIBaseElement element, int mouseButton) {}
 
-        if (this.currentOfferButton != null) {
-            MerchantOffer offer = this.screen.merchantProfile.getOffer(this.currentOfferButton.index);
+    public void bought(MerchantOffer offer, long balance) {
+        this.balanceElement.setValue(balance);
+        this.balanceElement.setRed(balance == 0L);
 
-            this.simulateSelling(ClientReference.getClientPlayer(), this.screen.merchantProfile, offer);
-            this.updateInventoryState();
+        this.inventoryLoadElement.setLoad(this.screen.getBuySection().getInventoryLoadElement().getLoad());
 
-            this.currentOfferButton.setPlayerStock(this.currentOfferButton.getPlayerStock() - offer.getAmount());
-            this.setBalance(this.balance + offer.getSellingCost());
-
-            this.currentOfferButton.setEnabled(this.currentOfferButton.getPlayerStock() >= offer.getAmount());
-
-            this.screen.getBuySection().setInventoryState(this.occupiedSlots);
-            this.screen.getBuySection().setBalance(this.balance);
-            this.screen.getBuySection().updateOffer(offer.offerId, this.currentOfferButton.getPlayerStock());
-        }
+        this.updateOffers();
     }
 
-    public void updateOffer(long offerId, int amount) {
+    private void updateOffers() {
+        int stock;       
         OfferGUIButton offerButton;
-        for (GUIButton button : this.sellingOffersPanel.buttonsBuffer) {
+        MerchantOffer offer;
+        for (GUIButton button : this.offersPanel.buttonsBuffer) {
             offerButton = (OfferGUIButton) button;
-            if (offerButton.index == offerId) {
-                offerButton.setEnabled(amount >= this.screen.merchantProfile.getOffer(offerButton.index).getAmount());
-                offerButton.setPlayerStock(amount);
-            }
+            offer = this.screen.merchantProfile.getOffer(offerButton.index);
+            stock = this.screen.getEqualStackAmount(offer.getOfferedStack());  
+            offerButton.setAvailable((this.screen.merchantProfile.isUsingCurrency() || !this.inventoryLoadElement.isOverloaded()) && stock >= offer.getAmount());
+            offerButton.setPlayerStock(stock);
         }
     }
 
-    private void simulateSelling(EntityPlayer player, MerchantProfile profile, MerchantOffer offer) {
-        if (!profile.isUsingCurrency())
-            InventoryHelper.addItemStack(player, profile.getCurrencyStack().getItemStack(), offer.getSellingCost());
-        InventoryHelper.removeEqualStack(player, offer.getOfferedStack(), offer.getAmount());
-    }
+    public void sold(MerchantOffer offer, long balance) {
+        this.balanceElement.setValue(balance);
+        this.balanceElement.setRed(balance == 0L);
 
-    public GUIButtonPanel getSellingOffersPanel() {
-        return this.sellingOffersPanel;
+        this.inventoryLoadElement.setLoad(this.screen.getBuySection().getInventoryLoadElement().getLoad());
+
+        this.updateOffers();
     }
 }

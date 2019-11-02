@@ -2,11 +2,11 @@ package austeretony.oxygen_merchants.common.command;
 
 import java.util.Set;
 
-import austeretony.oxygen.common.api.command.AbstractArgumentExecutor;
-import austeretony.oxygen.common.api.command.ArgumentParameter;
-import austeretony.oxygen.common.command.IArgumentParameter;
-import austeretony.oxygen.common.sync.gui.api.ComplexGUIHandlerServer;
-import austeretony.oxygen_merchants.common.main.MerchantsMain;
+import austeretony.oxygen_core.common.api.command.AbstractArgumentExecutor;
+import austeretony.oxygen_core.common.api.command.ArgumentParameterImpl;
+import austeretony.oxygen_core.common.command.ArgumentParameter;
+import austeretony.oxygen_core.common.main.OxygenMain;
+import austeretony.oxygen_merchants.common.network.client.CPOpenManagementMenu;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,15 +21,14 @@ public class MerchantsArgumentExecutorServer extends AbstractArgumentExecutor {
     }
 
     @Override
-    public void getParams(Set<IArgumentParameter> params) {
-        params.add(new ArgumentParameter(ACTION_MANAGEMENT));
+    public void getParams(Set<ArgumentParameter> params) {
+        params.add(new ArgumentParameterImpl(ACTION_MANAGEMENT));
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, Set<IArgumentParameter> params) throws CommandException {
-        for (IArgumentParameter param : params) {
+    public void execute(MinecraftServer server, ICommandSender sender, Set<ArgumentParameter> params) throws CommandException {
+        for (ArgumentParameter param : params)
             if (param.getBaseName().equals(ACTION_MANAGEMENT))
-                ComplexGUIHandlerServer.openScreen((EntityPlayerMP) sender, MerchantsMain.MANAGEMENT_MENU_SCREEN_ID);
-        }
+                OxygenMain.network().sendTo(new CPOpenManagementMenu(), (EntityPlayerMP) sender);
     }
 }

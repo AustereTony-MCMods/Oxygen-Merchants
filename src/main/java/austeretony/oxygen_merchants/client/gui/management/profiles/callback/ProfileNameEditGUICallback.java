@@ -1,18 +1,19 @@
 package austeretony.oxygen_merchants.client.gui.management.profiles.callback;
 
-import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.text.GUITextField;
-import austeretony.alternateui.screen.text.GUITextLabel;
-import austeretony.oxygen.client.core.api.ClientReference;
-import austeretony.oxygen.client.gui.settings.GUISettings;
-import austeretony.oxygen.common.main.OxygenSoundEffects;
+import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.gui.elements.OxygenCallbackGUIFiller;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
+import austeretony.oxygen_core.client.gui.elements.OxygenGUITextField;
+import austeretony.oxygen_core.client.gui.settings.GUISettings;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
 import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
-import austeretony.oxygen_merchants.common.main.MerchantProfile;
+import austeretony.oxygen_merchants.common.MerchantProfile;
 
 public class ProfileNameEditGUICallback extends AbstractGUICallback {
 
@@ -22,7 +23,7 @@ public class ProfileNameEditGUICallback extends AbstractGUICallback {
 
     private GUITextField nameField;
 
-    private GUIButton confirmButton, cancelButton;
+    private OxygenGUIButton confirmButton, cancelButton;
 
     private String oldName;
 
@@ -34,30 +35,25 @@ public class ProfileNameEditGUICallback extends AbstractGUICallback {
 
     @Override
     public void init() {
-        this.addElement(new ProfileNameEditCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
-        this.addElement(new GUITextLabel(2, 2).setDisplayText(ClientReference.localize("oxygen_merchants.gui.management.nameEditingCallback"), true, GUISettings.instance().getTitleScale()));   
-        this.addElement(new GUITextLabel(2, 16).setDisplayText(ClientReference.localize("oxygen.gui.name"), false, GUISettings.instance().getSubTextScale()));    
+        this.addElement(new OxygenCallbackGUIFiller(0, 0, this.getWidth(), this.getHeight()));
+        this.addElement(new OxygenGUIText(4, 5, ClientReference.localize("oxygen_merchants.gui.management.callback.editName"), GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()));
+        this.addElement(new OxygenGUIText(6, 18, ClientReference.localize("oxygen_merchants.gui.management.callback.editName.request"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
 
-        this.addElement(this.nameField = new GUITextField(2, 25, 136, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH).setTextScale(GUISettings.instance().getSubTextScale())
-                .enableDynamicBackground(GUISettings.instance().getEnabledTextFieldColor(), GUISettings.instance().getDisabledTextFieldColor(), GUISettings.instance().getHoveredTextFieldColor())
-                .setLineOffset(3).cancelDraggedElementLogic());
+        this.addElement(this.nameField = new OxygenGUITextField(6, 25, this.getWidth() - 12, 9, MerchantProfile.MAX_PROFILE_NAME_LENGTH, "", 3, false, - 1L));
 
-        this.addElement(this.confirmButton = new GUIButton(15, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.confirmButton"), true, GUISettings.instance().getButtonTextScale()).disable());
-        this.addElement(this.cancelButton = new GUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10).setSound(OxygenSoundEffects.BUTTON_CLICK.soundEvent).enableDynamicBackground().setDisplayText(ClientReference.localize("oxygen.gui.cancelButton"), true, GUISettings.instance().getButtonTextScale()));
+        this.addElement(this.confirmButton = new OxygenGUIButton(15, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.confirmButton")));
+        this.addElement(this.cancelButton = new OxygenGUIButton(this.getWidth() - 55, this.getHeight() - 12, 40, 10, ClientReference.localize("oxygen.gui.cancelButton")));
     }
 
     @Override
     protected void onOpen() {
-        this.nameField.setText(this.oldName = MerchantsManagerClient.instance().getMerchantProfilesManager().getProfile(this.section.getCurrentProfileButton().index).getName());
+        this.nameField.setText(this.oldName = MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(this.section.getCurrentProfileButton().index).getName());
     }
 
     @Override
     public boolean keyTyped(char typedChar, int keyCode) {
         boolean flag = super.keyTyped(typedChar, keyCode);
-        if (!this.nameField.getTypedText().equals(this.oldName))
-            this.confirmButton.enable();
-        else
-            this.confirmButton.disable();
+        this.confirmButton.setEnabled(!this.nameField.getTypedText().equals(this.oldName));
         return flag;
     }
 
