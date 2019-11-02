@@ -1,3 +1,6 @@
+0.9.0b [2019-11-02]
++Support for Oxygen Core 0.9.
+
 0.8.1b [2019-08-12]
 +Added option to enable selling only mode for an offer.
 +Fixed issue with disabled selling offers if your inventory overloaded and merchant uses currency.
