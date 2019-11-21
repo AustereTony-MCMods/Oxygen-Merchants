@@ -1,3 +1,15 @@
+0.9.2b [2019-11-21]
++Fixed issues with merchants profile editing.
+
+0.9.1b [2019-11-16]
++Fixes for GUI.
++Attempt to fix client crash caused by merchant profile editing.
+
+0.9.0b [2019-11-16]
++Fixed client crash caused by merchant profile editing with bound entities.
++Improved sliders size calculation for management menu.
++Added offers amount label for management menu.
+
 0.9.0b [2019-11-02]
 +Support for Oxygen Core 0.9.
 
