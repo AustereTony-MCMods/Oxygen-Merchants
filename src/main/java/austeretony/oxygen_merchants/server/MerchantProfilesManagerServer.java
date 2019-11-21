@@ -27,7 +27,7 @@ public class MerchantProfilesManagerServer {
         if (CommonReference.isPlayerOpped(playerMP) 
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()) {
             MerchantProfile profile = new MerchantProfile();
-            profile.setId(System.currentTimeMillis());
+            profile.setId(this.manager.getMerchantProfilesContainer().createId(System.currentTimeMillis()));
             profile.setName(name);
             profile.setUseCurrency(true);
             this.manager.getMerchantProfilesContainer().addProfile(profile);
@@ -44,9 +44,9 @@ public class MerchantProfilesManagerServer {
                 && MerchantsConfig.ALLOW_INGAME_MANAGEMENT.getBooleanValue()) {
             long oldId = profile.getId();
             this.manager.getMerchantProfilesContainer().removeProfile(oldId);
-            profile.setId(oldId + 1L);
+            profile.setId(this.manager.getMerchantProfilesContainer().createId(oldId));
             this.manager.getMerchantProfilesContainer().addProfile(profile);
-            MerchantsManagerServer.instance().getBoundEntitiesManager().merchantProfileEdited(oldId);
+            this.manager.getBoundEntitiesManager().merchantProfileEdited(oldId, profile.getId());
 
             OxygenMain.network().sendTo(new CPProfileAction(EnumAction.UPDATED, profile), playerMP); 
             this.informPlayer(playerMP, EnumMerchantsStatusMessage.PROFILE_UPDATED);
@@ -61,7 +61,7 @@ public class MerchantProfilesManagerServer {
             if (this.manager.getMerchantProfilesContainer().profileExist(profileId)) {
                 MerchantProfile profile = this.manager.getMerchantProfilesContainer().getProfile(profileId);
                 this.manager.getMerchantProfilesContainer().removeProfile(profileId);
-                MerchantsManagerServer.instance().getBoundEntitiesManager().merchantProfileRemoved(profileId);
+                this.manager.getBoundEntitiesManager().merchantProfileRemoved(profileId);
 
                 OxygenMain.network().sendTo(new CPProfileAction(EnumAction.REMOVED, profile), playerMP); 
                 this.informPlayer(playerMP, EnumMerchantsStatusMessage.ENTITY_REMOVED);

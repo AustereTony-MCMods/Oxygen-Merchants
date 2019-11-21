@@ -81,11 +81,11 @@ public class BoundEntityEntry implements PersistentEntry, SynchronizedData {
         this.profession = str;
     }
 
-    public long getProfileId() {
+    public long getMerchantProfileId() {
         return this.profileId;
     }
 
-    public void setProfileId(long value) {
+    public void setMerchantProfileId(long value) {
         this.profileId = value;
     }
 

@@ -71,7 +71,7 @@ public class BoundEntitiesContainerClient extends AbstractPersistentData {
 
     @Override
     public String getDisplayName() {
-        return "bound_entities";
+        return "merchants:bound_entities";
     }
 
     @Override

@@ -64,14 +64,20 @@ public class BoundEntitiesContainerServer extends AbstractPersistentData {
         if (this.entryExist(bondId))
             this.access.remove(this.entities.remove(bondId).getEntityUUID());
     }
-    
+
     public void removeAccess(UUID entityUUID) {
         this.access.remove(entityUUID);
     }
 
+    public long createId(long seed) {
+        while (this.entities.containsKey(seed))
+            seed++;
+        return seed;
+    }
+
     @Override
     public String getDisplayName() {
-        return "bound_entities";
+        return "merchants:bound_entities";
     }
 
     @Override

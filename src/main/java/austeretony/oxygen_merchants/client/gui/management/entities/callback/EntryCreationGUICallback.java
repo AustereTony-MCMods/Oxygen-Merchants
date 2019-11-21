@@ -56,7 +56,7 @@ public class EntryCreationGUICallback extends AbstractGUICallback {
         this.addElement(this.professionField = new OxygenGUITextField(6, 45, this.getWidth() - 12, 9, BoundEntityEntry.MAX_PROFESSION_LENGTH, "", 3, false, - 1L));
 
         this.addElement(new OxygenGUIText(6, 58, ClientReference.localize("oxygen_merchants.gui.management.profile"), GUISettings.get().getSubTextScale(), GUISettings.get().getEnabledTextColor()));
-        this.addElement(this.profilesPanel = new OxygenGUIButtonPanel(this.screen, 6, 66, this.getWidth() - 15, 10, 1, MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfilesAmount(), 5, 100), 10, GUISettings.get().getPanelTextScale(), false));        
+        this.addElement(this.profilesPanel = new OxygenGUIButtonPanel(this.screen, 6, 66, this.getWidth() - 15, 10, 1, MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfilesAmount(), 5, 100), 5, GUISettings.get().getPanelTextScale(), false));        
 
         this.profilesPanel.<IndexedGUIButton<Long>>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
             if (this.currentProfile != clicked) {

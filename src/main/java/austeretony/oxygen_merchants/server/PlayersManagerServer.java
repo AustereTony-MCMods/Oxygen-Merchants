@@ -67,9 +67,9 @@ public class PlayersManagerServer {
             if (this.manager.getBoundEntitiesContainer().entryExist(CommonReference.getPersistentUUID(entity))
                     && CommonReference.isEntitiesNear(playerMP, entity, 5.0D)) {
                 BoundEntityEntry entry = this.manager.getBoundEntitiesContainer().getBoundEntityEntry(CommonReference.getPersistentUUID(entity));
-                if (entry.getProfileId() != profileId) {
-                    if (entry.getProfileId() != 0L)
-                        OxygenMain.network().sendTo(new CPSyncDataOpenMenu(entry, this.manager.getMerchantProfilesContainer().getProfile(entry.getProfileId())), playerMP); 
+                if (entry.getMerchantProfileId() != profileId) {
+                    if (entry.getMerchantProfileId() != 0L)
+                        OxygenMain.network().sendTo(new CPSyncDataOpenMenu(entry, this.manager.getMerchantProfilesContainer().getProfile(entry.getMerchantProfileId())), playerMP); 
                 } else
                     OxygenMain.network().sendTo(new CPOpenMerchantMenu(profileId), playerMP); 
             }

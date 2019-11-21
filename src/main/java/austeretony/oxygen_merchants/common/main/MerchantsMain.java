@@ -21,9 +21,7 @@ import austeretony.oxygen_merchants.client.command.MerchantsArgumentExecutorClie
 import austeretony.oxygen_merchants.client.event.MerchantsEventsClient;
 import austeretony.oxygen_merchants.client.gui.overlay.MerchantInteractionOverlay;
 import austeretony.oxygen_merchants.client.interaction.MerchantInteraction;
-import austeretony.oxygen_merchants.common.command.MerchantsArgumentExecutorServer;
 import austeretony.oxygen_merchants.common.config.MerchantsConfig;
-import austeretony.oxygen_merchants.common.event.MerchantsEventsServer;
 import austeretony.oxygen_merchants.common.network.client.CPEntityAction;
 import austeretony.oxygen_merchants.common.network.client.CPMerchantAction;
 import austeretony.oxygen_merchants.common.network.client.CPOpenManagementMenu;
@@ -42,6 +40,8 @@ import austeretony.oxygen_merchants.common.network.server.SPVisitEntity;
 import austeretony.oxygen_merchants.server.EntitiesSyncHandlerServer;
 import austeretony.oxygen_merchants.server.MerchantsManagerServer;
 import austeretony.oxygen_merchants.server.ProfilesSyncHandlerServer;
+import austeretony.oxygen_merchants.server.command.MerchantsArgumentExecutorServer;
+import austeretony.oxygen_merchants.server.event.MerchantsEventsServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -52,7 +52,7 @@ import net.minecraftforge.fml.relauncher.Side;
         modid = MerchantsMain.MODID, 
         name = MerchantsMain.NAME, 
         version = MerchantsMain.VERSION,
-        dependencies = "required-after:oxygen_core@[0.9.4,);",
+        dependencies = "required-after:oxygen_core@[0.9.5,);",
         certificateFingerprint = "@FINGERPRINT@",
         updateJSON = MerchantsMain.VERSIONS_FORGE_URL)
 public class MerchantsMain {
@@ -60,7 +60,7 @@ public class MerchantsMain {
     public static final String 
     MODID = "oxygen_merchants",
     NAME = "Oxygen: Merchants",
-    VERSION = "0.9.0",
+    VERSION = "0.9.2",
     VERSION_CUSTOM = VERSION + ":beta:0",
     GAME_VERSION = "1.12.2",
     VERSIONS_FORGE_URL = "https://raw.githubusercontent.com/AustereTony-MCMods/Oxygen-Merchants/info/mod_versions_forge.json";

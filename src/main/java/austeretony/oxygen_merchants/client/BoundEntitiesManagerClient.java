@@ -20,8 +20,8 @@ public class BoundEntitiesManagerClient {
     public void merchantProfileEdited(long oldProfileId) {
         boolean changed = false;
         for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries()) {
-            if (entry.getProfileId() == oldProfileId) {
-                entry.setProfileId(oldProfileId + 1L);
+            if (entry.getMerchantProfileId() == oldProfileId) {
+                entry.setMerchantProfileId(oldProfileId + 1L);
                 changed = true;
             }
         }
@@ -32,8 +32,8 @@ public class BoundEntitiesManagerClient {
     public void merchantProfileRemoved(long profileId) {
         boolean changed = false;
         for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries()) {
-            if (entry.getProfileId() == profileId) {
-                entry.setProfileId(0L);
+            if (entry.getMerchantProfileId() == profileId) {
+                entry.setMerchantProfileId(0L);
                 this.manager.getBoundEntitiesContainer().removeAccess(entry.getEntityUUID());
                 changed = true;
             }

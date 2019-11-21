@@ -46,9 +46,15 @@ public class MerchantProfilesContainerServer extends AbstractPersistentData {
         this.profiles.remove(profileId);
     }
 
+    public long createId(long seed) {
+        while (this.profiles.containsKey(seed))
+            seed++;
+        return seed;
+    }
+
     @Override
     public String getDisplayName() {
-        return "merchant_profiles";
+        return "merchants:merchant_profiles";
     }
 
     @Override

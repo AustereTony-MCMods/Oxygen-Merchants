@@ -2,8 +2,8 @@
 {
   "modid": "oxygen_merchants",
   "name": "Oxygen: Merchants",
-  "description": "Merchants creating system.",
-  "version": "0.9.0",
+  "description": "Custom merchants creation.",
+  "version": "0.9.2",
   "mcversion": "1.12.2",
   "url": "https://www.curseforge.com/minecraft/mc-mods/oxygen-merchants",
   "updateUrl": "",

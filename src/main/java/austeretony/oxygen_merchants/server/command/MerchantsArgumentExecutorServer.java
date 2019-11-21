@@ -1,4 +1,4 @@
-package austeretony.oxygen_merchants.common.command;
+package austeretony.oxygen_merchants.server.command;
 
 import java.util.Set;
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.callback.AbstractGUICallback;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
@@ -58,7 +59,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
     //profile
 
-    private OxygenGUIText profileNameTextLabel;
+    private OxygenGUIText profileNameTextLabel, profileOffersAmountTextLabel;
 
     private OxygenGUIButton profileSaveChangesButton, profileOpenButton;
 
@@ -90,7 +91,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
         this.profilesNameSorterElement.setClickListener((sorting)->this.sortProfiles(sorting == EnumSorting.DOWN ? 0 : 1));
 
-        this.addElement(this.profilesPanel = new OxygenGUIButtonPanel(this.screen, 6, 24, 75, 10, 1, MathUtils.clamp(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfilesAmount(), 10, 100), 10, GUISettings.get().getPanelTextScale(), true));   
+        this.addElement(this.profilesPanel = new OxygenGUIButtonPanel(this.screen, 6, 24, 75, 10, 1, 100, 10, GUISettings.get().getPanelTextScale(), true));   
 
         this.profilesPanel.<IndexedGUIButton<Long>>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
             if (this.currentProfileButton != clicked) {
@@ -107,8 +108,6 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
                 new EditProfileCurrencyContextAction(this),
                 new OfferCreationContextAction(this),
                 new RemoveProfileContextAction(this)));    
-
-        this.addElement(new SectionsGUIDDList(this.getWidth() - 4, 5, this, this.screen.getEntitiesSection()));
 
         this.addElement(this.createButton = new OxygenGUIButton(22, 137, 40, 10, ClientReference.localize("oxygen_merchants.gui.management.create")));     
 
@@ -127,6 +126,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
     private void initProfileElements() {
         this.addElement(this.profileNameTextLabel = new OxygenGUIText(90, 20, "", GUISettings.get().getTextScale(), GUISettings.get().getEnabledTextColor()).disableFull());
         this.addElement(this.profileCurrencyElement = new GUICurrency(90, 20).disableFull());
+        this.addElement(this.profileOffersAmountTextLabel = new OxygenGUIText(0, 20, "", GUISettings.get().getSubTextScale() - 0.05F, GUISettings.get().getEnabledTextColor()).disableFull());
 
         this.addElement(this.profileSaveChangesButton = new OxygenGUIButton(90, 137, 40, 10, ClientReference.localize("oxygen_merchants.gui.management.saveChangesButton")).disableFull());     
         this.addElement(this.profileOpenButton = new OxygenGUIButton(134, 137, 40, 10, ClientReference.localize("oxygen_merchants.gui.management.openProfileButton")).disableFull());           
@@ -142,6 +142,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.profileOffersPanel.initContextMenu(new OxygenGUIContextMenu(GUISettings.get().getContextMenuWidth(), 9, 
                 new EditOfferContextAction(this),
                 new RemoveOfferContextAction(this))); 
+
+        this.addElement(new SectionsGUIDDList(this.getWidth() - 4, 5, this, this.screen.getEntitiesSection()));
     }
 
     private void sortProfiles(int mode) {
@@ -158,6 +160,9 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
 
         this.profilesAmountTextLabel.setDisplayText(String.valueOf(MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfilesAmount()));     
         this.profilesAmountTextLabel.setX(80 - this.textWidth(this.profilesAmountTextLabel.getDisplayText(), GUISettings.get().getSubTextScale() - 0.05F));
+
+        int maxRows = MathUtils.clamp(profiles.size(), 10, MathUtils.greaterOfTwo(profiles.size(), 100));
+        this.profilesPanel.getScroller().updateRowsAmount(maxRows);
 
         this.profilesPanel.getScroller().resetPosition();
         this.profilesPanel.getScroller().getSlider().reset();
@@ -186,6 +191,8 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
             this.profileCurrencyElement.setUseItem(this.changesBuffer.getCurrencyStack().getCachedItemStack());
         this.profileCurrencyElement.enable();
 
+        this.profileOffersAmountTextLabel.enableFull();
+
         this.loadOffers(this.changesBuffer);
         this.profileOffersPanel.enableFull();
         this.profileOffersPanel.getScroller().getSlider().enableFull();
@@ -208,6 +215,12 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         for (MerchantOffer offer : offers)
             this.profileOffersPanel.addButton(new OfferManagementGUIButton(offer, currencyStack));
 
+        this.profileOffersAmountTextLabel.setDisplayText(String.valueOf(profile.getOffersAmount()));     
+        this.profileOffersAmountTextLabel.setX(this.getWidth() - 9 - this.textWidth(this.profileOffersAmountTextLabel.getDisplayText(), GUISettings.get().getSubTextScale() - 0.05F));
+
+        int maxRows = MathUtils.clamp(profile.getOffersAmount(), 6, MathUtils.greaterOfTwo(profile.getOffersAmount(), 100));
+        this.profileOffersPanel.getScroller().updateRowsAmount(maxRows);
+
         this.profileOffersPanel.getScroller().resetPosition();
         this.profileOffersPanel.getScroller().getSlider().reset();
     }
@@ -216,6 +229,7 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
         this.profileNameTextLabel.disableFull();
 
         this.profileCurrencyElement.disable();
+        this.profileOffersAmountTextLabel.disableFull();
 
         this.profileOffersPanel.disableFull();
         this.profileOffersPanel.getScroller().getSlider().disableFull();
@@ -238,6 +252,15 @@ public class ProfilesManagementGUISection extends AbstractGUISection {
     public void profileUpdated(MerchantProfile profile) {
         this.sortProfiles(0);
         this.loadProfileData(profile.getId());
+
+        IndexedGUIButton<Long> profileButton;
+        for (GUIButton button : this.profilesPanel.buttonsBuffer) {
+            profileButton = (IndexedGUIButton<Long>) button;
+            if (profileButton.index == profile.getId()) {
+                profileButton.toggle();
+                this.currentProfileButton = profileButton;
+            }
+        }
 
         this.profilesNameSorterElement.setSorting(EnumSorting.DOWN);
     }

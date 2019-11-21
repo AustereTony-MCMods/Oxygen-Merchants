@@ -33,7 +33,7 @@ public class MerchantsConfig extends AbstractConfigHolder {
 
     @Override
     public String getInternalPath() {
-        return "assets/oxygen_merchants/merchants.json";
+        return "assets/oxygen_merchants/config/merchants.json";
     }
 
     @Override

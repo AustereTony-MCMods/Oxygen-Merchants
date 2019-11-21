@@ -80,7 +80,7 @@ public class EntitiesManagementGUISection extends AbstractGUISection {
             this.sortEntries(sorting == EnumSorting.DOWN ? 2 : 3);
         });
 
-        this.addElement(this.entitiesPanel = new OxygenGUIButtonPanel(this.screen, 6, 24, this.getWidth() - 15, 10, 1, MathUtils.clamp(MerchantsManagerClient.instance().getBoundEntitiesContainer().getEntriesAmount(), 10, 100), 10, GUISettings.get().getPanelTextScale(), true));        
+        this.addElement(this.entitiesPanel = new OxygenGUIButtonPanel(this.screen, 6, 24, this.getWidth() - 15, 10, 1, 100, 10, GUISettings.get().getPanelTextScale(), true));        
 
         this.entitiesPanel.<IndexedGUIButton<Long>>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
             if (this.currentEntryButton != clicked)                
@@ -104,7 +104,7 @@ public class EntitiesManagementGUISection extends AbstractGUISection {
     }
 
     public static String getProfileName(BoundEntityEntry entry) {
-        return MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(entry.getProfileId()).getName();
+        return MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(entry.getMerchantProfileId()).getName();
     }
 
     private void sortEntries(int mode) {
@@ -122,16 +122,19 @@ public class EntitiesManagementGUISection extends AbstractGUISection {
         this.entitiesPanel.reset();
         String profileName;
         for (BoundEntityEntry entry : profiles) {
-            if (entry.getProfileId() != 0L)
-                profileName = MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(entry.getProfileId()).getName();
+            if (entry.getMerchantProfileId() != 0L)
+                profileName = MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(entry.getMerchantProfileId()).getName();
             else
                 profileName = ClientReference.localize("oxygen_merchants.gui.management.emptyProfile");
             this.entitiesPanel.addButton(new EntityEntryGUIButton(entry.getId(), entry.getProfession().isEmpty() ? entry.getName() : entry.getName() + ", " + entry.getProfession(),
-                    profileName, entry.isDead(), entry.getProfileId() == 0L));
+                    profileName, entry.isDead(), entry.getMerchantProfileId() == 0L));
         }
 
         this.entitiesAmountTextLabel.setDisplayText(String.valueOf(MerchantsManagerClient.instance().getBoundEntitiesContainer().getEntriesAmount()));     
         this.entitiesAmountTextLabel.setX(this.getWidth() - 9 - this.textWidth(this.entitiesAmountTextLabel.getDisplayText(), GUISettings.get().getSubTextScale() - 0.05F));
+
+        int maxRows = MathUtils.clamp(profiles.size(), 10, MathUtils.greaterOfTwo(profiles.size(), 100));
+        this.entitiesPanel.getScroller().updateRowsAmount(maxRows);
 
         this.entitiesPanel.getScroller().resetPosition();
         this.entitiesPanel.getScroller().getSlider().reset();

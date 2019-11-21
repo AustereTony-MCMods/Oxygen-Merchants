@@ -1,4 +1,4 @@
-package austeretony.oxygen_merchants.common.event;
+package austeretony.oxygen_merchants.server.event;
 
 import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.server.api.event.OxygenPlayerLoadedEvent;

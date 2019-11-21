@@ -35,7 +35,7 @@ oxygen_merchants.gui.management.noSelling=No Selling
 oxygen_merchants.gui.management.edit=Edit
 oxygen_merchants.gui.management.openProfileButton=Open
 oxygen_merchants.gui.management.callback.entityCreation=Merchant Creation
-oxygen_merchants.gui.management.callback.entityEditk=Edit Merchant
+oxygen_merchants.gui.management.callback.entityEdit=Edit Merchant
 oxygen_merchants.gui.management.callback.visitEntity=Visit Merchant
 oxygen_merchants.gui.management.callback.visitEntity.request=Player will be teleported to entity.
 oxygen_merchants.gui.management.callback.removeEntity=Remove Merchant
@@ -50,10 +50,6 @@ oxygen_merchants.gui.management.sellFor=Sell for %s
 
 oxygen_merchants.gui.merchant.buy=Buy
 oxygen_merchants.gui.merchant.selling=Selling
-
-oxygen_merchants.tooltip.profiles=Merchant Profiles
-oxygen_merchants.tooltip.entities=Bound Entities
-oxygen_merchants.tooltip.edit=Edit
 
 oxygen_merchants.message.ingameManagementDisabled=Ingame management disabled.
 oxygen_merchants.message.merchantsDataReloaded=Merchants data reloaded.

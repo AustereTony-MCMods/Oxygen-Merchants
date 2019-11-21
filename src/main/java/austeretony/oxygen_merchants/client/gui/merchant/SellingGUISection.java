@@ -8,6 +8,7 @@ import austeretony.alternateui.screen.button.GUIButton;
 import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.util.EnumGUIAlignment;
+import austeretony.oxygen_core.client.gui.elements.CurrencyItemValueGUIElement;
 import austeretony.oxygen_core.client.gui.elements.InventoryLoadGUIElement;
 import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
 import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
@@ -27,7 +28,7 @@ public class SellingGUISection extends AbstractGUISection {
 
     private OxygenGUIButtonPanel offersPanel;
 
-    private GUICurrencyBalance balanceElement;
+    private CurrencyItemValueGUIElement balanceElement;
 
     private InventoryLoadGUIElement inventoryLoadElement;
 
@@ -45,12 +46,14 @@ public class SellingGUISection extends AbstractGUISection {
         this.addElement(this.searchField = new OxygenGUITextField(6, 17, 65, 8, 24, "...", 3, false, - 1L));
         this.offersPanel.initSearchField(this.searchField);
 
-        this.offersPanel.<OfferGUIButton>setClickListener(
-                (previous, clicked, mouseX, mouseY, mouseButton)->MerchantsManagerClient.instance().getMenuManager().performSellingSynced(this.screen.merchantProfile.getId(), clicked.index));
+        this.offersPanel.<OfferGUIButton>setClickListener((previous, clicked, mouseX, mouseY, mouseButton)->{
+            if (mouseButton == 0 && clicked.isAvailable()) 
+                MerchantsManagerClient.instance().getMenuManager().performSellingSynced(this.screen.merchantProfile.getId(), clicked.index);
+        });
 
         this.addElement(new SectionsGUIDDList(this.getWidth() - 4, 5, this, this.screen.getBuySection()));
 
-        this.addElement(this.balanceElement = new GUICurrencyBalance(this.getWidth() - 10, this.getHeight() - 10));   
+        this.addElement(this.balanceElement = new CurrencyItemValueGUIElement(this.getWidth() - 10, this.getHeight() - 10));   
         if (!this.screen.merchantProfile.isUsingCurrency())
             this.balanceElement.setItemStack(this.screen.merchantProfile.getCurrencyStack().getItemStack());
         this.balanceElement.setValue(this.screen.getBuySection().getBalanceElement().getValue());

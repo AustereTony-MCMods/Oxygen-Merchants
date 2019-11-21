@@ -9,6 +9,7 @@ import austeretony.alternateui.screen.core.AbstractGUISection;
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.util.EnumGUIAlignment;
 import austeretony.oxygen_core.client.api.WatcherHelperClient;
+import austeretony.oxygen_core.client.gui.elements.CurrencyItemValueGUIElement;
 import austeretony.oxygen_core.client.gui.elements.InventoryLoadGUIElement;
 import austeretony.oxygen_core.client.gui.elements.OxygenGUIButtonPanel;
 import austeretony.oxygen_core.client.gui.elements.OxygenGUIText;
@@ -31,7 +32,7 @@ public class BuyGUISection extends AbstractGUISection {
 
     private OxygenGUIButtonPanel offersPanel;
 
-    private GUICurrencyBalance balanceElement;
+    private CurrencyItemValueGUIElement balanceElement;
 
     private InventoryLoadGUIElement inventoryLoadElement;
 
@@ -56,7 +57,7 @@ public class BuyGUISection extends AbstractGUISection {
 
         this.addElement(new SectionsGUIDDList(this.getWidth() - 4, 5, this, this.screen.getSellingSection()));
 
-        this.addElement(this.balanceElement = new GUICurrencyBalance(this.getWidth() - 10, this.getHeight() - 10));  
+        this.addElement(this.balanceElement = new CurrencyItemValueGUIElement(this.getWidth() - 10, this.getHeight() - 10));  
         if (!this.screen.merchantProfile.isUsingCurrency())
             this.balanceElement.setItemStack(this.screen.merchantProfile.getCurrencyStack().getCachedItemStack());
         this.updateBalance();
@@ -143,7 +144,7 @@ public class BuyGUISection extends AbstractGUISection {
         this.updateOffers();
     }
 
-    public GUICurrencyBalance getBalanceElement() {
+    public CurrencyItemValueGUIElement getBalanceElement() {
         return this.balanceElement;
     }
 

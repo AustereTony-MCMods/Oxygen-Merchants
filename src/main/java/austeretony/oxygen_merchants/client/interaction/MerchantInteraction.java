@@ -23,6 +23,6 @@ public class MerchantInteraction implements Interaction {
     public void execute() {
         BoundEntityEntry entry = MerchantsManagerClient.instance().getBoundEntitiesContainer().getBoundEntityEntry(ClientReference.getPersistentUUID(this.pointed));   
         MerchantsManagerClient.instance().getMenuManager().openMerchantMenuSynced(ClientReference.getEntityId(this.pointed), 
-                MerchantsManagerClient.instance().getMerchantProfilesContainer().profileExist(entry.getProfileId()) ? entry.getProfileId() : 0L);
+                MerchantsManagerClient.instance().getMerchantProfilesContainer().profileExist(entry.getMerchantProfileId()) ? entry.getMerchantProfileId() : 0L);
     }
 }

@@ -48,7 +48,7 @@ public class MerchantProfilesContainerClient extends AbstractPersistentData {
 
     @Override
     public String getDisplayName() {
-        return "merchant_profiles";
+        return "merchants:merchant_profiles";
     }
 
     @Override

@@ -1,5 +1,7 @@
 package austeretony.oxygen_merchants.server;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import austeretony.oxygen_core.common.api.CommonReference;
@@ -23,28 +25,43 @@ public class BoundEntitiesManagerServer {
         this.manager = manager;
     }
 
-    public void merchantProfileEdited(long oldProfileId) {
-        boolean changed = false;
-        for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries()) {
-            if (entry.getProfileId() == oldProfileId) {
-                entry.setProfileId(oldProfileId + 1L);
-                changed = true;
-            }
+    public void merchantProfileEdited(long oldProfileId, long newProfileId) {
+        Set<BoundEntityEntry> cache = new HashSet<>();
+
+        for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries())
+            if (entry.getMerchantProfileId() == oldProfileId)
+                cache.add(entry);
+
+        BoundEntityEntry copy;//required?
+        for (BoundEntityEntry entry : cache) {
+            this.manager.getBoundEntitiesContainer().removeEntry(entry.getId());
+            copy = entry.copy();
+            copy.setMerchantProfileId(newProfileId);
+            copy.setId(this.manager.getBoundEntitiesContainer().createId(entry.getId()));
+            this.manager.getBoundEntitiesContainer().addEntry(copy);
         }
-        if (changed)
+
+        if (!cache.isEmpty())
             this.manager.getBoundEntitiesContainer().setChanged(true);
     }
 
     public void merchantProfileRemoved(long profileId) {
-        boolean changed = false;
-        for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries()) {
-            if (entry.getProfileId() == profileId) {
-                entry.setProfileId(0L);
-                this.manager.getBoundEntitiesContainer().removeAccess(entry.getEntityUUID());
-                changed = true;
-            }
+        Set<BoundEntityEntry> cache = new HashSet<>();
+
+        for (BoundEntityEntry entry : this.manager.getBoundEntitiesContainer().getEntries())
+            if (entry.getMerchantProfileId() == profileId)
+                cache.add(entry);
+
+        BoundEntityEntry copy;
+        for (BoundEntityEntry entry : cache) {
+            this.manager.getBoundEntitiesContainer().removeEntry(entry.getId());
+            copy = entry.copy();
+            copy.setMerchantProfileId(0L);
+            copy.setId(this.manager.getBoundEntitiesContainer().createId(entry.getId()));
+            this.manager.getBoundEntitiesContainer().addEntry(copy);
         }
-        if (changed)
+
+        if (!cache.isEmpty())
             this.manager.getBoundEntitiesContainer().setChanged(true);
     }
 
@@ -63,9 +80,9 @@ public class BoundEntitiesManagerServer {
                 entry.setId(System.currentTimeMillis());
                 entry.setName(name);
                 entry.setProfession(profession);
-                entry.setProfileId(profileId);
+                entry.setMerchantProfileId(profileId);
                 this.manager.getBoundEntitiesContainer().addEntry(entry);
-                
+
                 ((EntityLiving) pointed).enablePersistence();
 
                 OxygenMain.network().sendTo(new CPEntityAction(EnumAction.CREATED, entry), playerMP); 
@@ -87,7 +104,7 @@ public class BoundEntitiesManagerServer {
             entry.setId(oldBondId + 1L);
             entry.setName(name);
             entry.setProfession(profession);
-            entry.setProfileId(profileId);
+            entry.setMerchantProfileId(profileId);
             this.manager.getBoundEntitiesContainer().addEntry(entry);
 
             OxygenMain.network().sendTo(new CPEntityAction(EnumAction.UPDATED, entry), playerMP); 

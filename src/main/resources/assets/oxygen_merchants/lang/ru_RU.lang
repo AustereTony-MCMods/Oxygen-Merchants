@@ -51,10 +51,6 @@ oxygen_merchants.gui.management.sellFor=Скупка за %s
 oxygen_merchants.gui.merchant.buy=Покупка
 oxygen_merchants.gui.merchant.selling=Продажа
 
-oxygen_merchants.tooltip.profiles=Профили Торговцев
-oxygen_merchants.tooltip.entities=Привязанные Сущности
-oxygen_merchants.tooltip.edit=Редактировать
-
 oxygen_merchants.message.ingameManagementDisabled=Редактирование торговцев отключено.
 oxygen_merchants.message.merchantsDataReloaded=Данные торговцев перезагружены.
 
