@@ -1,3 +1,27 @@
+0.10.0b [2020-01-17]
++ Improved menu design.
++ Removed the ability to bind the merchant profile to the entity, now you can open the menu for the player using the command.
++ Added support for choosing the virtual currency used for the merchant profile.
++ Added timeout for operations in the menu to prevent the execution of unauthorized requests (synchronization requests, buy/sell). The timeout is individual for each player and is reset when the menu is opened using the command.
++ Added 1 second cooldown for sending packets - operations in the management menu (editing profiles).
++ Added a 500 millisecond cooldown for sending packets - operations in the merchant menu (buy/sell).
++ Updated configuration options:
+  Server
+  - "merchant_menu_operations_timeout_millis" - [int] - timeout of operations in the merchant menu in milliseconds
+  - "allow_ingame_profiles_management" [boolean] - permission to edit the profiles of merchants during the game
+ 
++ Added commands:
+  Server - Operators [/oxygenop]
+  - Open the management menu: /oxygenop merchants -management
+  - Open merchant menu: /oxygenop merchants -merchant-menu <target> <profile id>
+ 
+  Client [/oxygenc]
+  - Reset client data: /oxygenc merchants -reset-data
+ 
++ Added client settings:
+  Interface
+  - menu alignment
+
 0.9.2b [2019-11-21]
 +Fixed issues with merchants profile editing.
 
