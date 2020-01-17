@@ -9,14 +9,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 
-public class SPRemoveProfile extends Packet {
+public class SPRequestMerchantProfileSync extends Packet {
 
     private long profileId;
 
-    public SPRemoveProfile() {}
+    public SPRequestMerchantProfileSync() {}
 
-    public SPRemoveProfile(long id) {
-        this.profileId = id;
+    public SPRequestMerchantProfileSync(long profileId) {
+        this.profileId = profileId;
     }
 
     @Override
@@ -24,12 +24,12 @@ public class SPRemoveProfile extends Packet {
         buffer.writeLong(this.profileId);
     }
 
-    @Override   
+    @Override
     public void read(ByteBuf buffer, INetHandler netHandler) {
         final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
-        if (OxygenHelperServer.isNetworkRequestAvailable(CommonReference.getPersistentUUID(playerMP), MerchantsMain.PROFILE_MANAGEMENT_REQUEST_ID)) {
-            final long id = buffer.readLong();
-            OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getMerchantProfilesManager().removeProfile(playerMP, id));
+        if (OxygenHelperServer.isNetworkRequestAvailable(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_OPERATION_REQUEST_ID)) {
+            final long profileId = buffer.readLong();
+            MerchantsManagerServer.instance().getMerchantProfilesManager().syncProfile(playerMP, profileId);
         }
     }
 }

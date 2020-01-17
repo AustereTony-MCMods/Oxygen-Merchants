@@ -21,8 +21,6 @@ public class MerchantOffer {
     buyCost,//if buying from merchant 
     sellingCost;//if selling to merchant
 
-    private boolean sellingEnabled, sellingOnly;
-
     public MerchantOffer(long offerId, ItemStackWrapper offeredStack) {
         this.offerId = offerId;
         this.offeredStack = offeredStack;
@@ -44,20 +42,8 @@ public class MerchantOffer {
         return this.amount;
     }
 
-    public boolean isSellingEnabled() {
-        return this.sellingEnabled;
-    }
-
-    public void setSellingEnabled(boolean flag) {
-        this.sellingEnabled = flag;
-    }
-
-    public boolean isSellingOnly() {
-        return this.sellingOnly;
-    }
-
-    public void setSellingOnly(boolean flag) {
-        this.sellingOnly = flag;
+    public boolean isBuyEnabled() {
+        return this.buyCost != 0L;
     }
 
     public long getBuyCost() {
@@ -65,7 +51,11 @@ public class MerchantOffer {
     }
 
     public void setBuyCost(long value) {
-        this.buyCost = MathUtils.clamp(value, 0, Long.MAX_VALUE);
+        this.buyCost = MathUtils.clamp(value, 0L, Long.MAX_VALUE);
+    }
+
+    public boolean isSellingEnabled() {
+        return this.sellingCost != 0L;
     }
 
     public long getSellingCost() {
@@ -73,15 +63,13 @@ public class MerchantOffer {
     }
 
     public void setSellingCost(long value) {
-        this.sellingCost = MathUtils.clamp(value, 0, Long.MAX_VALUE);
+        this.sellingCost = MathUtils.clamp(value, 0L, Long.MAX_VALUE);
     }
 
     public void write(BufferedOutputStream bos) throws IOException {
         StreamUtils.write(this.offerId, bos);
         this.offeredStack.write(bos);
         StreamUtils.write((short) this.amount, bos);
-        StreamUtils.write(this.sellingEnabled, bos);
-        StreamUtils.write(this.sellingOnly, bos);
         StreamUtils.write(this.buyCost, bos);
         StreamUtils.write(this.sellingCost, bos);
     }
@@ -89,8 +77,6 @@ public class MerchantOffer {
     public static MerchantOffer read(BufferedInputStream bis) throws IOException {
         MerchantOffer offer = new MerchantOffer(StreamUtils.readLong(bis), ItemStackWrapper.read(bis));
         offer.amount = StreamUtils.readShort(bis);
-        offer.sellingEnabled = StreamUtils.readBoolean(bis);
-        offer.sellingOnly = StreamUtils.readBoolean(bis);
         offer.buyCost = StreamUtils.readLong(bis);
         offer.sellingCost = StreamUtils.readLong(bis);
         return offer;
@@ -100,8 +86,6 @@ public class MerchantOffer {
         buffer.writeLong(this.offerId);
         this.offeredStack.write(buffer);
         buffer.writeShort((short) this.amount);
-        buffer.writeBoolean(this.sellingEnabled);
-        buffer.writeBoolean(this.sellingOnly);
         buffer.writeLong(this.buyCost);
         buffer.writeLong(this.sellingCost);
     }
@@ -109,8 +93,6 @@ public class MerchantOffer {
     public static MerchantOffer read(ByteBuf buffer) {
         MerchantOffer offer = new MerchantOffer(buffer.readLong(), ItemStackWrapper.read(buffer));
         offer.amount = buffer.readShort();
-        offer.sellingEnabled = buffer.readBoolean();      
-        offer.sellingOnly = buffer.readBoolean();      
         offer.buyCost = buffer.readLong();
         offer.sellingCost = buffer.readLong();
         return offer;
@@ -119,8 +101,6 @@ public class MerchantOffer {
     public MerchantOffer copy() {
         MerchantOffer offer = new MerchantOffer(this.offerId, this.offeredStack.copy());
         offer.amount = this.amount;
-        offer.sellingEnabled = this.sellingEnabled;    
-        offer.sellingOnly = this.sellingOnly;      
         offer.buyCost = this.buyCost;
         offer.sellingCost = this.sellingCost;
         return offer;

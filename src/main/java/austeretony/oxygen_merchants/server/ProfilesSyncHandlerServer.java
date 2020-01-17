@@ -3,6 +3,7 @@ package austeretony.oxygen_merchants.server;
 import java.util.Set;
 import java.util.UUID;
 
+import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.server.sync.DataSyncHandlerServer;
 import austeretony.oxygen_merchants.common.MerchantProfile;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
@@ -16,7 +17,7 @@ public class ProfilesSyncHandlerServer implements DataSyncHandlerServer<Merchant
 
     @Override
     public boolean allowSync(UUID playerUUID) {
-        return true;
+        return CommonReference.isPlayerOpped(CommonReference.playerByUUID(playerUUID));
     }
 
     @Override

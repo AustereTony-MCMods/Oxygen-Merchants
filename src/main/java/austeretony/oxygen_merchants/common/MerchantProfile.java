@@ -9,20 +9,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
 import austeretony.oxygen_core.common.persistent.PersistentEntry;
-import austeretony.oxygen_core.common.sync.SynchronizedData;
+import austeretony.oxygen_core.common.sync.SynchronousEntry;
 import austeretony.oxygen_core.common.util.ByteBufUtils;
 import austeretony.oxygen_core.common.util.StreamUtils;
 import io.netty.buffer.ByteBuf;
 
-public class MerchantProfile implements PersistentEntry, SynchronizedData {
+public class MerchantProfile implements PersistentEntry, SynchronousEntry {
 
-    public static final int MAX_PROFILE_NAME_LENGTH = 20;
+    public static final int MAX_PROFILE_NAME_LENGTH = 24;
 
-    private long profileId;
+    private long persistentId, profileId;
 
     private String name;
 
-    private boolean useCurrency;
+    private int currencyIndex;
 
     private ItemStackWrapper currencyStack;
 
@@ -38,6 +38,14 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
         this.profileId = profileId;
     }
 
+    public long getPersistentId() {       
+        return this.persistentId;
+    }
+
+    public void setPersistentId(long persistentId) {
+        this.persistentId = persistentId;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -46,12 +54,17 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
         this.name = name;
     }
 
-    public boolean isUsingCurrency() {
-        return this.useCurrency;        
+    public boolean isUsingVirtalCurrency() {
+        return this.currencyIndex != - 1;        
     }
 
-    public void setUseCurrency(boolean flag) {
-        this.useCurrency = flag;
+    public int getCurrencyIndex() {
+        return this.currencyIndex;        
+    }
+
+    public void setCurrencyIndex(int currencyIndex) {
+        this.currencyIndex = currencyIndex;
+        this.currencyStack = null;
     }
 
     public ItemStackWrapper getCurrencyStack() {
@@ -60,18 +73,31 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     public void setCurrencyStack(ItemStackWrapper currencyStack) {
         this.currencyStack = currencyStack;
+        this.currencyIndex = - 1;
     }
 
     public Collection<MerchantOffer> getOffers() {
         return this.offers.values();
     }
 
-    public boolean offerExist(long offerId) {
-        return this.offers.containsKey(offerId);
-    }
-
     public int getOffersAmount() {
         return this.offers.size();
+    }
+
+    public int getBuyOffersAmount() {
+        int amount = 0;
+        for (MerchantOffer offer : this.getOffers())
+            if (offer.isBuyEnabled())
+                amount++;
+        return amount;
+    }
+
+    public int getSellingOffersAmount() {
+        int amount = 0;
+        for (MerchantOffer offer : this.getOffers())
+            if (offer.isSellingEnabled())
+                amount++;
+        return amount;
     }
 
     public MerchantOffer getOffer(long offerId) {
@@ -88,10 +114,11 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     @Override
     public void write(BufferedOutputStream bos) throws IOException {
+        StreamUtils.write(this.persistentId, bos);
         StreamUtils.write(this.profileId, bos);
         StreamUtils.write(this.name, bos);
-        StreamUtils.write(this.useCurrency, bos);
-        if (!this.useCurrency)
+        StreamUtils.write((byte) this.currencyIndex, bos);
+        if (this.currencyIndex == - 1)
             this.currencyStack.write(bos);
         StreamUtils.write((short) this.offers.size(), bos);
         for (MerchantOffer offer : this.offers.values())
@@ -100,10 +127,11 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     @Override
     public void read(BufferedInputStream bis) throws IOException {
+        this.persistentId = StreamUtils.readLong(bis);
         this.profileId = StreamUtils.readLong(bis);
         this.name = StreamUtils.readString(bis);
-        this.useCurrency = StreamUtils.readBoolean(bis);
-        if (!this.useCurrency)
+        this.currencyIndex = StreamUtils.readByte(bis);
+        if (this.currencyIndex == - 1)
             this.currencyStack = ItemStackWrapper.read(bis);
         int amount = StreamUtils.readShort(bis);
         MerchantOffer offer;
@@ -115,10 +143,11 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     @Override
     public void write(ByteBuf buffer) {
+        buffer.writeLong(this.persistentId);
         buffer.writeLong(this.profileId);
         ByteBufUtils.writeString(this.name, buffer);
-        buffer.writeBoolean(this.useCurrency);
-        if (!this.useCurrency)
+        buffer.writeByte(this.currencyIndex);
+        if (this.currencyIndex == - 1)
             this.currencyStack.write(buffer);
         buffer.writeShort(this.offers.size());
         for (MerchantOffer offer : this.offers.values())
@@ -127,10 +156,11 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     @Override
     public void read(ByteBuf buffer) {
+        this.persistentId = buffer.readLong();
         this.profileId = buffer.readLong();
         this.name = ByteBufUtils.readString(buffer);
-        this.useCurrency = buffer.readBoolean();
-        if (!this.useCurrency)
+        this.currencyIndex = buffer.readByte();
+        if (this.currencyIndex == - 1)
             this.currencyStack = ItemStackWrapper.read(buffer);
         int amount = buffer.readShort();
         MerchantOffer offer;
@@ -142,10 +172,11 @@ public class MerchantProfile implements PersistentEntry, SynchronizedData {
 
     public MerchantProfile copy() {
         MerchantProfile profile = new MerchantProfile();
+        profile.persistentId = this.persistentId;
         profile.profileId = this.profileId;
         profile.name = this.name;
-        profile.useCurrency = this.useCurrency;
-        if (!profile.useCurrency)
+        profile.currencyIndex = this.currencyIndex;
+        if (this.currencyIndex == - 1)
             profile.currencyStack = this.currencyStack.copy();
         for (MerchantOffer offer :  this.getOffers())
             profile.offers.put(offer.offerId, offer.copy());

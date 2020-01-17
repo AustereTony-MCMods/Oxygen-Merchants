@@ -2,24 +2,21 @@ package austeretony.oxygen_merchants.client.gui.management.profiles.context;
 
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.oxygen_core.client.api.ClientReference;
-import austeretony.oxygen_core.client.gui.elements.OxygenGUIContextMenuElement.ContextMenuAction;
-import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
-import austeretony.oxygen_merchants.client.gui.management.profiles.OfferManagementGUIButton;
+import austeretony.oxygen_core.client.gui.elements.OxygenContextMenu.OxygenContextMenuAction;
+import austeretony.oxygen_merchants.client.gui.management.MerchantProfilesSection;
+import austeretony.oxygen_merchants.client.gui.management.profiles.MerchantOfferPanelEntry;
 
-public class RemoveOfferContextAction implements ContextMenuAction {
+public class RemoveOfferContextAction implements OxygenContextMenuAction {
 
-    private final ProfilesManagementGUISection section;
+    private final MerchantProfilesSection section;
 
-    private final String name;
-
-    public RemoveOfferContextAction(ProfilesManagementGUISection section) {
+    public RemoveOfferContextAction(MerchantProfilesSection section) {
         this.section = section;
-        this.name = ClientReference.localize("oxygen_merchants.gui.management.remove");
     }
 
     @Override
-    public String getName(GUIBaseElement currElement) {
-        return this.name;
+    public String getLocalizedName(GUIBaseElement currElement) {
+        return ClientReference.localize("oxygen_core.gui.remove");
     }
 
     @Override
@@ -29,6 +26,6 @@ public class RemoveOfferContextAction implements ContextMenuAction {
 
     @Override
     public void execute(GUIBaseElement currElement) {
-        this.section.removeOfferFromCurrentProfile(((OfferManagementGUIButton) currElement).index); 
+        this.section.removeOfferFromCurrentProfile(((MerchantOfferPanelEntry) currElement).index); 
     }
 }

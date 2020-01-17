@@ -6,10 +6,7 @@ public enum EnumMerchantsStatusMessage {
 
     PROFILE_CREATED("profileCreated"),
     PROFILE_UPDATED("profileUpdated"),
-    PROFILE_REMOVED("profileRemoved"),
-    ENTITY_CREATED("entityCreated"),
-    ENTITY_UPDATED("entityUpdated"),
-    ENTITY_REMOVED("entityRemoved");
+    PROFILE_REMOVED("profileRemoved");
 
     private final String status;
 

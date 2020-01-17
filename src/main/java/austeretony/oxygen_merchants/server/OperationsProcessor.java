@@ -5,11 +5,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import austeretony.oxygen_core.common.api.CommonReference;
-import austeretony.oxygen_core.common.currency.CurrencyHelperServer;
 import austeretony.oxygen_core.common.inventory.InventoryHelper;
 import austeretony.oxygen_core.common.main.OxygenMain;
-import austeretony.oxygen_core.server.OxygenPlayerData;
-import austeretony.oxygen_core.server.api.WatcherHelperServer;
+import austeretony.oxygen_core.server.api.CurrencyHelperServer;
 import austeretony.oxygen_merchants.common.EnumMerchantOperation;
 import austeretony.oxygen_merchants.common.MerchantOffer;
 import austeretony.oxygen_merchants.common.MerchantProfile;
@@ -31,98 +29,84 @@ public class OperationsProcessor {
     }
 
     public void process() {
-        QueuedMerchantOperation operation;
-        MerchantProfile profile = null;
+        QueuedMerchantOperation queued;
+        MerchantProfile profile;
         MerchantOffer offer;
         EntityPlayerMP playerMP;
-        boolean save = false;
+
         while (!this.operations.isEmpty()) {
-            operation = this.operations.poll();
-            if (profile == null) {
-                if (MerchantsManagerServer.instance().getMerchantProfilesContainer().profileExist(operation.profileId))
-                    profile = MerchantsManagerServer.instance().getMerchantProfilesContainer().getProfile(operation.profileId);
-                else
-                    break;
-            } 
-            if (profile != null) {
-                if (profile.offerExist(operation.offerId)) {
-                    playerMP = CommonReference.playerByUUID(this.playerUUID);
-                    offer = profile.getOffer(operation.offerId);
-                    switch (operation.operation) {
-                    case BUY:
-                        if (!offer.isSellingOnly())
-                            save = this.buy(playerMP, profile, offer);
-                        break;
-                    case SELLING:
-                        if (offer.isSellingEnabled())
-                            save = this.sell(playerMP, profile, offer);
-                        break;
+            queued = this.operations.poll();
+            if (queued != null) {
+                profile = MerchantsManagerServer.instance().getMerchantProfilesContainer().getProfile(queued.profileId); 
+                if (profile != null) {
+                    offer = profile.getOffer(queued.offerId);
+                    if (offer != null) {
+                        playerMP = CommonReference.playerByUUID(this.playerUUID);
+                        if (playerMP != null) {
+                            switch (queued.operation) {
+                            case BUY:
+                                if (offer.isBuyEnabled())
+                                    this.buy(playerMP, profile, offer);
+                                break;
+                            case SELLING:
+                                if (offer.isSellingEnabled())
+                                    this.sell(playerMP, profile, offer);
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }   
-        if (save) {
-            CurrencyHelperServer.save(this.playerUUID);
-            WatcherHelperServer.setValue(this.playerUUID, OxygenPlayerData.CURRENCY_COINS_WATCHER_ID, CurrencyHelperServer.getCurrency(this.playerUUID));
-        }
     }
 
-    private boolean buy(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
-        boolean save = false;
+    private void buy(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
         if (!InventoryHelper.haveEnoughSpace(playerMP, offer.getAmount(), offer.getOfferedStack().getCachedItemStack().getMaxStackSize()))
-            return false;
+            return;
 
         long balance;
-        if (profile.isUsingCurrency()) {
-            if (!CurrencyHelperServer.enoughCurrency(this.playerUUID, offer.getBuyCost()))
-                return false;
+        if (profile.isUsingVirtalCurrency()) {
+            if (!CurrencyHelperServer.enoughCurrency(this.playerUUID, offer.getBuyCost(), profile.getCurrencyIndex()))
+                return;
 
-            CurrencyHelperServer.removeCurrency(this.playerUUID, offer.getBuyCost());
-            save = true;
+            CurrencyHelperServer.removeCurrency(this.playerUUID, offer.getBuyCost(), profile.getCurrencyIndex());
 
-            balance = CurrencyHelperServer.getCurrency(this.playerUUID);
+            balance = CurrencyHelperServer.getCurrency(this.playerUUID, profile.getCurrencyIndex());
         } else {
             if ((balance = InventoryHelper.getEqualStackAmount(playerMP, profile.getCurrencyStack())) < offer.getBuyCost())
-                return false;
+                return;
 
             CommonReference.delegateToServerThread(()->InventoryHelper.removeEqualStack(playerMP, profile.getCurrencyStack(), (int) offer.getBuyCost()));
 
             balance -= offer.getBuyCost();
         }
 
-        CommonReference.delegateToServerThread(()->InventoryHelper.addItemStack(playerMP, offer.getOfferedStack().getItemStack(), offer.getAmount()));
+        CommonReference.delegateToServerThread(()->InventoryHelper.addItemStack(playerMP, offer.getOfferedStack().getCachedItemStack().copy(), offer.getAmount()));
         this.notifyPlayer(playerMP, EnumMerchantOperation.BUY, offer, balance);
-
-        return save;
     }
 
-    private boolean sell(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
-        boolean save = false;
-
-        if (!profile.isUsingCurrency() && !InventoryHelper.haveEnoughSpace(playerMP, (int) offer.getSellingCost(), offer.getOfferedStack().getCachedItemStack().getMaxStackSize()))
-            return false;
+    private void sell(EntityPlayerMP playerMP, MerchantProfile profile, MerchantOffer offer) {
+        if (!profile.isUsingVirtalCurrency() && !InventoryHelper.haveEnoughSpace(playerMP, (int) offer.getSellingCost(), offer.getOfferedStack().getCachedItemStack().getMaxStackSize()))
+            return;
 
         if (InventoryHelper.getEqualStackAmount(playerMP, offer.getOfferedStack()) < offer.getAmount())
-            return false;
+            return;
 
         long balance;
-        if (profile.isUsingCurrency()) {
-            CurrencyHelperServer.addCurrency(this.playerUUID, offer.getSellingCost());
-            save = true;
+        if (profile.isUsingVirtalCurrency()) {
+            CurrencyHelperServer.addCurrency(this.playerUUID, offer.getSellingCost(), profile.getCurrencyIndex());
 
-            balance = CurrencyHelperServer.getCurrency(this.playerUUID);
+            balance = CurrencyHelperServer.getCurrency(this.playerUUID, profile.getCurrencyIndex());
         } else {
             balance = InventoryHelper.getEqualStackAmount(playerMP, profile.getCurrencyStack());
 
-            CommonReference.delegateToServerThread(()->InventoryHelper.addItemStack(playerMP, profile.getCurrencyStack().getItemStack(), (int) offer.getSellingCost()));
+            CommonReference.delegateToServerThread(()->InventoryHelper.addItemStack(playerMP, profile.getCurrencyStack().getCachedItemStack().copy(), (int) offer.getSellingCost()));
 
             balance += offer.getSellingCost();
         }
 
         CommonReference.delegateToServerThread(()->InventoryHelper.removeEqualStack(playerMP, offer.getOfferedStack(), offer.getAmount()));
         this.notifyPlayer(playerMP, EnumMerchantOperation.SELLING, offer, balance);
-
-        return save;
     }
 
     public void notifyPlayer(EntityPlayerMP playerMP, EnumMerchantOperation operation, MerchantOffer offer, long balance) {

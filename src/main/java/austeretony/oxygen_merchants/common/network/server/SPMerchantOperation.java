@@ -1,9 +1,10 @@
 package austeretony.oxygen_merchants.common.network.server;
 
 import austeretony.oxygen_core.common.api.CommonReference;
+import austeretony.oxygen_core.common.main.EnumOxygenStatusMessage;
+import austeretony.oxygen_core.common.main.OxygenMain;
 import austeretony.oxygen_core.common.network.Packet;
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
-import austeretony.oxygen_core.server.api.RequestsFilterHelper;
 import austeretony.oxygen_merchants.common.EnumMerchantOperation;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import austeretony.oxygen_merchants.server.MerchantsManagerServer;
@@ -35,15 +36,17 @@ public class SPMerchantOperation extends Packet {
     @Override
     public void read(ByteBuf buffer, INetHandler netHandler) {
         final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
-        //if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_OPERATION_REQUEST_ID)) {
-        //TODO Increase lock resolution (seconds -> milliseconds)
-            final int ordinal = buffer.readByte();
-            final long 
-            profileId = buffer.readLong(),
-            offerId = buffer.readLong();
-            if (ordinal >= 0 && ordinal < EnumMerchantOperation.values().length) 
-                OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getPlayersManager().performOperation(playerMP, 
-                        EnumMerchantOperation.values()[ordinal], profileId, offerId));
-        //}
+        if (OxygenHelperServer.isNetworkRequestAvailable(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_OPERATION_REQUEST_ID)) {
+            if (OxygenHelperServer.checkTimeOut(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_MENU_TIMEOUT_ID) || CommonReference.isPlayerOpped(playerMP)) {
+                final int ordinal = buffer.readByte();
+                final long 
+                profileId = buffer.readLong(),
+                offerId = buffer.readLong();
+                if (ordinal >= 0 && ordinal < EnumMerchantOperation.values().length) 
+                    OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getPlayersManager().performOperation(playerMP, 
+                            EnumMerchantOperation.values()[ordinal], profileId, offerId));
+            } else
+                OxygenHelperServer.sendStatusMessage(playerMP, OxygenMain.OXYGEN_CORE_MOD_INDEX, EnumOxygenStatusMessage.ACTION_TIMEOUT.ordinal()); 
+        }
     }
 }

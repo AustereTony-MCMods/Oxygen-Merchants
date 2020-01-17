@@ -1,6 +1,6 @@
 package austeretony.oxygen_merchants.client;
 
-import austeretony.oxygen_core.common.status.ChatMessagesHandler;
+import austeretony.oxygen_core.common.chat.ChatMessagesHandler;
 import austeretony.oxygen_merchants.common.main.EnumMerchantsStatusMessage;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 

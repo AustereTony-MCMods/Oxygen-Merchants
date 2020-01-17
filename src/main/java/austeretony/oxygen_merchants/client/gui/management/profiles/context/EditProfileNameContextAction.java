@@ -2,23 +2,20 @@ package austeretony.oxygen_merchants.client.gui.management.profiles.context;
 
 import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.oxygen_core.client.api.ClientReference;
-import austeretony.oxygen_core.client.gui.elements.OxygenGUIContextMenuElement.ContextMenuAction;
-import austeretony.oxygen_merchants.client.gui.management.ProfilesManagementGUISection;
+import austeretony.oxygen_core.client.gui.elements.OxygenContextMenu.OxygenContextMenuAction;
+import austeretony.oxygen_merchants.client.gui.management.MerchantProfilesSection;
 
-public class EditProfileNameContextAction implements ContextMenuAction {
+public class EditProfileNameContextAction implements OxygenContextMenuAction {
 
-    private final ProfilesManagementGUISection section;
+    private final MerchantProfilesSection section;
 
-    private final String name;
-
-    public EditProfileNameContextAction(ProfilesManagementGUISection section) {
+    public EditProfileNameContextAction(MerchantProfilesSection section) {
         this.section = section;
-        this.name = ClientReference.localize("oxygen_merchants.gui.management.editProfileName");
     }
 
     @Override
-    public String getName(GUIBaseElement currElement) {
-        return this.name;
+    public String getLocalizedName(GUIBaseElement currElement) {
+        return ClientReference.localize("oxygen_merchants.gui.management.editProfileName");
     }
 
     @Override

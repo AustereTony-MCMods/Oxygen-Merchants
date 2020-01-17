@@ -1,5 +1,7 @@
 package austeretony.oxygen_merchants.server;
 
+import java.util.concurrent.TimeUnit;
+
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -9,29 +11,28 @@ public class MerchantsManagerServer {
 
     private final MerchantProfilesContainerServer profilesContainer = new MerchantProfilesContainerServer();
 
-    private final BoundEntitiesContainerServer entitiesContainer = new BoundEntitiesContainerServer();
-
     private final MerchantProfilesManagerServer profilesManager;
-
-    private final BoundEntitiesManagerServer entitiesManager;
 
     private final PlayersManagerServer playersManager;
 
     private MerchantsManagerServer() {
         this.profilesManager = new MerchantProfilesManagerServer(this);
-        this.entitiesManager = new BoundEntitiesManagerServer(this);
         this.playersManager = new PlayersManagerServer(this);
     }
 
     private void registerPersistentData() {
         OxygenHelperServer.registerPersistentData(this.profilesContainer);
-        OxygenHelperServer.registerPersistentData(this.entitiesContainer);
+    }
+
+    private void scheduleRepeatableProcesses() {
+        OxygenHelperServer.getSchedulerExecutorService().scheduleAtFixedRate(()->this.playersManager.process(), 500L, 500L, TimeUnit.MILLISECONDS);
     }
 
     public static void create() {
         if (instance == null) {
             instance = new MerchantsManagerServer();
             instance.registerPersistentData();
+            instance.scheduleRepeatableProcesses();
         }
     }
 
@@ -43,24 +44,12 @@ public class MerchantsManagerServer {
         return this.profilesContainer;
     }
 
-    public BoundEntitiesContainerServer getBoundEntitiesContainer() {
-        return this.entitiesContainer;
-    }
-
     public MerchantProfilesManagerServer getMerchantProfilesManager() {
         return this.profilesManager;
     }
 
-    public BoundEntitiesManagerServer getBoundEntitiesManager() {
-        return this.entitiesManager;
-    }
-
     public PlayersManagerServer getPlayersManager() {
         return this.playersManager;
-    }
-
-    public void onPlayerLoaded(EntityPlayerMP playerMP) {
-        this.playersManager.onPlayerLoaded(playerMP);
     }
 
     public void onPlayerUnloaded(EntityPlayerMP playerMP) {
@@ -69,6 +58,5 @@ public class MerchantsManagerServer {
 
     public void worldLoaded() {
         OxygenHelperServer.loadPersistentDataAsync(this.profilesContainer);
-        OxygenHelperServer.loadPersistentDataAsync(this.entitiesContainer);
     }
 }

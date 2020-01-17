@@ -2,15 +2,14 @@ package austeretony.oxygen_merchants.client;
 
 import austeretony.oxygen_core.client.api.ClientReference;
 import austeretony.oxygen_core.common.main.OxygenMain;
-import austeretony.oxygen_merchants.client.gui.management.ManagementMenuGUIScreen;
-import austeretony.oxygen_merchants.client.gui.merchant.MerchantMenuGUIScreen;
-import austeretony.oxygen_merchants.common.BoundEntityEntry;
+import austeretony.oxygen_merchants.client.gui.management.ManagementScreen;
+import austeretony.oxygen_merchants.client.gui.merchant.MerchantScreen;
 import austeretony.oxygen_merchants.common.EnumMerchantOperation;
 import austeretony.oxygen_merchants.common.MerchantOffer;
 import austeretony.oxygen_merchants.common.MerchantProfile;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import austeretony.oxygen_merchants.common.network.server.SPMerchantOperation;
-import austeretony.oxygen_merchants.common.network.server.SPOpenMerchantMenu;
+import austeretony.oxygen_merchants.common.network.server.SPRequestMerchantProfileSync;
 
 public class MerchantsMenuManagerClient {
 
@@ -23,20 +22,13 @@ public class MerchantsMenuManagerClient {
     //management menu
 
     public void openManagementMenuDelegated() {
-        ClientReference.getMinecraft().addScheduledTask(()->ClientReference.displayGuiScreen(new ManagementMenuGUIScreen()));
+        ClientReference.getMinecraft().addScheduledTask(()->ClientReference.displayGuiScreen(new ManagementScreen()));
     }
 
     public void profilesSynchronized() {
         ClientReference.delegateToClientThread(()->{
             if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).profilesSynchronized();;
-        }); 
-    }
-
-    public void entitiesSynchronized() {
-        ClientReference.delegateToClientThread(()->{
-            if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).entitiesSynchronized();;
+                ((ManagementScreen) ClientReference.getCurrentScreen()).profilesSynchronized();;
         }); 
     }
 
@@ -46,7 +38,7 @@ public class MerchantsMenuManagerClient {
 
         ClientReference.delegateToClientThread(()->{
             if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).profileCreated(profile);;
+                ((ManagementScreen) ClientReference.getCurrentScreen()).profileCreated(profile);;
         }); 
     }
 
@@ -57,7 +49,7 @@ public class MerchantsMenuManagerClient {
 
         ClientReference.delegateToClientThread(()->{
             if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).profileUpdated(profile);;
+                ((ManagementScreen) ClientReference.getCurrentScreen()).profileUpdated(profile);;
         }); 
     }
 
@@ -67,58 +59,29 @@ public class MerchantsMenuManagerClient {
 
         ClientReference.delegateToClientThread(()->{
             if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).profileRemoved(profile);;
-        }); 
-    }
-
-    public void entityCreated(BoundEntityEntry entry) {
-        this.manager.getBoundEntitiesContainer().addEntry(entry);
-        this.manager.getBoundEntitiesContainer().setChanged(true);
-
-        ClientReference.delegateToClientThread(()->{
-            if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).entityCreated(entry);;
-        }); 
-    }
-
-    public void entityUpdated(BoundEntityEntry entry) {
-        this.manager.getBoundEntitiesContainer().removeEntry(entry.getId() - 1L);
-        this.manager.getBoundEntitiesContainer().addEntry(entry);
-        this.manager.getBoundEntitiesContainer().setChanged(true);
-
-        ClientReference.delegateToClientThread(()->{
-            if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).entityUpdated(entry);;
-        }); 
-    }
-
-    public void entityRemoved(BoundEntityEntry entry) {
-        this.manager.getBoundEntitiesContainer().removeEntry(entry.getId());
-        this.manager.getBoundEntitiesContainer().setChanged(true);
-
-        ClientReference.delegateToClientThread(()->{
-            if (isManagementMenuOpened())
-                ((ManagementMenuGUIScreen) ClientReference.getCurrentScreen()).entityRemoved(entry);;
+                ((ManagementScreen) ClientReference.getCurrentScreen()).profileRemoved(profile);;
         }); 
     }
 
     public static boolean isManagementMenuOpened() {
-        return ClientReference.hasActiveGUI() && ClientReference.getCurrentScreen() instanceof ManagementMenuGUIScreen;
+        return ClientReference.hasActiveGUI() && ClientReference.getCurrentScreen() instanceof ManagementScreen;
     }
 
     //merchant menu
-
-    public void openMerchantMenuSynced(int entityId, long profileId) {
-        OxygenMain.network().sendToServer(new SPOpenMerchantMenu(entityId, profileId));
+    
+    public void tryOpenMerchantMenu(long profileId) {
+        if (this.manager.getMerchantProfilesContainer().getProfile(profileId) != null)
+            this.openMerchantMenuDelegated(profileId);
+        else
+            OxygenMain.network().sendToServer(new SPRequestMerchantProfileSync(profileId));
     }
 
     public void openMerchantMenuDelegated(long profileId) {
-        ClientReference.getMinecraft().addScheduledTask(()->ClientReference.displayGuiScreen(new MerchantMenuGUIScreen(profileId)));
+        ClientReference.delegateToClientThread(()->ClientReference.displayGuiScreen(new MerchantScreen(profileId)));
     }
 
-    public void updateDataOpenMerchantMenu(BoundEntityEntry entry, MerchantProfile merchantProfile) {
+    public void addProfileOpenMerchantMenu(MerchantProfile merchantProfile) {
         MerchantsMain.LOGGER.info("Synchronized merchant profile: <{}>.", merchantProfile.getName());
-        MerchantsManagerClient.instance().getBoundEntitiesManager().entryCreated(entry);
         MerchantsManagerClient.instance().getMerchantProfilesManager().profileCreated(merchantProfile);
         this.openMerchantMenuDelegated(merchantProfile.getId());
     }
@@ -126,19 +89,19 @@ public class MerchantsMenuManagerClient {
     public void bought(MerchantOffer offer, long balance) {
         ClientReference.delegateToClientThread(()->{
             if (isMerchantMenuOpened())
-                ((MerchantMenuGUIScreen) ClientReference.getCurrentScreen()).bought(offer, balance);;
+                ((MerchantScreen) ClientReference.getCurrentScreen()).bought(offer, balance);;
         }); 
     }
 
     public void sold(MerchantOffer offer, long balance) {
         ClientReference.delegateToClientThread(()->{
             if (isMerchantMenuOpened())
-                ((MerchantMenuGUIScreen) ClientReference.getCurrentScreen()).sold(offer, balance);;
+                ((MerchantScreen) ClientReference.getCurrentScreen()).sold(offer, balance);;
         }); 
     }
 
     public static boolean isMerchantMenuOpened() {
-        return ClientReference.hasActiveGUI() && ClientReference.getCurrentScreen() instanceof MerchantMenuGUIScreen;
+        return ClientReference.hasActiveGUI() && ClientReference.getCurrentScreen() instanceof MerchantScreen;
     }
 
     public void performBuySynced(long profileId, long offerId) {

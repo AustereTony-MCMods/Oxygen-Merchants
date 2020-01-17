@@ -4,7 +4,6 @@ import austeretony.oxygen_core.common.api.CommonReference;
 import austeretony.oxygen_core.common.network.Packet;
 import austeretony.oxygen_core.common.util.ByteBufUtils;
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
-import austeretony.oxygen_core.server.api.RequestsFilterHelper;
 import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import austeretony.oxygen_merchants.server.MerchantsManagerServer;
 import io.netty.buffer.ByteBuf;
@@ -29,7 +28,7 @@ public class SPCreateProfile extends Packet {
     @Override   
     public void read(ByteBuf buffer, INetHandler netHandler) {
         final EntityPlayerMP playerMP = getEntityPlayerMP(netHandler);
-        if (RequestsFilterHelper.getLock(CommonReference.getPersistentUUID(playerMP), MerchantsMain.PROFILE_MANAGEMENT_REQUEST_ID)) {
+        if (OxygenHelperServer.isNetworkRequestAvailable(CommonReference.getPersistentUUID(playerMP), MerchantsMain.PROFILE_MANAGEMENT_REQUEST_ID)) {
             final String name = ByteBufUtils.readString(buffer);
             OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getMerchantProfilesManager().createProfile(playerMP, name));
         }
