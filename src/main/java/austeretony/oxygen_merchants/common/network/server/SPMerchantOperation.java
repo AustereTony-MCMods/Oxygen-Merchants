@@ -16,20 +16,18 @@ public class SPMerchantOperation extends Packet {
 
     private int ordinal;
 
-    private long profileId, offerId;
+    private long offerId;
 
     public SPMerchantOperation() {}
 
-    public SPMerchantOperation(EnumMerchantOperation operation, long profileId, long offerId) {
+    public SPMerchantOperation(EnumMerchantOperation operation, long offerId) {
         this.ordinal = operation.ordinal();
-        this.profileId = profileId;
         this.offerId = offerId;
     }
 
     @Override
     public void write(ByteBuf buffer, INetHandler netHandler) {
         buffer.writeByte(this.ordinal);
-        buffer.writeLong(this.profileId);
         buffer.writeLong(this.offerId);
     }
 
@@ -39,12 +37,9 @@ public class SPMerchantOperation extends Packet {
         if (OxygenHelperServer.isNetworkRequestAvailable(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_OPERATION_REQUEST_ID)) {
             if (OxygenHelperServer.checkTimeOut(CommonReference.getPersistentUUID(playerMP), MerchantsMain.MERCHANT_MENU_TIMEOUT_ID) || CommonReference.isPlayerOpped(playerMP)) {
                 final int ordinal = buffer.readByte();
-                final long 
-                profileId = buffer.readLong(),
-                offerId = buffer.readLong();
+                final long offerId = buffer.readLong();
                 if (ordinal >= 0 && ordinal < EnumMerchantOperation.values().length) 
-                    OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getPlayersManager().performOperation(playerMP, 
-                            EnumMerchantOperation.values()[ordinal], profileId, offerId));
+                    OxygenHelperServer.addRoutineTask(()->MerchantsManagerServer.instance().getPlayersManager().performOperation(playerMP, EnumMerchantOperation.values()[ordinal], offerId));
             } else
                 OxygenHelperServer.sendStatusMessage(playerMP, OxygenMain.OXYGEN_CORE_MOD_INDEX, EnumOxygenStatusMessage.ACTION_TIMEOUT.ordinal()); 
         }

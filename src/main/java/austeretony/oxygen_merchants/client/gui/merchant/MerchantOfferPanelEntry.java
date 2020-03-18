@@ -7,45 +7,48 @@ import austeretony.oxygen_core.client.api.EnumBaseGUISetting;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.client.gui.ItemRenderHelper;
 import austeretony.oxygen_core.client.gui.OxygenGUIUtils;
-import austeretony.oxygen_core.client.gui.elements.OxygenIndexedPanelEntry;
+import austeretony.oxygen_core.client.gui.elements.OxygenWrapperPanelEntry;
 import austeretony.oxygen_core.common.util.OxygenUtils;
-import austeretony.oxygen_merchants.common.MerchantOffer;
+import austeretony.oxygen_merchants.common.merchant.MerchantOffer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 
-public class MerchantOfferPanelEntry extends OxygenIndexedPanelEntry<Long> {
+public class MerchantOfferPanelEntry extends OxygenWrapperPanelEntry<Long> {
 
     private final ItemStack offeredStack, currencyStack;
 
-    private final String amountStr, costStr;
+    private final String idStr, amountStr, costStr;
 
     private String playerStockStr;
 
-    private final boolean singleItem, enableDurabilityBar;
+    private final boolean singleItem, enableDurabilityBar, debug;
 
     private boolean useCurrencyStack, available;
 
     private CurrencyProperties currencyProperties;
 
-    public MerchantOfferPanelEntry(MerchantOffer offer, long cost, int playerStock, ItemStack currencyStack, CurrencyProperties properties) {
-        super(offer.offerId);
+    public MerchantOfferPanelEntry(MerchantOffer offer, long cost, int playerStock, ItemStack currencyStack, CurrencyProperties properties, boolean debug) {
+        super(offer.getId());
         this.playerStockStr = String.valueOf(playerStock);
-        this.offeredStack = offer.getOfferedStack().getCachedItemStack();
+        this.offeredStack = offer.getStackWrapper().getCachedItemStack();
         this.currencyStack = currencyStack;
         this.useCurrencyStack = currencyStack != null;
+        this.idStr = String.format("Id: %d", offer.getId());
         this.amountStr = String.valueOf(offer.getAmount());
         this.costStr = OxygenUtils.formatCurrencyValue(String.valueOf(cost));
         this.singleItem = offer.getAmount() == 1;
 
         this.currencyProperties = properties;
+        this.debug = debug;
 
         this.enableDurabilityBar = EnumBaseClientSetting.ENABLE_ITEMS_DURABILITY_BAR.get().asBoolean();
         this.setDisplayText(EnumBaseClientSetting.ENABLE_RARITY_COLORS.get().asBoolean() ? this.offeredStack.getRarity().rarityColor + this.offeredStack.getDisplayName() : this.offeredStack.getDisplayName());
         this.setDynamicBackgroundColor(EnumBaseGUISetting.ELEMENT_ENABLED_COLOR.get().asInt(), EnumBaseGUISetting.ELEMENT_DISABLED_COLOR.get().asInt(), EnumBaseGUISetting.ELEMENT_HOVERED_COLOR.get().asInt());
         this.setTextDynamicColor(EnumBaseGUISetting.TEXT_ENABLED_COLOR.get().asInt(), EnumBaseGUISetting.TEXT_DISABLED_COLOR.get().asInt(), EnumBaseGUISetting.TEXT_HOVERED_COLOR.get().asInt());
         this.setDebugColor(EnumBaseGUISetting.INACTIVE_ELEMENT_COLOR.get().asInt());
+        this.setStaticBackgroundColor(EnumBaseGUISetting.TEXT_DARK_ENABLED_COLOR.get().asInt());
         this.requireDoubleClick();
     }
 
@@ -115,6 +118,14 @@ public class MerchantOfferPanelEntry extends OxygenIndexedPanelEntry<Long> {
             GlStateManager.scale(this.getTextScale() + 0.05F, this.getTextScale() + 0.05F, 0.0F);           
             this.mc.fontRenderer.drawString(this.getDisplayText(), 0, 0, this.available ? color : this.getDebugColor(), false);
             GlStateManager.popMatrix();     
+
+            if (this.debug) {
+                GlStateManager.pushMatrix();           
+                GlStateManager.translate(110.0F, 1.0F, 0.0F);            
+                GlStateManager.scale(this.getTextScale() - 0.1F, this.getTextScale() - 0.1F, 0.0F);           
+                this.mc.fontRenderer.drawString(this.idStr, 0, 0, this.getStaticBackgroundColor(), false);
+                GlStateManager.popMatrix(); 
+            }
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);  
 

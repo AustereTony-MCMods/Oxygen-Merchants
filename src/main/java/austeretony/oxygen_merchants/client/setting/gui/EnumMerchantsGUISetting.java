@@ -30,7 +30,7 @@ public enum EnumMerchantsGUISetting {
     }
 
     public static void register() {
-        for (EnumMerchantsGUISetting setting : EnumMerchantsGUISetting.values())
+        for (EnumMerchantsGUISetting setting : values())
             OxygenManagerClient.instance().getClientSettingManager().register(SettingValueUtils.getValue(setting.type, setting.key, setting.baseValue));
     }
 }

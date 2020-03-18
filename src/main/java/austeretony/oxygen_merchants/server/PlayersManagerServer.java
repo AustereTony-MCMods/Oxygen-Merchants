@@ -39,11 +39,11 @@ public class PlayersManagerServer {
         });
     }
 
-    public void onPlayerUnloaded(EntityPlayerMP playerMP) {
+    public void playerUnloaded(EntityPlayerMP playerMP) {
         this.removeOperationsProcessor(CommonReference.getPersistentUUID(playerMP));
     }
 
-    public void performOperation(EntityPlayerMP playerMP, EnumMerchantOperation operation, long profileId, long offerId) {
-        this.getOperationsProcessor(CommonReference.getPersistentUUID(playerMP)).addOperation(operation, profileId, offerId);
+    public void performOperation(EntityPlayerMP playerMP, EnumMerchantOperation operation, long offerId) {
+        this.getOperationsProcessor(CommonReference.getPersistentUUID(playerMP)).addOperation(operation, offerId);
     }
 }

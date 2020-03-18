@@ -45,6 +45,8 @@ oxygen_merchants.message.merchantsDataReloaded=Данные торговцев �
 
 oxygen_merchants.command.dataReset=Данные <oxygen: merchants> сброшены для клиента.
 
-oxygen_merchants.status.profileCreated=Создан профиль торговца
-oxygen_merchants.status.profileUpdated=Профиль торговца обновлён
-oxygen_merchants.status.profileRemoved=Профиль торговца удалён
+oxygen_merchants.status.message.profilesReloaded=Профили торговцев перезагружены
+oxygen_merchants.status.message.profileCreated=Создан профиль торговца
+oxygen_merchants.status.message.profileUpdated=Профиль торговца обновлён
+oxygen_merchants.status.message.profileSaved=Профиль торговца сохранён
+oxygen_merchants.status.message.profileRemoved=Профиль торговца удалён

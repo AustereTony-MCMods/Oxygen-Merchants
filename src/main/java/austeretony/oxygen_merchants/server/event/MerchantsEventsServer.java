@@ -14,6 +14,6 @@ public class MerchantsEventsServer {
 
     @SubscribeEvent
     public void onPlayerUnloaded(OxygenPlayerUnloadedEvent event) {         
-        MerchantsManagerServer.instance().onPlayerUnloaded(event.playerMP);
+        MerchantsManagerServer.instance().playerUnloaded(event.playerMP);
     }
 }

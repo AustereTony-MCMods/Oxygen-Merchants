@@ -4,7 +4,7 @@ import austeretony.oxygen_core.client.api.OxygenHelperClient;
 import austeretony.oxygen_core.common.network.Packet;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.common.EnumMerchantOperation;
-import austeretony.oxygen_merchants.common.MerchantOffer;
+import austeretony.oxygen_merchants.common.merchant.MerchantOffer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.INetHandler;
 

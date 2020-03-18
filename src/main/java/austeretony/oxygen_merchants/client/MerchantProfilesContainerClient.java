@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import austeretony.oxygen_core.client.api.OxygenHelperClient;
 import austeretony.oxygen_core.common.persistent.AbstractPersistentData;
 import austeretony.oxygen_core.common.util.StreamUtils;
-import austeretony.oxygen_merchants.common.MerchantProfile;
+import austeretony.oxygen_merchants.common.merchant.MerchantProfile;
 
 public class MerchantProfilesContainerClient extends AbstractPersistentData {
 
@@ -29,6 +31,7 @@ public class MerchantProfilesContainerClient extends AbstractPersistentData {
         return this.profiles.values();
     }
 
+    @Nullable
     public MerchantProfile getProfile(long profileId) {
         return this.profiles.get(profileId);
     }
@@ -43,12 +46,12 @@ public class MerchantProfilesContainerClient extends AbstractPersistentData {
 
     @Override
     public String getDisplayName() {
-        return "merchant_profiles";
+        return "merchants:merchant_profiles_client";
     }
 
     @Override
     public String getPath() {
-        return OxygenHelperClient.getDataFolder() + "/client/world/merchants/profiles.dat";
+        return OxygenHelperClient.getDataFolder() + "/client/world/merchants/profiles_client.dat";
     }
 
     @Override

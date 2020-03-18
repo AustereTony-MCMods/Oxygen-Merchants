@@ -3,6 +3,8 @@ package austeretony.oxygen_merchants.server;
 import java.util.concurrent.TimeUnit;
 
 import austeretony.oxygen_core.server.api.OxygenHelperServer;
+import austeretony.oxygen_merchants.common.main.EnumMerchantsStatusMessage;
+import austeretony.oxygen_merchants.common.main.MerchantsMain;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 public class MerchantsManagerServer {
@@ -20,18 +22,13 @@ public class MerchantsManagerServer {
         this.playersManager = new PlayersManagerServer(this);
     }
 
-    private void registerPersistentData() {
-        OxygenHelperServer.registerPersistentData(this.profilesContainer);
-    }
-
     private void scheduleRepeatableProcesses() {
-        OxygenHelperServer.getSchedulerExecutorService().scheduleAtFixedRate(()->this.playersManager.process(), 500L, 500L, TimeUnit.MILLISECONDS);
+        OxygenHelperServer.getSchedulerExecutorService().scheduleAtFixedRate(this.playersManager::process, 500L, 500L, TimeUnit.MILLISECONDS);
     }
 
     public static void create() {
         if (instance == null) {
             instance = new MerchantsManagerServer();
-            instance.registerPersistentData();
             instance.scheduleRepeatableProcesses();
         }
     }
@@ -52,11 +49,15 @@ public class MerchantsManagerServer {
         return this.playersManager;
     }
 
-    public void onPlayerUnloaded(EntityPlayerMP playerMP) {
-        this.playersManager.onPlayerUnloaded(playerMP);
+    public void playerUnloaded(EntityPlayerMP playerMP) {
+        this.playersManager.playerUnloaded(playerMP);
     }
 
     public void worldLoaded() {
-        OxygenHelperServer.loadPersistentDataAsync(this.profilesContainer);
+        this.profilesContainer.loadAsync();
+    }
+
+    public void sendStatusMessage(EntityPlayerMP playerMP, EnumMerchantsStatusMessage status) {
+        OxygenHelperServer.sendStatusMessage(playerMP, MerchantsMain.MERCHANTS_MOD_INDEX, status.ordinal());
     }
 }

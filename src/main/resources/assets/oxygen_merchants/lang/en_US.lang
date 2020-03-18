@@ -46,6 +46,8 @@ oxygen_merchants.message.merchantsDataReloaded=Merchants data reloaded.
 
 oxygen_merchants.command.dataReset=<oxygen: merchants> client data reset.
 
-oxygen_merchants.status.profileCreated=Merchant profile created
-oxygen_merchants.status.profileUpdated=Merchant profile updated
-oxygen_merchants.status.profileRemoved=Merchant profile removed
+oxygen_merchants.status.message.profilesReloaded=Profiles reloaded
+oxygen_merchants.status.message.profileCreated=Merchant profile created
+oxygen_merchants.status.message.profileUpdated=Merchant profile updated
+oxygen_merchants.status.message.profileSaved=Merchant profile saved
+oxygen_merchants.status.message.profileRemoved=Merchant profile removed

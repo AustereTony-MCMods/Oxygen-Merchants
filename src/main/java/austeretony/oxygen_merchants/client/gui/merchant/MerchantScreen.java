@@ -1,6 +1,5 @@
 package austeretony.oxygen_merchants.client.gui.merchant;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import austeretony.alternateui.screen.core.AbstractGUIScreen;
@@ -9,39 +8,43 @@ import austeretony.alternateui.screen.core.GUIBaseElement;
 import austeretony.alternateui.screen.core.GUIWorkspace;
 import austeretony.alternateui.util.EnumGUIAlignment;
 import austeretony.oxygen_core.client.api.ClientReference;
+import austeretony.oxygen_core.client.api.InventoryProviderClient;
 import austeretony.oxygen_core.client.api.OxygenHelperClient;
 import austeretony.oxygen_core.client.currency.CurrencyProperties;
 import austeretony.oxygen_core.common.item.ItemStackWrapper;
 import austeretony.oxygen_core.common.main.OxygenMain;
 import austeretony.oxygen_merchants.client.MerchantsManagerClient;
 import austeretony.oxygen_merchants.client.setting.gui.EnumMerchantsGUISetting;
-import austeretony.oxygen_merchants.common.MerchantOffer;
-import austeretony.oxygen_merchants.common.MerchantProfile;
-import net.minecraft.item.ItemStack;
+import austeretony.oxygen_merchants.common.merchant.MerchantOffer;
+import austeretony.oxygen_merchants.common.merchant.MerchantProfile;
 
 public class MerchantScreen extends AbstractGUIScreen {
 
-    public final MerchantProfile merchantProfile;
+    private final MerchantProfile merchantProfile;
 
     private CurrencyProperties currencyProperties;
 
-    public final Map<ItemStackWrapper, Integer> inventoryContent = new LinkedHashMap<>();
+    private final Map<ItemStackWrapper, Integer> inventoryContent;
 
     public final int buyOffersAmount, sellingOffersAmount;
 
-    protected BuySection buySection;
+    public final boolean debug;
 
-    protected SellingSection sellingSection;
+    private BuySection buySection;
 
-    public MerchantScreen(long profileId) {
+    private SellingSection sellingSection;
+
+    public MerchantScreen(long profileId, boolean debug) {
         this.merchantProfile = MerchantsManagerClient.instance().getMerchantProfilesContainer().getProfile(profileId);
         this.currencyProperties = OxygenHelperClient.getCurrencyProperties(this.merchantProfile.getCurrencyIndex());
         if (this.currencyProperties == null)
             this.currencyProperties = OxygenHelperClient.getCurrencyProperties(OxygenMain.COMMON_CURRENCY_INDEX);
+        this.inventoryContent = InventoryProviderClient.getPlayerInventory().getInventoryContent(ClientReference.getClientPlayer());
+
         this.buyOffersAmount = this.merchantProfile.getBuyOffersAmount();
         this.sellingOffersAmount = this.merchantProfile.getSellingOffersAmount();
 
-        this.updateInventoryContent();
+        this.debug = debug;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class MerchantScreen extends AbstractGUIScreen {
             alignment = EnumGUIAlignment.CENTER;
             break;
         }
-        return new GUIWorkspace(this, 185, 183).setAlignment(alignment, 0, 0);
+        return new GUIWorkspace(this, 185, 191).setAlignment(alignment, 0, 0);
     }
 
     @Override
@@ -103,30 +106,32 @@ public class MerchantScreen extends AbstractGUIScreen {
         return this.sellingSection;
     }
 
-    public void updateInventoryContent() {
-        this.inventoryContent.clear();
-        ItemStackWrapper wrapper;
-        int amount;
-        for (ItemStack itemStack : ClientReference.getClientPlayer().inventory.mainInventory) {
-            if (!itemStack.isEmpty()) {
-                wrapper = ItemStackWrapper.getFromStack(itemStack);
-                if (!this.inventoryContent.containsKey(wrapper))
-                    this.inventoryContent.put(wrapper, itemStack.getCount());
-                else {
-                    amount = this.inventoryContent.get(wrapper);
-                    amount += itemStack.getCount();
-                    this.inventoryContent.put(wrapper, amount);
-                }
-            }
-        }
+    public MerchantProfile getMerchantProfile() {
+        return this.merchantProfile;
+    }
+
+    public Map<ItemStackWrapper, Integer> getInventoryContent() {
+        return this.inventoryContent;
     }
 
     public int getEqualStackAmount(ItemStackWrapper stackWrapper) {
-        int amount = 0;
-        for (ItemStackWrapper wrapper : this.inventoryContent.keySet())
-            if (wrapper.isEquals(stackWrapper))
-                amount += this.inventoryContent.get(wrapper);
-        return amount;
+        Integer amount = this.inventoryContent.get(stackWrapper);
+        return amount == null ? 0 : amount.intValue();
+    }
+
+    public void addItemStack(ItemStackWrapper stackWrapper, int amount) {
+        Integer stored = this.inventoryContent.get(stackWrapper);
+        this.inventoryContent.put(stackWrapper, stored != null ? stored + amount : amount);
+    }
+
+    public void removeItemStack(ItemStackWrapper stackWrapper, int amount) {
+        Integer stored = this.inventoryContent.get(stackWrapper);
+        if (stored != null) {
+            if (stored > amount)
+                this.inventoryContent.put(stackWrapper, stored - amount);
+            else
+                this.inventoryContent.remove(stackWrapper);
+        }
     }
 
     public CurrencyProperties getCurrencyProperties() {

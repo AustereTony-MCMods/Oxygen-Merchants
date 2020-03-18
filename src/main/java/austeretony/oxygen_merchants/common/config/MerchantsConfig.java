@@ -12,11 +12,17 @@ public class MerchantsConfig extends AbstractConfig {
 
     public static final ConfigValue 
     MERCHANT_MENU_OPERATIONS_TIMEOUT_MILLIS = ConfigValueUtils.getValue("server", "merchant_menu_operations_timeout_millis", 120000),
-    ALLOW_INGAME_MANAGEMENT = ConfigValueUtils.getValue("server", "allow_ingame_profiles_management", true);
+    ALLOW_MANAGEMENT_INGAME = ConfigValueUtils.getValue("server", "allow_management_ingame", true),
+    ADVANCED_LOGGING = ConfigValueUtils.getValue("server", "advanced_logging", false);
 
     @Override
     public String getDomain() {
         return MerchantsMain.MODID;
+    }
+
+    @Override
+    public String getVersion() {
+        return MerchantsMain.VERSION_CUSTOM;
     }
 
     @Override
@@ -27,6 +33,7 @@ public class MerchantsConfig extends AbstractConfig {
     @Override
     public void getValues(List<ConfigValue> values) {
         values.add(MERCHANT_MENU_OPERATIONS_TIMEOUT_MILLIS);
-        values.add(ALLOW_INGAME_MANAGEMENT);
+        values.add(ALLOW_MANAGEMENT_INGAME);
+        values.add(ADVANCED_LOGGING);
     }
 }

@@ -6,11 +6,10 @@ public class QueuedMerchantOperation {
 
     final EnumMerchantOperation operation;
 
-    final long profileId, offerId;
+    final long offerId;
 
-    QueuedMerchantOperation(EnumMerchantOperation operation, long profileId, long offerId) {
+    QueuedMerchantOperation(EnumMerchantOperation operation, long offerId) {
         this.operation = operation;
-        this.profileId = profileId;
         this.offerId = offerId;
     }
 }

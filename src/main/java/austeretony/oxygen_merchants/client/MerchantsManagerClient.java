@@ -8,12 +8,9 @@ public class MerchantsManagerClient {
 
     private final MerchantProfilesContainerClient profilesContainer = new MerchantProfilesContainerClient();
 
-    private final MerchantProfilesManagerClient profilesManager;
-
     private final MerchantsMenuManagerClient menuManager;
 
     private MerchantsManagerClient() {        
-        this.profilesManager = new MerchantProfilesManagerClient(this);
         this.menuManager = new MerchantsMenuManagerClient(this);
     }
 
@@ -34,10 +31,6 @@ public class MerchantsManagerClient {
 
     public MerchantProfilesContainerClient getMerchantProfilesContainer() {
         return this.profilesContainer;
-    }
-
-    public MerchantProfilesManagerClient getMerchantProfilesManager() {
-        return this.profilesManager;
     }
 
     public MerchantsMenuManagerClient getMenuManager() {

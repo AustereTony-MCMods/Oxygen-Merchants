@@ -10,20 +10,25 @@ public class CPTryOpenMerchantMenu extends Packet {
 
     private long profileId;
 
+    private boolean debug;
+
     public CPTryOpenMerchantMenu() {}
 
-    public CPTryOpenMerchantMenu(long profileId) {
+    public CPTryOpenMerchantMenu(long profileId, boolean debug) {
         this.profileId = profileId;
+        this.debug = debug;
     }
 
     @Override
     public void write(ByteBuf buffer, INetHandler netHandler) {
         buffer.writeLong(this.profileId);
+        buffer.writeBoolean(this.debug);
     }
 
     @Override
     public void read(ByteBuf buffer, INetHandler netHandler) {
         final long profileId = buffer.readLong();
-        OxygenHelperClient.addRoutineTask(()->MerchantsManagerClient.instance().getMenuManager().tryOpenMerchantMenu(profileId));
+        final boolean debug = buffer.readBoolean();
+        OxygenHelperClient.addRoutineTask(()->MerchantsManagerClient.instance().getMenuManager().tryOpenMerchantMenu(profileId, debug));
     }
 }
