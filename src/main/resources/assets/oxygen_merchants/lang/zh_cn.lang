@@ -1,0 +1,63 @@
+#Chinese Translated By ahdg,lian20,Lingdong,NEWLY_1129514
+oxygen_merchants.gui.settings.module.merchants=贸易
+oxygen_merchants.gui.settings.option.alignmentMerchantMenu=贸易菜单
+
+ 
+oxygen_merchants.sorting.profile=档案
+ 
+oxygen_merchants.gui.management.title=管理
+oxygen_merchants.gui.management.profiles.title=档案
+ 
+oxygen_merchants.gui.management.saveChangesButton=保存
+oxygen_merchants.gui.management.changeCurrencyButton=修改
+ 
+oxygen_merchants.gui.management.callback.profileCreation=新建档案
+
+oxygen_merchants.gui.management.callback.profileCreation.request=档案名称
+
+oxygen_merchants.gui.management.profileGenericName=档案
+oxygen_merchants.gui.management.callback.removeProfile=移除档案
+
+oxygen_merchants.gui.management.callback.removeProfile.request=档案将被移除
+
+oxygen_merchants.gui.management.callback.editName=编辑名称
+oxygen_merchants.gui.management.callback.editName.request=档案名称
+
+oxygen_merchants.gui.management.callback.currencyManagement=货币管理
+
+oxygen_merchants.gui.management.callback.offerCreation=新建报价
+
+oxygen_merchants.gui.management.callback.editOffer=编辑报价
+oxygen_merchants.gui.management.callback.saveChanges=保存档案
+oxygen_merchants.gui.management.callback.saveChanges.request=与服务器同步你的修改吗？
+
+oxygen_merchants.gui.management.editProfileName=编辑名称
+oxygen_merchants.gui.management.editProfileCurrency=编辑货币
+oxygen_merchants.gui.management.newOffer=新的报价
+oxygen_merchants.gui.management.remove=移除
+oxygen_merchants.gui.management.useCurrency=用货币
+oxygen_merchants.gui.management.useItem=用物品
+oxygen_merchants.gui.management.amount=数量
+oxygen_merchants.gui.management.buyPrice=销售价格
+oxygen_merchants.gui.management.sellingPrice=购买价格
+oxygen_merchants.gui.management.buyFor=Selling for %s
+oxygen_merchants.gui.management.noBuy=No selling
+oxygen_merchants.gui.management.sellFor=Buy for %s
+oxygen_merchants.gui.management.noSelling=No buy
+oxygen_merchants.gui.management.edit=编辑
+oxygen_merchants.gui.management.openProfileButton=打开
+oxygen_merchants.gui.management.linkIdToChat=把ID关联到聊天
+ 
+oxygen_merchants.gui.merchant.buy=买
+oxygen_merchants.gui.merchant.selling=卖
+ 
+oxygen_merchants.message.ingameManagementDisabled=游戏内管理已关闭
+oxygen_merchants.message.merchantsDataReloaded=贸易数据已载入
+ 
+oxygen_merchants.command.dataReset=<oxygen: merchants>客户端数据重置
+
+oxygen_merchants.status.message.profilesReloaded=档案已重置
+oxygen_merchants.status.message.profileCreated=商人档案已创建
+oxygen_merchants.status.message.profileUpdated=商人档案已更新
+oxygen_merchants.status.message.profileSaved=商人档案已保存
+oxygen_merchants.status.message.profileRemoved=商人档案已移除
