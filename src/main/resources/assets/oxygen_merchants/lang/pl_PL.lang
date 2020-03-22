@@ -1,0 +1,53 @@
+oxygen_merchants.gui.settings.module.merchants=Handlarze i Kupcy
+oxygen_merchants.gui.settings.option.alignmentMerchantMenu=Pokazuj menu kupców
+
+oxygen_merchants.sorting.profile=Profil
+
+oxygen_merchants.gui.management.title=Zarządzanie
+oxygen_merchants.gui.management.profiles.title=Profile
+
+oxygen_merchants.gui.management.saveChangesButton=Zapisz
+oxygen_merchants.gui.management.changeCurrencyButton=Zmień
+
+oxygen_merchants.gui.management.callback.profileCreation=Tworzenie profilu
+oxygen_merchants.gui.management.callback.profileCreation.request=Nazwa Profilu
+oxygen_merchants.gui.management.profileGenericName=Profil
+oxygen_merchants.gui.management.callback.removeProfile=Skasuj Profil
+oxygen_merchants.gui.management.callback.removeProfile.request=Profil zostanie skasowany.
+oxygen_merchants.gui.management.callback.editName=Edytuj Nazwę
+oxygen_merchants.gui.management.callback.editName.request=Nazwa Profilu
+oxygen_merchants.gui.management.callback.currencyManagement=Zarządzanie walutą
+oxygen_merchants.gui.management.callback.offerCreation=Kreator Ofert
+oxygen_merchants.gui.management.callback.editOffer=Edytuj Ofertę
+oxygen_merchants.gui.management.callback.saveChanges=Zapisz Profil
+oxygen_merchants.gui.management.callback.saveChanges.request=Zsynchronizować zmiany z serwerem?
+oxygen_merchants.gui.management.editProfileName=Edytuj Nazwę
+oxygen_merchants.gui.management.editProfileCurrency=Edytuj Walutę
+oxygen_merchants.gui.management.newOffer=Nowa Oferta
+oxygen_merchants.gui.management.remove=Skasuj
+oxygen_merchants.gui.management.useCurrency=Użyj Waluty
+oxygen_merchants.gui.management.useItem=Użyj Przedmiot
+oxygen_merchants.gui.management.amount=Ilość
+oxygen_merchants.gui.management.buyPrice=Cena sprzedaży
+oxygen_merchants.gui.management.sellingPrice=Cena kupna
+oxygen_merchants.gui.management.buyFor=Sprzedano dla %s
+oxygen_merchants.gui.management.noBuy=Brak sprzedaży
+oxygen_merchants.gui.management.sellFor=Kup za %s
+oxygen_merchants.gui.management.noSelling=Nie kupiono
+oxygen_merchants.gui.management.edit=Edytuj
+oxygen_merchants.gui.management.openProfileButton=Otwórz
+oxygen_merchants.gui.management.linkIdToChat=Link z ID na chacie
+
+oxygen_merchants.gui.merchant.buy=Kupno
+oxygen_merchants.gui.merchant.selling=Sprzedaż
+
+oxygen_merchants.message.ingameManagementDisabled=Menadżer w grze jest wyłączony.
+oxygen_merchants.message.merchantsDataReloaded=Dane kupców zostały przeładowane.
+
+oxygen_merchants.command.dataReset=<oxygen: merchants> zostało zresetowane.
+
+oxygen_merchants.status.message.profilesReloaded=Profile przeładowane
+oxygen_merchants.status.message.profileCreated=Profil handlowy został utworzony
+oxygen_merchants.status.message.profileUpdated=Profil handlowy został zaktualizowany
+oxygen_merchants.status.message.profileSaved=Profil handlowy został zapisany
+oxygen_merchants.status.message.profileRemoved=Profil handlowy został usunięty
